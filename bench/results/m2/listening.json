@@ -1,0 +1,48 @@
+{
+ "date": "2026-10-09",
+ "listeners": 1,
+ "voice": "pl_PL-zenski_wg_glos-medium",
+ "pairs": [
+  {
+   "pair": "para 1",
+   "text_id": "M2",
+   "A": "raw",
+   "B": "normalized",
+   "preferred": "B",
+   "preferred_version": "normalized"
+  },
+  {
+   "pair": "para 2",
+   "text_id": "M3",
+   "A": "raw",
+   "B": "normalized",
+   "preferred": "B",
+   "preferred_version": "normalized"
+  },
+  {
+   "pair": "para 3",
+   "text_id": "M4",
+   "A": "raw",
+   "B": "normalized",
+   "preferred": "B",
+   "preferred_version": "normalized"
+  },
+  {
+   "pair": "para 4",
+   "text_id": "X1",
+   "A": "normalized",
+   "B": "raw",
+   "preferred": "A",
+   "preferred_version": "normalized"
+  },
+  {
+   "pair": "para 5",
+   "text_id": "X2",
+   "A": "raw",
+   "B": "normalized",
+   "preferred": "B",
+   "preferred_version": "normalized"
+  }
+ ],
+ "listener_comment": "trzy czyta jako \"czy\", trzydzieści już lepiej - słychać ciche \"t\""
+}
