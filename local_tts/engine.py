@@ -161,26 +161,28 @@ class Engine:
         return _End(utterance)
 
     def _playback_loop(self) -> None:
-        started: set[str] = set()
+        # Seconds of audio written for each started utterance.
+        played: dict[str, float] = {}
         while (item := self._audio.get()) is not _STOP:
             utterance = item.utterance
             if isinstance(item, _Chunk):
                 with self._write_lock:
                     if not self._current(utterance):
                         continue
-                    if utterance.id not in started:
-                        started.add(utterance.id)
+                    if utterance.id not in played:
+                        played[utterance.id] = 0.0
                         self._emit("started", id=utterance.id)
                     self._player.write(item.pcm, item.sample_rate)
+                    played[utterance.id] += len(item.pcm) / item.sample_rate
                 continue
 
             # End marker: wait until the audio of this utterance was played.
             if self._current(utterance):
                 self._player.drain()
-            started.discard(utterance.id)
+            audio_seconds = played.pop(utterance.id, 0.0)
             if not self._current(utterance):
                 self._emit("cancelled", id=utterance.id)
             elif item.error is not None:
                 self._emit("error", id=utterance.id, message=item.error)
             else:
-                self._emit("done", id=utterance.id)
+                self._emit("done", id=utterance.id, audio_seconds=audio_seconds)

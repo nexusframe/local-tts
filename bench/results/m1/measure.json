@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-08 22:13:58",
+  "daemon_pid": 2643246,
+  "status": {
+    "event": "status",
+    "voices": [
+      "gosia",
+      "zenski"
+    ],
+    "default_voice": "zenski",
+    "speaking": null,
+    "queued": []
+  },
+  "rss_before": {
+    "rss_mb": 498.8,
+    "peak_rss_mb": 498.8
+  },
+  "short": {
+    "text": "S1",
+    "ttfa_s": {
+      "n": 10,
+      "median": 0.0721,
+      "min": 0.058,
+      "max": 0.1013
+    }
+  },
+  "long": {
+    "text": "L1",
+    "ttfa_s": {
+      "n": 3,
+      "median": 0.0452,
+      "min": 0.0447,
+      "max": 0.0519
+    },
+    "audio_s": {
+      "n": 3,
+      "median": 59.1064,
+      "min": 59.0483,
+      "max": 59.3502
+    },
+    "playback_minus_audio_s": {
+      "n": 3,
+      "median": 0.0492,
+      "min": 0.0467,
+      "max": 0.0502
+    }
+  },
+  "cancel": {
+    "after_s": 2.0,
+    "cancel_to_ack_s": {
+      "n": 5,
+      "median": 0.0021,
+      "min": 0.0016,
+      "max": 0.0051
+    },
+    "cancel_to_event_s": {
+      "n": 5,
+      "median": 0.0945,
+      "min": 0.055,
+      "max": 0.1686
+    }
+  },
+  "interrupt": {
+    "after_s": 0.3,
+    "interrupt_to_new_started_s": {
+      "n": 5,
+      "median": 0.1592,
+      "min": 0.1355,
+      "max": 0.2372
+    }
+  },
+  "dialogue": {
+    "voices": [
+      "zenski",
+      "gosia"
+    ],
+    "gap_done_to_next_started_s": {
+      "n": 5,
+      "median": 0.0001,
+      "min": 0.0,
+      "max": 0.0001
+    }
+  },
+  "rss_after": {
+    "rss_mb": 511.3,
+    "peak_rss_mb": 511.3
+  }
+}

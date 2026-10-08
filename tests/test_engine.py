@@ -134,3 +134,12 @@ def test_status_shows_voices_current_speech_and_queue(log):
     assert engine.status()["speaking"] is None
     assert engine.status()["queued"] == []
     engine.close()
+
+
+def test_done_event_reports_the_played_audio_duration(log):
+    engine = make_engine(log)
+    request_id = engine.speak(Speak(text="Raz. Dwa."))
+    done = log.wait_for("done", id=request_id)
+    engine.close()
+    # FakeBackend gives 10 samples for each sentence at 22050 Hz.
+    assert done["audio_seconds"] == pytest.approx(20 / 22050)
