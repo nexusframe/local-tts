@@ -6,3 +6,4 @@ bench/models/
 bench/results/audio/
 bench/results/logs/
 bench/results/listening/
+.venv/
