@@ -143,3 +143,12 @@ def test_done_event_reports_the_played_audio_duration(log):
     engine.close()
     # FakeBackend gives 10 samples for each sentence at 22050 Hz.
     assert done["audio_seconds"] == pytest.approx(20 / 22050)
+
+
+def test_text_is_normalized_before_synthesis(log):
+    backend = FakeBackend("zenski")
+    engine = make_engine(log, zenski=backend)
+    request_id = engine.speak(Speak(text="Kosztuje 5 zł. Dr Nowak wraca o 14:30."))
+    log.wait_for("done", id=request_id)
+    engine.close()
+    assert backend.calls == ["Kosztuje pięć złotych.", "Doktor Nowak wraca o czternastej trzydzieści."]

@@ -1,0 +1,112 @@
+id	priority	category	input	expected
+K-M2	must	corpus	Temperatura spadnie do -3°C, a wiatr osiągnie 45 km/h.	Temperatura spadnie do minus trzech stopni Celsjusza, a wiatr osiągnie czterdzieści pięć kilometrów na godzinę.
+K-M3	must	corpus	Spotkanie przeniesiono na 15.11.2026 r. o godz. 14:30.	Spotkanie przeniesiono na piętnastego listopada dwa tysiące dwudziestego szóstego roku o godzinie czternastej trzydzieści.
+K-M4	must	corpus	Dr hab. Krzysztof Wiśniewski z ul. Żwirki i Wigury przyjmuje m.in. we wtorki.	Doktor habilitowany Krzysztof Wiśniewski z ulicy Żwirki i Wigury przyjmuje między innymi we wtorki.
+K-M6	must	corpus	Uwaga! To nie jest test — to prawdziwy alarm; proszę zachować spokój… i wyjść.	Uwaga! To nie jest test, to prawdziwy alarm. Proszę zachować spokój... i wyjść.
+K-S1	must	corpus-unchanged	Jasne, już sprawdzam.	Jasne, już sprawdzam.
+K-S2	must	corpus-unchanged	Czy mam włączyć światło w kuchni?	Czy mam włączyć światło w kuchni?
+K-M1	must	corpus-unchanged	Na koncie zostało trzy tysiące dwieście piętnaście złotych i czterdzieści dwa grosze.	Na koncie zostało trzy tysiące dwieście piętnaście złotych i czterdzieści dwa grosze.
+K-M5	must	corpus-unchanged	Pani Agnieszka Brzezińska i pan Grzegorz Chmielewski przyjechali ze Szczebrzeszyna.	Pani Agnieszka Brzezińska i pan Grzegorz Chmielewski przyjechali ze Szczebrzeszyna.
+K-M7	must	corpus-unchanged	Zażółć gęślą jaźń, a potem włącz radio.	Zażółć gęślą jaźń, a potem włącz radio.
+K-M8	must	corpus-unchanged	Jeden, dwa, trzy, cztery, pięć, sześć.	Jeden, dwa, trzy, cztery, pięć, sześć.
+C01	must	cleanup	**Uwaga:** to ważne.	Uwaga: to ważne.
+C02	must	cleanup	# Plan dnia	Plan dnia
+C03	must	cleanup	- mleko\n- chleb	mleko. chleb.
+C04	must	cleanup	Więcej na https://example.com/docs.	Więcej na example kropka com.
+C05	must	cleanup	Gotowe 😊	Gotowe
+C06	must	cleanup	To był dzień. [pauza] Aż zadzwonił telefon.	To był dzień. Aż zadzwonił telefon.
+C07	must	cleanup	[śmiech] No dobrze.	No dobrze.
+C08	must	cleanup	Uruchom `make test`.	Uruchom make test.
+C09	must	cleanup	Zobacz [dokumentację](https://x.pl).	Zobacz dokumentację.
+C10	must	cleanup	Raz,   dwa.\n\nTrzy.	Raz, dwa. Trzy.
+P01	nice	punctuation	Wynik (wstępny) jest dobry.	Wynik, wstępny, jest dobry.
+P02	must	punctuation	Opcja i/lub inna.	Opcja i lub inna.
+A01	must	abbreviation	Weź np. jutro.	Weź na przykład jutro.
+A02	must	abbreviation	Nie, tzn. jeszcze nie.	Nie, to znaczy jeszcze nie.
+A03	must	abbreviation	Kupiłem jabłka, gruszki itd.	Kupiłem jabłka, gruszki i tak dalej.
+A04	must	abbreviation	Owoce, warzywa itp.	Owoce, warzywa i tym podobne.
+A05	must	abbreviation	Dzwonił prof. Nowak.	Dzwonił profesor Nowak.
+A06	nice	abbreviation	Pisała mgr inż. Kowalska.	Pisała magister inżynier Kowalska.
+A07	must	abbreviation	Cena wynosi, tj. po rabacie, mniej.	Cena wynosi, to jest po rabacie, mniej.
+A08	must	abbreviation	Mieszkam na ul. Długiej.	Mieszkam na ulicy Długiej.
+A09	must	abbreviation	Pokój nr 5.	Pokój numer pięć.
+A10	must	abbreviation	Działamy wg planu.	Działamy według planu.
+A11	must	abbreviation	Mam ok. 5 km do domu.	Mam około pięciu kilometrów do domu.
+A12	nice	abbreviation	Podaj tel. kontaktowy.	Podaj telefon kontaktowy.
+N01	must	cardinal	Wynik: 0.	Wynik: zero.
+N02	must	cardinal	Za 7 dni.	Za siedem dni.
+N03	must	cardinal	Mam 11 lat.	Mam jedenaście lat.
+N04	must	cardinal	Przyszło 21 osób.	Przyszło dwadzieścia jeden osób.
+N05	must	cardinal	To kosztuje 215 punktów.	To kosztuje dwieście piętnaście punktów.
+N06	must	cardinal	Mamy 1000 sztuk.	Mamy tysiąc sztuk.
+N07	must	cardinal	Mamy 2000 sztuk.	Mamy dwa tysiące sztuk.
+N08	must	cardinal	Mamy 5000 sztuk.	Mamy pięć tysięcy sztuk.
+N09	must	cardinal	Mamy 12 345 sztuk.	Mamy dwanaście tysięcy trzysta czterdzieści pięć sztuk.
+N10	must	cardinal	Mieszka tu 1 000 000 osób.	Mieszka tu milion osób.
+N11	must	cardinal	Mieszka tu 2 500 000 osób.	Mieszka tu dwa miliony pięćset tysięcy osób.
+N12	must	cardinal	Średnia to 3,5.	Średnia to trzy i pół.
+N13	must	cardinal	Średnia to 0,25.	Średnia to zero przecinek dwadzieścia pięć.
+N14	must	cardinal	Wynik to -5.	Wynik to minus pięć.
+N15	must	cardinal	Przyjdą 2 osoby.	Przyjdą dwie osoby.
+N16	must	cardinal	Zostały 22 minuty.	Zostały dwadzieścia dwie minuty.
+N17	must	cardinal	Została 1 minuta.	Została jedna minuta.
+N18	must	cardinal	Minęły 2 dni.	Minęły dwa dni.
+N19	nice	ordinal	Zajął 3. miejsce.	Zajął trzecie miejsce.
+K01	must	case	Wrócę do 3 dni.	Wrócę do trzech dni.
+K02	must	case	Mieszkam tu od 5 lat.	Mieszkam tu od pięciu lat.
+K03	must	case	Zaczniemy bez 2 osób.	Zaczniemy bez dwóch osób.
+K04	must	case	Czekam około 20 minut.	Czekam około dwudziestu minut.
+K05	must	case	Grupa z 3 osób.	Grupa z trzech osób.
+K06	must	case	Byłem w 2 miejscach.	Byłem w dwóch miejscach.
+K07	must	case	Wrócił po 5 latach.	Wrócił po pięciu latach.
+K08	must	case	Przyszedł z 2 kolegami.	Przyszedł z dwoma kolegami.
+K09	must	case	Było to przed 3 dniami.	Było to przed trzema dniami.
+K10	must	case	Wrócę za 5 minut.	Wrócę za pięć minut.
+K11	nice	case	Udało się dzięki 2 osobom.	Udało się dzięki dwóm osobom.
+K12	must	case	Przyszło ponad 100 osób.	Przyszło ponad sto osób.
+K13	must	case	Limit do 1000 zł.	Limit do tysiąca złotych.
+K14	must	case	Policz od 1 do 10.	Policz od jednego do dziesięciu.
+K15	must	case	Wiek od 15 do 21 lat.	Wiek od piętnastu do dwudziestu jeden lat.
+K16	must	case	Jest o 2 osoby więcej.	Jest o dwie osoby więcej.
+T01	must	time	Zadzwoń o 14:30.	Zadzwoń o czternastej trzydzieści.
+T02	must	time	Zadzwoń o 8:00.	Zadzwoń o ósmej.
+T03	must	time	Zadzwoń o 9:05.	Zadzwoń o dziewiątej zero pięć.
+T04	must	time	Pracuję od 8:00 do 16:00.	Pracuję od ósmej do szesnastej.
+T05	must	time	Jest 14:30.	Jest czternasta trzydzieści.
+T06	must	time	Spotkanie 14:00-15:30.	Spotkanie od czternastej do piętnastej trzydzieści.
+T07	must	time	Sklep jest otwarty do 22:15.	Sklep jest otwarty do dwudziestej drugiej piętnaście.
+T08	must	time	Pociąg odjeżdża o 21:45.	Pociąg odjeżdża o dwudziestej pierwszej czterdzieści pięć.
+D01	must	date	Termin to 15.11.2026.	Termin to piętnastego listopada dwa tysiące dwudziestego szóstego.
+D02	must	date	Przyjadę 1 maja.	Przyjadę pierwszego maja.
+D03	must	date	Dziś jest 3 maja.	Dziś jest trzeci maja.
+D04	must	date	To było w 2026 r.	To było w dwa tysiące dwudziestym szóstym roku.
+D05	must	date	Działa od 2020 r.	Działa od dwa tysiące dwudziestego roku.
+D06	must	date	Termin: 2026-11-15.	Termin: piętnastego listopada dwa tysiące dwudziestego szóstego.
+D07	must	date	Zostaw to do 15.11.	Zostaw to do piętnastego listopada.
+U01	must	unit	Jest 20°C.	Jest dwadzieścia stopni Celsjusza.
+U02	must	unit	Jest 1°C.	Jest jeden stopień Celsjusza.
+U03	must	unit	Jest 2°C.	Jest dwa stopnie Celsjusza.
+U04	must	unit	Jest -3°C.	Jest minus trzy stopnie Celsjusza.
+U05	must	unit	Jest 22°C.	Jest dwadzieścia dwa stopnie Celsjusza.
+U06	must	currency	Kosztuje 1 zł.	Kosztuje jeden złoty.
+U07	must	currency	Kosztuje 2 zł.	Kosztuje dwa złote.
+U08	must	currency	Kosztuje 12 zł.	Kosztuje dwanaście złotych.
+U09	must	currency	Kosztuje 5,99 zł.	Kosztuje pięć złotych dziewięćdziesiąt dziewięć groszy.
+U10	must	currency	Kosztuje 0,50 zł.	Kosztuje pięćdziesiąt groszy.
+U11	must	currency	Budżet to 3,5 mln zł.	Budżet to trzy i pół miliona złotych.
+U12	must	currency	Mam 5 tys. zł.	Mam pięć tysięcy złotych.
+U13	nice	currency	Kosztuje 100 €.	Kosztuje sto euro.
+U14	nice	currency	Kosztuje $20.	Kosztuje dwadzieścia dolarów.
+U15	must	percent	Bateria: 50%.	Bateria: pięćdziesiąt procent.
+U16	must	percent	Wzrost o 5%.	Wzrost o pięć procent.
+U17	must	percent	Rabat do 30%.	Rabat do trzydziestu procent.
+U18	must	unit	Waży 1 kg.	Waży jeden kilogram.
+U19	must	unit	Waży 2 kg.	Waży dwa kilogramy.
+U20	must	unit	Waży 12 kg.	Waży dwanaście kilogramów.
+U21	must	unit	Przejdź 500 m.	Przejdź pięćset metrów.
+U22	must	unit	Zostały 2 km.	Zostały dwa kilometry.
+U23	must	unit	Czekaj 15 min.	Czekaj piętnaście minut.
+U24	must	unit	Czekaj 2 min.	Czekaj dwie minuty.
+U25	nice	unit	Plik ma 2 GB.	Plik ma dwa gigabajty.
+U26	nice	unit	Mamy 5 mld zł.	Mamy pięć miliardów złotych.
+U27	must	currency	Kosztuje 0,52 zł.	Kosztuje pięćdziesiąt dwa grosze.

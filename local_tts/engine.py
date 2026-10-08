@@ -25,6 +25,7 @@ import numpy as np
 from local_tts.backends.base import Backend
 from local_tts.player import Player
 from local_tts.protocol import Speak
+from local_tts.normalizer import normalize
 from local_tts.splitter import split_sentences
 
 EventSink = Callable[..., None]
@@ -151,7 +152,7 @@ class Engine:
         """Put the audio chunks of one utterance into the audio queue. Return its end marker."""
         backend = self._backends[utterance.voice]
         try:
-            for sentence in split_sentences(utterance.text):
+            for sentence in split_sentences(normalize(utterance.text)):
                 for pcm in backend.synthesize(sentence):
                     if not self._current(utterance):
                         return _End(utterance)
