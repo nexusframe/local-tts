@@ -1,0 +1,302 @@
+{
+ "001_c382eb.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "S1",
+  "variant": "raw"
+ },
+ "002_abcfe0.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "S1",
+  "variant": "raw"
+ },
+ "003_ab5a31.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M2",
+  "variant": "normalized"
+ },
+ "004_c74fa0.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M2",
+  "variant": "normalized"
+ },
+ "005_7d6c12.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M7",
+  "variant": "raw"
+ },
+ "006_989ca1.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M5",
+  "variant": "raw"
+ },
+ "007_9c415c.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M4",
+  "variant": "normalized"
+ },
+ "008_fc198a.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M8",
+  "variant": "raw"
+ },
+ "009_a75e46.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M6",
+  "variant": "normalized"
+ },
+ "010_39ae4b.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "L1",
+  "variant": "raw"
+ },
+ "011_8b24d3.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M4",
+  "variant": "normalized"
+ },
+ "012_76a779.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "S1",
+  "variant": "raw"
+ },
+ "013_f968b9.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M6",
+  "variant": "normalized"
+ },
+ "014_acf18d.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M6",
+  "variant": "normalized"
+ },
+ "015_62f674.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M5",
+  "variant": "raw"
+ },
+ "016_666262.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M2",
+  "variant": "normalized"
+ },
+ "017_3978f7.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M5",
+  "variant": "raw"
+ },
+ "018_10e50e.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "S1",
+  "variant": "raw"
+ },
+ "019_161bb2.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M2",
+  "variant": "normalized"
+ },
+ "020_702b4c.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M4",
+  "variant": "normalized"
+ },
+ "021_eafc08.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M7",
+  "variant": "raw"
+ },
+ "022_d57928.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "S1",
+  "variant": "raw"
+ },
+ "023_1a0c04.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M1",
+  "variant": "raw"
+ },
+ "024_be587a.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M1",
+  "variant": "raw"
+ },
+ "025_f42c7a.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M4",
+  "variant": "normalized"
+ },
+ "026_3dbf56.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M7",
+  "variant": "raw"
+ },
+ "027_f6778c.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "L1",
+  "variant": "raw"
+ },
+ "028_ec5574.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M4",
+  "variant": "normalized"
+ },
+ "029_62f212.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M5",
+  "variant": "raw"
+ },
+ "030_ff1510.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M2",
+  "variant": "normalized"
+ },
+ "031_aee906.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M6",
+  "variant": "normalized"
+ },
+ "032_7307d7.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M8",
+  "variant": "raw"
+ },
+ "033_de3f4f.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M6",
+  "variant": "normalized"
+ },
+ "034_aef3c8.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M3",
+  "variant": "normalized"
+ },
+ "035_e306a2.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M5",
+  "variant": "raw"
+ },
+ "036_52edf3.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M3",
+  "variant": "normalized"
+ },
+ "037_c5e5a0.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M8",
+  "variant": "raw"
+ },
+ "038_7b6f58.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M3",
+  "variant": "normalized"
+ },
+ "039_c1b1c7.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M1",
+  "variant": "raw"
+ },
+ "040_6afee8.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "L1",
+  "variant": "raw"
+ },
+ "041_c2aa3c.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "L1",
+  "variant": "raw"
+ },
+ "042_e601fa.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M7",
+  "variant": "raw"
+ },
+ "043_c71f39.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "M3",
+  "variant": "normalized"
+ },
+ "044_a3bf0e.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M4",
+  "variant": "normalized"
+ },
+ "045_746ea9.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M8",
+  "variant": "raw"
+ },
+ "046_454760.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M1",
+  "variant": "raw"
+ },
+ "047_00d055.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "L1",
+  "variant": "raw"
+ },
+ "048_ebd14d.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "L1",
+  "variant": "raw"
+ },
+ "049_432e2a.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M8",
+  "variant": "raw"
+ },
+ "050_086e58.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M8",
+  "variant": "raw"
+ },
+ "051_1284fe.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M2",
+  "variant": "normalized"
+ },
+ "052_0dcf60.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M1",
+  "variant": "raw"
+ },
+ "053_63bb1b.wav": {
+  "target": "piper__pl_PL-zenski_wg_glos-medium__zenski",
+  "text_id": "S1",
+  "variant": "raw"
+ },
+ "054_907496.wav": {
+  "target": "piper__pl_PL-gosia-medium__gosia",
+  "text_id": "M6",
+  "variant": "normalized"
+ },
+ "055_879684.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M1",
+  "variant": "raw"
+ },
+ "056_564057.wav": {
+  "target": "supertonic__supertonic-3__F1",
+  "text_id": "M3",
+  "variant": "normalized"
+ },
+ "057_eaa764.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__fp32",
+  "text_id": "M7",
+  "variant": "raw"
+ },
+ "058_67dfdb.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M7",
+  "variant": "raw"
+ },
+ "059_9049e4.wav": {
+  "target": "pocket__shefowl_pocket-tts-polish-6l__int8-torch.ao",
+  "text_id": "M5",
+  "variant": "raw"
+ },
+ "060_dde2d3.wav": {
+  "target": "supertonic__supertonic-3__M1",
+  "text_id": "M3",
+  "variant": "normalized"
+ }
+}

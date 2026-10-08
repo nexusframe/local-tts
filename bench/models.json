@@ -1,0 +1,73 @@
+{
+  "notes": [
+    "All downloads use a fixed Hugging Face revision (a commit SHA).",
+    "fetch_models.py verifies sha256 when the value is not null. Small non-LFS files have no sha256 in the Hugging Face API."
+  ],
+  "piper": {
+    "pl_PL-gosia-medium": {
+      "repo": "rhasspy/piper-voices",
+      "revision": "c10ece1aade47bb51c153c893d14e5bf8e5b7117",
+      "files": {
+        "pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx": "38f66464240ed74f186e6b7dc13c6e3b22e023426299f25c2b3cc9dfa9373fbc",
+        "pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx.json": null,
+        "pl/pl_PL/gosia/medium/MODEL_CARD": null
+      },
+      "voice_gender": "female"
+    },
+    "pl_PL-bass-high": {
+      "repo": "rhasspy/piper-voices",
+      "revision": "c10ece1aade47bb51c153c893d14e5bf8e5b7117",
+      "files": {
+        "pl/pl_PL/bass/high/pl_PL-bass-high.onnx": "73b8408967c58118700f21eb2413cd8b666c7844c6136cf674bf5dd56bde72c2",
+        "pl/pl_PL/bass/high/pl_PL-bass-high.onnx.json": null,
+        "pl/pl_PL/bass/high/MODEL_CARD": null
+      },
+      "voice_gender": "male"
+    },
+    "pl_PL-zenski_wg_glos-medium": {
+      "repo": "WitoldG/polish_piper_models",
+      "revision": "ed4cda3cd323636873ffc563bc692f50e9dca9fa",
+      "files": {
+        "pl_PL-zenski_wg_glos-medium.onnx": "d35553f659c6ae0b72ab9f1c9832b8203a1167a70aebf19b7e4b9fcb4c972fb6",
+        "pl_PL-zenski_wg_glos-medium.onnx.json": null,
+        "README.md": null
+      },
+      "voice_gender": "female",
+      "deviation": "Not in the official rhasspy/piper-voices catalog. Source is the original community repo WitoldG/polish_piper_models. A sherpa-onnx repackage also exists: csukuangfj/vits-piper-pl_PL-zenski_wg_glos-medium."
+    }
+  },
+  "pocket": {
+    "shefowl/pocket-tts-polish-6l": {
+      "repo": "shefowl/pocket-tts-polish-6l",
+      "revision": "a8630f2a39055d3e5a91acb7922e31bd0c506cfe",
+      "config": "hf://shefowl/pocket-tts-polish-6l/config.yaml@a8630f2a39055d3e5a91acb7922e31bd0c506cfe",
+      "files": {
+        "reference.wav": "c00d0cf6841e0e2b437506d167b052b2b94615aeca5afef2124278a8682dbb66",
+        "reference.txt": null,
+        "config.yaml": null
+      },
+      "weights_sha256": "c34a3a901686e0af6764661f853d7977e084de213de2586528f8a4815cb9564d",
+      "voice_gender": "reference.wav (CML-TTS speaker)",
+      "note": "pocket-tts downloads model.safetensors and the tokenizer into the Hugging Face cache. config.yaml pins them to revision cd9047ee2fc9d1eb40ed38673d8b220485713863, which has the same sha256."
+    }
+  },
+  "supertonic": {
+    "supertonic-3": {
+      "repo": "supertone-oss-archive/supertonic-3",
+      "revision": "aafc6e32416a594460b32413efc49d7fe4ce6d46",
+      "files": {
+        "onnx/duration_predictor.onnx": "c3eb91414d5ff8a7a239b7fe9e34e7e2bf8a8140d8375ffb14718b1c639325db",
+        "onnx/text_encoder.onnx": "c7befd5ea8c3119769e8a6c1486c4edc6a3bc8365c67621c881bbb774b9902ff",
+        "onnx/vector_estimator.onnx": "883ac868ea0275ef0e991524dc64f16b3c0376efd7c320af6b53f5b780d7c61c",
+        "onnx/vocoder.onnx": "085de76dd8e8d5836d6ca66826601f615939218f90e519f70ee8a36ed2a4c4ba",
+        "onnx/tts.json": null,
+        "onnx/unicode_indexer.json": null,
+        "voice_styles/F1.json": null,
+        "voice_styles/M1.json": null,
+        "LICENSE": null
+      },
+      "code_repo": "https://github.com/supertone-oss-archive/supertonic",
+      "code_revision": "1e9799e964ea4c0dad7cde993b65c3c813a7b373"
+    }
+  }
+}

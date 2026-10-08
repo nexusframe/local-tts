@@ -1,0 +1,74 @@
+{
+ "meta": {
+  "config_name": "t4c4",
+  "threads_requested": 4,
+  "cpu_affinity": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "options": {},
+  "python": "3.12.3",
+  "load_avg_start": [
+   5.06,
+   4.03,
+   3.82
+  ],
+  "started": "2026-10-08T07:03:09+0200",
+  "argv": [
+   "--backend",
+   "piper",
+   "--model",
+   "pl_PL-zenski_wg_glos-medium",
+   "--threads",
+   "4",
+   "--config-name",
+   "t4c4",
+   "--suites",
+   "cold",
+   "--out",
+   "/home/leto/projects/local-tts/bench/results/raw/piper__pl_PL-zenski_wg_glos-medium__zenski__t4c4__cold3.json"
+  ],
+  "backend_info": {
+   "backend": "piper",
+   "model": "pl_PL-zenski_wg_glos-medium",
+   "voice": "pl_PL-zenski_wg_glos-medium",
+   "sample_rate": 22050,
+   "native_dtype": "float32 (int16 available via AudioChunk.audio_int16_bytes)",
+   "native_granularity": "one chunk per sentence (sentence split by espeak-ng)",
+   "intra_op_threads": 4,
+   "versions": {
+    "piper-tts": "1.8.0",
+    "onnxruntime": "1.30.0",
+    "numpy": "2.5.3"
+   },
+   "synthesis_config": "library defaults (normalize_audio=True, model inference settings from .onnx.json)"
+  },
+  "import_s": 0.042,
+  "load_s": 1.366,
+  "rss_after_load_mb": 142.5,
+  "load_warnings": [],
+  "load_avg_end": [
+   4.9,
+   4.02,
+   3.81
+  ],
+  "lifetime_peak_rss_mb": 165.0,
+  "finished": "2026-10-08T07:03:10+0200",
+  "process_max_rss_mb_wait4": 165.0,
+  "exit_code": 0
+ },
+ "results": {
+  "cold": {
+   "process_start_to_main_s": 0.027,
+   "import_s": 0.042,
+   "load_s": 1.366,
+   "first_synthesis_ttfa_s": 0.064,
+   "first_synthesis_total_s": 0.064,
+   "cold_start_to_first_audio_s": 1.571,
+   "ok": true,
+   "error": null
+  }
+ }
+}

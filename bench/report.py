@@ -1,0 +1,443 @@
+"""Make bench/results/report.md and bench/results/summary.json from bench/results/raw/*.json.
+
+Uses only the Python standard library. The report contains measured values
+only. The last section compares them with values that the model authors
+report. Those author values are not verified by this benchmark.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import statistics
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Any
+
+BENCH_DIR = Path(__file__).resolve().parent
+RESULTS = BENCH_DIR / "results"
+RAW = RESULTS / "raw"
+
+TEXT_ORDER = ["S1", "S2", "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "L1"]
+CONFIG_ORDER = ["t1c2", "t2c2", "t4c4", "t8c8"]
+
+# Values from research.md and the model cards. Source labels as in research.md:
+# [A] author claim, [S] community report, [W] estimate by the research author.
+CLAIMS = {
+    ("pocket", "fp32"): {"rtf": "0.21 [A] (desktop CPU, model not named)", "ttfa": "~0.2 s [A, base engine]",
+                         "load": "0.6 s [A]", "rss": "341 MB weights [A]; ~0.8-1.5 GB process [W]"},
+    ("pocket", "int8-torchao"): {"rtf": "0.11 [A]", "ttfa": "~0.2 s [A, base engine]",
+                         "load": "0.8 s [A]", "rss": "125 MB weights [A]"},
+    ("pocket", "int8-torch.ao"): {"rtf": "0.11 [A] (int8, backend not named)", "ttfa": "~0.2 s [A, base engine]",
+                                  "load": "0.8 s [A]", "rss": "125 MB weights [A]"},
+    ("piper", "*"): {"rtf": "~0.15-0.2 [S] (other voice, i7-1255U)", "ttfa": "<0.2 s short sentence [W]",
+                     "load": "<1 s [W]", "rss": "~0.15-0.3 GB [W]"},
+    ("supertonic", "*"): {"rtf": "0.172 [A] (CPU not named)", "ttfa": "~0.3-0.8 s short sentence [W]",
+                          "load": "several s [W]", "rss": "2.0 GiB peak [A]"},
+}
+
+
+def load_all() -> list[dict[str, Any]]:
+    runs = []
+    for path in sorted(RAW.glob("*.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        target, config, kind = path.stem.split("__")[0:3], path.stem.split("__")[3], path.stem.split("__")[4]
+        data["_file"] = path.name
+        data["_target"] = "__".join(target)
+        data["_backend"], data["_model"], data["_variant"] = target
+        data["_config"] = config
+        data["_kind"] = kind
+        runs.append(data)
+    return runs
+
+
+def f(x: Any, digits: int = 3) -> str:
+    if x is None:
+        return "–"
+    if isinstance(x, float):
+        return f"{x:.{digits}f}"
+    return str(x)
+
+
+def ms(x: float | None) -> str:
+    return "–" if x is None else f"{x * 1000:.0f} ms"
+
+
+def table(headers: list[str], rows: list[list[Any]], align: str | None = None) -> str:
+    align = align or "l" * len(headers)
+    sep = ["---:" if a == "r" else "---" for a in align]
+    out = ["| " + " | ".join(headers) + " |", "| " + " | ".join(sep) + " |"]
+    out += ["| " + " | ".join(str(c) for c in r) + " |" for r in rows]
+    return "\n".join(out)
+
+
+def pooled(warm: dict[str, Any], key: str) -> list[float]:
+    return [r[key] for v in warm.values() for r in v["runs"] if r.get(key) is not None]
+
+
+def pct(values: list[float], q: float) -> float | None:
+    if not values:
+        return None
+    s = sorted(values)
+    k = (len(s) - 1) * q / 100
+    lo, hi = int(k), min(int(k) + 1, len(s) - 1)
+    return s[lo] + (s[hi] - s[lo]) * (k - lo)
+
+
+def label(t: dict[str, Any]) -> tuple[str, str]:
+    model = t["_model"].replace("shefowl_", "shefowl/")
+    return t["_backend"], f"{model} ({t['_variant']})"
+
+
+def streaming_verdict(detail: dict[str, Any] | None) -> str:
+    if not detail:
+        return "not measured"
+    s = detail["results"].get("stream", {})
+    s1, l1 = s.get("S1", {}), s.get("L1", {})
+    if s1.get("first_chunk_before_end"):
+        return "yes, inside a sentence"
+    if l1.get("first_chunk_before_end"):
+        return "sentence/chunk level only"
+    return "no (one block)"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.parse_args()
+    runs = load_all()
+    if not runs:
+        print("No results in bench/results/raw. Run bench/run_all.sh first.")
+        return 1
+    env = json.loads((RESULTS / "env.json").read_text(encoding="utf-8")) if (RESULTS / "env.json").exists() else {}
+
+    by_target: dict[str, dict[str, Any]] = defaultdict(lambda: {"warm": {}, "detail": None, "cold": [], "stream_extra": []})
+    for r in runs:
+        t = by_target[r["_target"]]
+        t["any"] = r
+        if r["_kind"] == "warm":
+            t["warm"][r["_config"]] = r
+        elif r["_kind"] == "detail":
+            t["detail"] = r
+            t["best"] = r["_config"]
+        elif r["_kind"].startswith("cold"):
+            t["cold"].append(r)
+        elif r["_kind"].startswith("stream-"):
+            t["stream_extra"].append(r)
+
+    out: list[str] = []
+    summary: dict[str, Any] = {}
+    w = out.append
+
+    w("# M0 benchmark report: local Polish TTS on CPU\n")
+    w("This file is generated by `bench/report.py` from `bench/results/raw/*.json`. Do not edit it by hand.\n")
+    w("All values in sections 1-8 are measured on the machine in section 9. "
+      "Section 10 compares them with claims from `research.md`. Those claims are not verified here.\n")
+    w("## Definitions\n")
+    w("- **TTFA** (time to first audio): time from the synthesis call to the first audio chunk, model already loaded.\n"
+      "- **RTF** (real-time factor): synthesis time divided by audio duration. Lower is faster. 0.5 means 2x faster than real time.\n"
+      "- **Cold start**: time from process start (before the Python interpreter starts) to the first audio chunk of S1. "
+      "The operating system file cache was warm (the benchmark cannot drop caches without root).\n"
+      "- **Peak RSS**: maximum resident memory of the whole process, from `wait4()` (same value as `/usr/bin/time -v`).\n"
+      "- **CPU cores**: process CPU time divided by wall time during synthesis.\n"
+      "- **Warm protocol**: 3 warm-up runs, then 10 measured runs for each text. p95 of 10 values is close to the maximum.\n"
+      "- **Thread configuration** `tXcY`: X intra-op threads, process pinned with `taskset` to Y CPUs.\n")
+
+    # ------------------------------------------------------------------ 1 main table
+    w("## 1. Main table\n")
+    w("TTFA is for S1 (short sentence). RTF is pooled over all 11 raw texts (110 runs). "
+      "Cold start and streaming are measured only on the best thread configuration of each target. "
+      "**Bold** configuration = best (lowest mean of per-text median RTF).\n")
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        backend, model = label(t["any"])
+        stream = streaming_verdict(t["detail"])
+        cold_vals = [c["results"]["cold"]["cold_start_to_first_audio_s"] for c in t["cold"] if c["results"].get("cold")]
+        for cfg in CONFIG_ORDER:
+            r = t["warm"].get(cfg)
+            if not r:
+                continue
+            warm = r["results"]["warm"]
+            s1 = warm.get("S1/raw", {})
+            rtfs = pooled(warm, "rtf")
+            best = cfg == t.get("best")
+            rows.append([
+                backend, model, f"**{cfg}**" if best else cfg,
+                f"{statistics.median(cold_vals):.2f} s" if best and cold_vals else "–",
+                ms((s1.get("ttfa_s") or {}).get("median")), ms((s1.get("ttfa_s") or {}).get("p95")),
+                f(statistics.median(rtfs) if rtfs else None), f(pct(rtfs, 95)),
+                f"{r['meta'].get('process_max_rss_mb_wait4', r['meta']['lifetime_peak_rss_mb']):.0f} MB",
+                stream if best else "",
+            ])
+    w(table(["Backend", "Model", "Threads", "Cold start", "TTFA median", "TTFA p95", "RTF median", "RTF p95", "Peak RSS", "Streaming"],
+            rows, "lllrrrrrrl"))
+    w("")
+
+    # ------------------------------------------------------------------ 2 per thread configuration
+    w("## 2. Results per thread configuration\n")
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        backend, model = label(t["any"])
+        for cfg in CONFIG_ORDER:
+            r = t["warm"].get(cfg)
+            if not r:
+                continue
+            warm = r["results"]["warm"]
+            per_text = [v["rtf"]["median"] for v in warm.values() if v.get("rtf")]
+            l1 = warm.get("L1/raw", {})
+            rows.append([backend, model, cfg + (" (best)" if cfg == t.get("best") else ""),
+                         f(statistics.fmean(per_text)) if per_text else "–",
+                         ms((warm.get("S1/raw", {}).get("ttfa_s") or {}).get("median")),
+                         ms((warm.get("M1/raw", {}).get("ttfa_s") or {}).get("median")),
+                         f((l1.get("rtf") or {}).get("median")), f((l1.get("rtf") or {}).get("p95")),
+                         f(statistics.median(pooled(warm, "cpu_cores")), 2),
+                         f"{r['meta']['load_s']:.2f} s",
+                         f"{r['meta'].get('rss_after_load_mb', 0):.0f} MB",
+                         f"{r['meta'].get('process_max_rss_mb_wait4', r['meta']['lifetime_peak_rss_mb']):.0f} MB",
+                         f(statistics.median(pooled(warm, "other_cpu_cores")) if pooled(warm, "other_cpu_cores") else None, 2),
+                         f(max(pooled(warm, "other_cpu_cores")) if pooled(warm, "other_cpu_cores") else None, 2)])
+    w(table(["Backend", "Model", "Config", "Mean RTF", "TTFA S1", "TTFA M1", "RTF L1 median", "RTF L1 p95",
+             "CPU cores", "Load time", "RSS after load", "Peak RSS", "Other CPU median", "Other CPU max"], rows, "lllrrrrrrrrrrr"))
+    w("\nOther CPU: CPU cores used by other processes on the machine during the measured runs "
+      "(system-wide busy time minus the time of the benchmark process). "
+      "The machine is a desktop in normal use, so this value is not zero. "
+      "High values mean the measurement is disturbed.\n")
+
+    # ------------------------------------------------------------------ 3 per sentence
+    w("## 3. Results per text (best thread configuration)\n")
+    for key in sorted(by_target):
+        t = by_target[key]
+        r = t["warm"].get(t.get("best", ""))
+        if not r:
+            continue
+        backend, model = label(t["any"])
+        w(f"### {backend}: {model}, {t['best']}\n")
+        rows = []
+        for tid in TEXT_ORDER:
+            v = r["results"]["warm"].get(f"{tid}/raw")
+            if not v:
+                continue
+            chk = v.get("checks_first_run") or {}
+            rows.append([tid, f(v["audio_s"]["median"], 2), f(v["audio_s"]["min"], 2) + "–" + f(v["audio_s"]["max"], 2),
+                         ms(v["ttfa_s"]["median"] if v["ttfa_s"] else None), ms(v["ttfa_s"]["p95"] if v["ttfa_s"] else None),
+                         f(v["total_s"]["median"]), f(v["rtf"]["median"] if v["rtf"] else None),
+                         f(v["rtf"]["p95"] if v["rtf"] else None), f(v["rtf"]["min"] if v["rtf"] else None) + "–" + f(v["rtf"]["max"] if v["rtf"] else None),
+                         f(v["cpu_cores"]["median"], 2), f(chk.get("words_per_s"), 2), f(v["failed_runs"]),
+                         "; ".join(chk.get("problems", [])) or "–"])
+        w(table(["Text", "Audio s", "Audio min–max", "TTFA median", "TTFA p95", "Total s", "RTF median", "RTF p95", "RTF min–max",
+                 "CPU cores", "Words/s", "Failed", "Audio check problems (first run)"], rows, "lrrrrrrrrrrrl"))
+        w("")
+
+    # ------------------------------------------------------------------ 4 streaming
+    w("## 4. Streaming and cancel\n")
+    w("Test method: the iterator of the backend is consumed and the arrival time of every chunk is recorded. "
+      "A backend streams if the first chunk arrives before 90% of the total synthesis time. "
+      "Playback simulation: playback starts at the first chunk; an underrun means a chunk arrives after the player needs it. "
+      "Cancel: the stop request is sent after the first chunk of L1; cancel latency is the time until the iterator ends.\n")
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        for d in ([t["detail"]] if t["detail"] else []) + t["stream_extra"]:
+            s = d["results"].get("stream")
+            if not s:
+                continue
+            backend, model = label(t["any"])
+            opt = d["meta"]["options"].get("split")
+            name = model + (f", split={opt}" if opt else "")
+            s1, l1, cancel = s.get("S1", {}), s.get("L1", {}), s.get("cancel_L1", {})
+            rows.append([backend, name, d["_config"],
+                         ms((s1.get("ttfa_s") or {}).get("median")), f((s1.get("total_s") or {}).get("median")),
+                         "yes" if s1.get("first_chunk_before_end") else "no",
+                         "yes" if l1.get("first_chunk_before_end") else "no",
+                         ms((l1.get("ttfa_s") or {}).get("median")),
+                         f((l1.get("n_chunks") or {}).get("median"), 0),
+                         f((s1.get("first_chunk_audio_s") or {}).get("median"), 2),
+                         f((l1.get("first_chunk_audio_s") or {}).get("median"), 2),
+                         f((l1.get("max_gap_between_chunks_s") or {}).get("max"), 2),
+                         f"{l1.get('underrun_runs', '–')} (worst {f(l1.get('worst_gap_s'), 2)} s)",
+                         ms((cancel.get("cancel_latency_s") or {}).get("median")),
+                         f((cancel.get("audio_after_cancel_s") or {}).get("median"), 2)])
+    w(table(["Backend", "Model", "Config", "TTFA S1", "Total S1 s", "S1 streams", "L1 streams", "TTFA L1", "L1 chunks",
+             "1st chunk S1 (audio s)", "1st chunk L1 (audio s)", "Max gap L1 s", "L1 underrun runs", "Cancel latency", "Audio after cancel s"],
+            rows, "lllrrllrrrrrlrr"))
+    w("")
+
+    # ------------------------------------------------------------------ 5 repeat
+    w("## 5. Repeatability: 100 consecutive syntheses\n")
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        rep = (t["detail"] or {}).get("results", {}).get("repeat", {}) if t["detail"] else {}
+        backend, model = label(t["any"])
+        for tid, v in rep.items():
+            rows.append([backend, model, tid, v["n"], f(v["total_s"]["median"]), f(v["total_s"]["p95"]),
+                         f(v["total_median_first10_s"]) + " / " + f(v["total_median_last10_s"]),
+                         f(v["rtf"]["median"]), f"{v['rss_before_mb']:.0f} / {v['rss_after_mb']:.0f} / {v['rss_max_mb']:.0f}",
+                         f(v["rss_slope_mb_per_100_runs"], 1),
+                         f"{v['audio_s']['min']:.2f}–{v['audio_s']['max']:.2f} ({v['distinct_audio_lengths']} distinct)",
+                         v["errors"], v["runs_with_warnings"]])
+    w(table(["Backend", "Model", "Text", "N", "Total median s", "Total p95 s", "First 10 / last 10 median s", "RTF median",
+             "RSS before / after / max MB", "RSS slope MB/100 runs", "Audio length s", "Errors", "Runs with warnings"],
+            rows, "lllrrrrrrrlrr"))
+    w("\nRSS slope: linear fit of RSS after each run. A clear positive slope suggests a memory leak.\n")
+
+    # ------------------------------------------------------------------ 6 cold start
+    w("## 6. Cold start (3 new processes, best configuration)\n")
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        cs = [c["results"]["cold"] for c in t["cold"] if c["results"].get("cold")]
+        if not cs:
+            continue
+        backend, model = label(t["any"])
+        med = lambda k: statistics.median(c[k] for c in cs)  # noqa: E731
+        rows.append([backend, model, t["cold"][0]["_config"], len(cs),
+                     f"{med('cold_start_to_first_audio_s'):.2f} s ({min(c['cold_start_to_first_audio_s'] for c in cs):.2f}–{max(c['cold_start_to_first_audio_s'] for c in cs):.2f})",
+                     f"{med('process_start_to_main_s'):.2f} s", f"{med('import_s'):.2f} s", f"{med('load_s'):.2f} s",
+                     ms(med("first_synthesis_ttfa_s")), f"{med('first_synthesis_total_s'):.2f} s",
+                     f"{statistics.median(c['meta']['process_max_rss_mb_wait4'] for c in t['cold']):.0f} MB"])
+    w(table(["Backend", "Model", "Config", "N", "Start to first audio (median, min–max)", "Interpreter + common imports",
+             "Backend import", "Model + voice load", "First TTFA", "First synthesis total", "Peak RSS"], rows, "lllrrrrrrrr"))
+    w("")
+
+    # ------------------------------------------------------------------ 7 samples and audio checks
+    w("## 7. Audio samples and audio checks\n")
+    w("One synthesis per raw and normalized text on the best configuration. "
+      "WAV files are in `bench/results/audio/<target>/` (not in git). "
+      "The checks cannot detect wrong pronunciation. They detect only empty, broken, clipped or unusually fast/slow audio.\n")
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        samples = (t["detail"] or {}).get("results", {}).get("samples", {}) if t["detail"] else {}
+        if not samples:
+            continue
+        backend, model = label(t["any"])
+        first = next(iter(samples.values()))["checks"]
+        problems = [f"{k}: {p}" for k, v in samples.items() for p in v["checks"].get("problems", [])]
+        rows.append([backend, model, first.get("sample_rate"), first.get("channels"), first.get("dtype"), len(samples),
+                     sum(1 for v in samples.values() if not v["ok"]),
+                     f"{min(v['checks'].get('peak', 0) for v in samples.values()):.2f}–{max(v['checks'].get('peak', 0) for v in samples.values()):.2f}",
+                     sum(v["checks"].get("n_nonfinite", 0) for v in samples.values()),
+                     "<br>".join(problems) or "none"])
+    w(table(["Backend", "Model", "Sample rate", "Channels", "Native dtype", "Samples", "Failed", "Peak range", "NaN/Inf", "Problems"],
+            rows, "llrrlrrrrl"))
+    w("\n### Raw vs normalized duration (seconds)\n")
+    w("A large difference between the raw and the normalized form suggests that the engine skipped or misread digits or abbreviations. "
+      "Listen to the files to confirm.\n")
+    ids = ["M2", "M3", "M4", "M6"]
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        samples = (t["detail"] or {}).get("results", {}).get("samples", {}) if t["detail"] else {}
+        if not samples:
+            continue
+        backend, model = label(t["any"])
+        row = [backend, model]
+        for tid in ids:
+            raw, norm = samples.get(f"{tid}/raw"), samples.get(f"{tid}/normalized")
+            row.append(f"{raw['audio_s']:.2f} / {norm['audio_s']:.2f}" if raw and norm else "–")
+        rows.append(row)
+    w(table(["Backend", "Model"] + [f"{i} raw / norm" for i in ids], rows, "ll" + "r" * len(ids)))
+    w("")
+
+    # ------------------------------------------------------------------ 8 anomalies
+    w("## 8. Anomalies, errors and warnings\n")
+    items = []
+    for r in runs:
+        if r["meta"].get("exit_code", 0) != 0:
+            items.append(f"`{r['_file']}`: exit code {r['meta']['exit_code']}")
+        for msg in r["meta"].get("load_warnings", []):
+            first_line = msg.splitlines()[0][:200]
+            items.append(f"{r['_target']}: load warning (all processes of this target): {first_line}")
+        for tid, v in r["results"].get("warm", {}).items():
+            if v["failed_runs"]:
+                items.append(f"`{r['_file']}` {tid}: {v['failed_runs']} failed runs")
+            if v["runs_with_problems"]:
+                probs = sorted({p for x in v["runs"] for p in x.get("problems", [])})
+                items.append(f"`{r['_file']}` {tid}: {v['runs_with_problems']}/10 runs with audio check problems: {'; '.join(probs)}")
+            for msg in v["warnings"]:
+                items.append(f"`{r['_file']}` {tid} warning: {msg}")
+            a = v["audio_s"]
+            if a and a["median"] and (a["max"] - a["min"]) / a["median"] > 0.15:
+                items.append(f"`{r['_file']}` {tid}: audio length varies by more than 15% between runs "
+                             f"({a['min']:.2f}–{a['max']:.2f} s)")
+    expected_files = {f"{key}": t for key, t in by_target.items()}
+    for key, t in expected_files.items():
+        if not t["detail"]:
+            items.append(f"{key}: no detail run (stream/repeat/samples missing)")
+    w("\n".join(f"- {i}" for i in dict.fromkeys(items)) or "No anomalies found.")
+    w("")
+
+    # ------------------------------------------------------------------ 9 environment
+    w("## 9. Environment\n")
+    if env:
+        cpu = next((line.split(":", 1)[1].strip() for line in env.get("lscpu", "").splitlines() if line.startswith("Model name")), "?")
+        snap, snap_end = env.get("snapshot", {}), env.get("snapshot_end", {})
+        w(f"- Kernel: `{env.get('uname')}`")
+        w(f"- OS: {next((line.split('=', 1)[1].strip('\"') for line in (env.get('os_release') or '').splitlines() if line.startswith('PRETTY_NAME')), '?')}")
+        w(f"- CPU: {cpu}, {env.get('nproc')} logical CPUs, SMT active: {env.get('smt_active')}")
+        w(f"- Governor: {env.get('scaling_governor')}, EPP: {env.get('energy_performance_preference')}, no_turbo: {env.get('intel_pstate_no_turbo')}")
+        w(f"- Memory: see `free -h` in env.json; MemAvailable at start: {int(snap.get('meminfo_available_kb') or 0) // 1024} MiB")
+        w(f"- Power supply at start: {json.dumps(snap.get('power_supply'))}")
+        w(f"- Load average start: {snap.get('load_avg')}, end: {snap_end.get('load_avg')}")
+        w(f"- Package temperature start: {snap.get('thermal_c', {}).get('x86_pkg_temp')} °C, end: {snap_end.get('thermal_c', {}).get('x86_pkg_temp')} °C")
+        for name, v in env.get("venvs", {}).items():
+            pkgs = [p for p in v.get("pip_freeze", []) if p.split("==")[0].lower() in
+                    {"piper-tts", "pocket-tts", "torch", "torchao", "onnxruntime", "numpy"}]
+            w(f"- venv `{name}`: Python {v.get('python', '?').split()[0]}; {', '.join(pkgs)}")
+        w(f"- Supertonic helper code revision: {env.get('supertonic_code_revision')}")
+        w("- Model revisions: see `bench/models.json` (all pinned to commit SHA, sha256 verified at download).")
+        w("- Full data: `bench/results/env.json`.")
+    else:
+        w("env.json is missing. Run `python3 bench/env_info.py`.")
+    w("")
+
+    # ------------------------------------------------------------------ 10 claims
+    w("## 10. Measured values vs claims in research.md\n")
+    w("Claims are copied from `research.md` with its source labels: [A] author claim, [S] community report, [W] estimate. "
+      "The claims come from other hardware. A difference does not prove that a claim is false.\n")
+    rows = []
+    for key in sorted(by_target):
+        t = by_target[key]
+        if not t.get("best"):
+            continue
+        backend, variant = t["any"]["_backend"], t["any"]["_variant"]
+        claim = CLAIMS.get((backend, variant)) or CLAIMS.get((backend, "*"))
+        if not claim:
+            continue
+        r = t["warm"][t["best"]]
+        warm = r["results"]["warm"]
+        rtfs = pooled(warm, "rtf")
+        loads = [c["meta"]["load_s"] for c in t["cold"]]
+        backend_l, model = label(t["any"])
+        rows.append([backend_l, model, claim["rtf"], f"{statistics.median(rtfs):.3f} (pooled, {t['best']})",
+                     claim["ttfa"], ms(warm["S1/raw"]["ttfa_s"]["median"]),
+                     claim["load"], f"{statistics.median(loads):.2f} s" if loads else "–",
+                     claim["rss"], f"{r['meta']['rss_after_load_mb']:.0f} MB after load; {r['meta'].get('process_max_rss_mb_wait4', 0):.0f} MB peak"])
+    w(table(["Backend", "Model", "RTF claim", "RTF measured", "TTFA claim", "TTFA S1 measured", "Load claim", "Load measured",
+             "Memory claim", "Memory measured"], rows))
+    w("")
+
+    # ------------------------------------------------------------------ write
+    for key, t in by_target.items():
+        best = t.get("best")
+        r = t["warm"].get(best or "")
+        summary[key] = {
+            "best_config": best,
+            "mean_median_rtf_by_config": {cfg: round(statistics.fmean([v["rtf"]["median"] for v in x["results"]["warm"].values() if v.get("rtf")]), 4)
+                                          for cfg, x in t["warm"].items()},
+            "ttfa_s1_median_s": r["results"]["warm"]["S1/raw"]["ttfa_s"]["median"] if r else None,
+            "rtf_l1_median": r["results"]["warm"]["L1/raw"]["rtf"]["median"] if r and "L1/raw" in r["results"]["warm"] else None,
+            "peak_rss_mb": r["meta"].get("process_max_rss_mb_wait4") if r else None,
+            "streaming": streaming_verdict(t["detail"]),
+        }
+    (RESULTS / "report.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+    (RESULTS / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    print(f"wrote {RESULTS / 'report.md'} and summary.json")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

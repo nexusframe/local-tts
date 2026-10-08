@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+bench/.venvs/
+bench/.vendor/
+bench/models/
+bench/results/audio/
+bench/results/logs/
+bench/results/listening/

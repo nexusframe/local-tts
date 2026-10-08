@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "language": "pl-PL",
+  "notes": [
+    "raw: the exact text that goes to the engine. It tests the engine with no text normalization.",
+    "normalized: a hand-written reference form. It is not the output of a normalizer. It is null when the raw text has no digits, abbreviations or unusual punctuation.",
+    "L1 is plain prose with all numbers already written as words. It tests long-form stability, not normalization."
+  ],
+  "items": [
+    {
+      "id": "S1",
+      "category": "short, conversational",
+      "raw": "Jasne, już sprawdzam.",
+      "normalized": null
+    },
+    {
+      "id": "S2",
+      "category": "short, question",
+      "raw": "Czy mam włączyć światło w kuchni?",
+      "normalized": null
+    },
+    {
+      "id": "M1",
+      "category": "numbers as words",
+      "raw": "Na koncie zostało trzy tysiące dwieście piętnaście złotych i czterdzieści dwa grosze.",
+      "normalized": null
+    },
+    {
+      "id": "M2",
+      "category": "digits, units, signs",
+      "raw": "Temperatura spadnie do -3°C, a wiatr osiągnie 45 km/h.",
+      "normalized": "Temperatura spadnie do minus trzech stopni Celsjusza, a wiatr osiągnie czterdzieści pięć kilometrów na godzinę."
+    },
+    {
+      "id": "M3",
+      "category": "dates and times",
+      "raw": "Spotkanie przeniesiono na 15.11.2026 r. o godz. 14:30.",
+      "normalized": "Spotkanie przeniesiono na piętnastego listopada dwa tysiące dwudziestego szóstego roku o godzinie czternastej trzydzieści."
+    },
+    {
+      "id": "M4",
+      "category": "abbreviations and names",
+      "raw": "Dr hab. Krzysztof Wiśniewski z ul. Żwirki i Wigury przyjmuje m.in. we wtorki.",
+      "normalized": "Doktor habilitowany Krzysztof Wiśniewski z ulicy Żwirki i Wigury przyjmuje między innymi we wtorki."
+    },
+    {
+      "id": "M5",
+      "category": "surnames, consonant clusters",
+      "raw": "Pani Agnieszka Brzezińska i pan Grzegorz Chmielewski przyjechali ze Szczebrzeszyna.",
+      "normalized": null
+    },
+    {
+      "id": "M6",
+      "category": "punctuation",
+      "raw": "Uwaga! To nie jest test — to prawdziwy alarm; proszę zachować spokój… i wyjść.",
+      "normalized": "Uwaga! To nie jest test, to prawdziwy alarm. Proszę zachować spokój... i wyjść."
+    },
+    {
+      "id": "M7",
+      "category": "diacritics",
+      "raw": "Zażółć gęślą jaźń, a potem włącz radio.",
+      "normalized": null
+    },
+    {
+      "id": "M8",
+      "category": "isolated numerals (piper1-gpl issue #267)",
+      "raw": "Jeden, dwa, trzy, cztery, pięć, sześć.",
+      "normalized": null
+    },
+    {
+      "id": "L1",
+      "category": "long assistant answer (about 150 words)",
+      "raw": "Dzień dobry! Sprawdziłem prognozę pogody na jutro dla Krakowa. Rano będzie pochmurno i chłodno, a temperatura wyniesie około pięciu stopni. Około południa chmury się rozejdą i wyjdzie słońce, więc zrobi się wyraźnie cieplej. Po południu termometry pokażą nawet czternaście stopni, ale wiatr z zachodu będzie dość silny, szczególnie na otwartych przestrzeniach. Wieczorem znowu pojawią się chmury, a po zmroku możliwe są przelotne opady deszczu. Jeśli planujesz spacer, najlepiej wyjść między dwunastą a szesnastą. Zabierz ze sobą cieplejszą kurtkę i parasol, bo pogoda może się szybko zmienić. W weekend zapowiada się podobnie, chociaż w niedzielę ma być trochę słoneczniej. Pamiętaj też, że jutro wieczorem w telewizji jest mecz, o który pytałeś wczoraj, więc mogę przypomnieć ci o nim kwadrans przed rozpoczęciem. Czy chcesz, żebym ustawił przypomnienie o zabraniu parasola? Mogę też sprawdzić, jak będzie wyglądał dojazd do pracy, i podpowiedzieć, o której godzinie najlepiej wyjechać, żeby uniknąć korków na obwodnicy.",
+      "normalized": null
+    }
+  ]
+}

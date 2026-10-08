@@ -1,0 +1,81 @@
+{
+ "meta": {
+  "config_name": "t1c2",
+  "threads_requested": 1,
+  "cpu_affinity": [
+   0,
+   1
+  ],
+  "options": {
+   "quantize": "fp32"
+  },
+  "python": "3.12.3",
+  "load_avg_start": [
+   1.82,
+   2.97,
+   4.05
+  ],
+  "started": "2026-10-08T06:22:14+0200",
+  "argv": [
+   "--backend",
+   "pocket",
+   "--model",
+   "shefowl/pocket-tts-polish-6l",
+   "--threads",
+   "1",
+   "--config-name",
+   "t1c2",
+   "--suites",
+   "cold",
+   "--out",
+   "/home/leto/projects/local-tts/bench/results/raw/pocket__shefowl_pocket-tts-polish-6l__fp32__t1c2__cold1.json",
+   "--option",
+   "quantize=fp32"
+  ],
+  "backend_info": {
+   "backend": "pocket",
+   "model": "shefowl/pocket-tts-polish-6l",
+   "config": "hf://shefowl/pocket-tts-polish-6l/config.yaml@a8630f2a39055d3e5a91acb7922e31bd0c506cfe",
+   "voice": "reference.wav from the model repo",
+   "quantize": "fp32",
+   "quantization_backend": null,
+   "sample_rate": 24000,
+   "native_dtype": "float32 (torch.Tensor)",
+   "native_granularity": "Mimi frames (80 ms each) decoded in a separate thread; text split into chunks by token count",
+   "torch_threads": 1,
+   "torch_interop_threads": 2,
+   "seed": 1234,
+   "versions": {
+    "pocket-tts": "3.3.0",
+    "torch": "2.14.1+cpu",
+    "torchao": "0.18.0+cpu",
+    "numpy": "2.5.3"
+   }
+  },
+  "import_s": 2.877,
+  "load_s": 2.166,
+  "rss_after_load_mb": 898.8,
+  "load_warnings": [],
+  "load_avg_end": [
+   1.69,
+   2.9,
+   4.02
+  ],
+  "lifetime_peak_rss_mb": 1203.4,
+  "finished": "2026-10-08T06:22:20+0200",
+  "process_max_rss_mb_wait4": 1203.4,
+  "exit_code": 0
+ },
+ "results": {
+  "cold": {
+   "process_start_to_main_s": 0.028,
+   "import_s": 2.877,
+   "load_s": 2.166,
+   "first_synthesis_ttfa_s": 0.1,
+   "first_synthesis_total_s": 0.867,
+   "cold_start_to_first_audio_s": 5.245,
+   "ok": true,
+   "error": null
+  }
+ }
+}

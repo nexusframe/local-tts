@@ -1,0 +1,88 @@
+{
+ "meta": {
+  "config_name": "t4c4",
+  "threads_requested": 4,
+  "cpu_affinity": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "options": {
+   "quantize": "int8",
+   "int8_backend": "torchao"
+  },
+  "python": "3.12.3",
+  "load_avg_start": [
+   3.73,
+   3.85,
+   4.27
+  ],
+  "started": "2026-10-08T10:05:42+0200",
+  "argv": [
+   "--backend",
+   "pocket",
+   "--model",
+   "shefowl/pocket-tts-polish-6l",
+   "--threads",
+   "4",
+   "--config-name",
+   "t4c4",
+   "--suites",
+   "cold",
+   "--out",
+   "/home/leto/projects/local-tts/bench/results/raw/pocket__shefowl_pocket-tts-polish-6l__int8-torchao__t4c4__cold1.json",
+   "--option",
+   "quantize=int8",
+   "--option",
+   "int8_backend=torchao"
+  ],
+  "backend_info": {
+   "backend": "pocket",
+   "model": "shefowl/pocket-tts-polish-6l",
+   "config": "hf://shefowl/pocket-tts-polish-6l/config.yaml@a8630f2a39055d3e5a91acb7922e31bd0c506cfe",
+   "voice": "reference.wav from the model repo",
+   "quantize": "int8",
+   "quantization_backend": "torchao",
+   "sample_rate": 24000,
+   "native_dtype": "float32 (torch.Tensor)",
+   "native_granularity": "Mimi frames (80 ms each) decoded in a separate thread; text split into chunks by token count",
+   "torch_threads": 4,
+   "torch_interop_threads": 4,
+   "seed": 1234,
+   "versions": {
+    "pocket-tts": "3.3.0",
+    "torch": "2.14.1+cpu",
+    "torchao": "0.18.0+cpu",
+    "numpy": "2.5.3"
+   }
+  },
+  "import_s": 2.855,
+  "load_s": 4.052,
+  "rss_after_load_mb": 682.6,
+  "load_warnings": [
+   "WARNING torchao.kernel.intmm: Warning: Detected no triton, on systems without Triton certain kernels will not work"
+  ],
+  "load_avg_end": [
+   3.75,
+   3.85,
+   4.27
+  ],
+  "lifetime_peak_rss_mb": 1206.5,
+  "finished": "2026-10-08T10:05:51+0200",
+  "process_max_rss_mb_wait4": 1206.5,
+  "exit_code": 0
+ },
+ "results": {
+  "cold": {
+   "process_start_to_main_s": 0.029,
+   "import_s": 2.855,
+   "load_s": 4.052,
+   "first_synthesis_ttfa_s": 0.312,
+   "first_synthesis_total_s": 1.985,
+   "cold_start_to_first_audio_s": 7.325,
+   "ok": true,
+   "error": null
+  }
+ }
+}

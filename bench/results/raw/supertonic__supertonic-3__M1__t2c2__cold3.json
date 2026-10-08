@@ -1,0 +1,78 @@
+{
+ "meta": {
+  "config_name": "t2c2",
+  "threads_requested": 2,
+  "cpu_affinity": [
+   0,
+   1
+  ],
+  "options": {},
+  "python": "3.12.3",
+  "load_avg_start": [
+   2.32,
+   2.53,
+   3.2
+  ],
+  "started": "2026-10-08T09:08:22+0200",
+  "argv": [
+   "--backend",
+   "supertonic",
+   "--model",
+   "supertonic-3",
+   "--threads",
+   "2",
+   "--config-name",
+   "t2c2",
+   "--suites",
+   "cold",
+   "--out",
+   "/home/leto/projects/local-tts/bench/results/raw/supertonic__supertonic-3__M1__t2c2__cold3.json",
+   "--voice",
+   "M1"
+  ],
+  "backend_info": {
+   "backend": "supertonic",
+   "model": "supertonic-3",
+   "voice": "M1",
+   "lang": "pl",
+   "split": "native",
+   "total_step": 8,
+   "speed": 1.05,
+   "sample_rate": 44100,
+   "native_dtype": "float32",
+   "native_granularity": "whole text chunk (up to 300 characters) per inference",
+   "intra_op_threads": 2,
+   "seed": 1234,
+   "versions": {
+    "onnxruntime": "1.30.0",
+    "numpy": "2.5.3",
+    "helper.py": "supertone-oss-archive/supertonic@1e9799e"
+   }
+  },
+  "import_s": 0.044,
+  "load_s": 0.805,
+  "rss_after_load_mb": 479.2,
+  "load_warnings": [],
+  "load_avg_end": [
+   2.32,
+   2.53,
+   3.2
+  ],
+  "lifetime_peak_rss_mb": 484.4,
+  "finished": "2026-10-08T09:08:24+0200",
+  "process_max_rss_mb_wait4": 484.4,
+  "exit_code": 0
+ },
+ "results": {
+  "cold": {
+   "process_start_to_main_s": 0.029,
+   "import_s": 0.044,
+   "load_s": 0.805,
+   "first_synthesis_ttfa_s": 0.753,
+   "first_synthesis_total_s": 0.753,
+   "cold_start_to_first_audio_s": 1.707,
+   "ok": true,
+   "error": null
+  }
+ }
+}
