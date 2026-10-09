@@ -1,0 +1,96 @@
+{
+ "zdanie 1": {
+  "id": "M1",
+  "A": "full",
+  "B": "fw3",
+  "C": "fw2",
+  "segments": {
+   "full": [
+    "Na koncie zostało trzy tysiące dwieście piętnaście złotych i czterdzieści dwa grosze."
+   ],
+   "fw3": [
+    "Na koncie zostało",
+    "trzy tysiące dwieście piętnaście złotych i czterdzieści dwa grosze."
+   ],
+   "fw2": [
+    "Na koncie",
+    "zostało trzy tysiące dwieście piętnaście złotych i czterdzieści dwa grosze."
+   ]
+  }
+ },
+ "zdanie 2": {
+  "id": "M3",
+  "A": "full",
+  "B": "fw3",
+  "C": "fw2",
+  "segments": {
+   "full": [
+    "Spotkanie przeniesiono na 15.11.2026 r. o godz. 14:30."
+   ],
+   "fw3": [
+    "Spotkanie przeniesiono na 15.11.2026 r. o godz. 14:30."
+   ],
+   "fw2": [
+    "Spotkanie przeniesiono",
+    "na 15.11.2026 r. o godz. 14:30."
+   ]
+  }
+ },
+ "zdanie 3": {
+  "id": "M5",
+  "A": "full",
+  "B": "fw3",
+  "C": "fw2",
+  "segments": {
+   "full": [
+    "Pani Agnieszka Brzezińska i pan Grzegorz Chmielewski przyjechali ze Szczebrzeszyna."
+   ],
+   "fw3": [
+    "Pani Agnieszka Brzezińska",
+    "i pan Grzegorz Chmielewski przyjechali ze Szczebrzeszyna."
+   ],
+   "fw2": [
+    "Pani Agnieszka",
+    "Brzezińska i pan Grzegorz Chmielewski przyjechali ze Szczebrzeszyna."
+   ]
+  }
+ },
+ "zdanie 4": {
+  "id": "X1",
+  "A": "fw3",
+  "B": "fw2",
+  "C": "full",
+  "segments": {
+   "fw3": [
+    "Jutro w Warszawie",
+    "będzie słonecznie przez cały dzień."
+   ],
+   "fw2": [
+    "Jutro w Warszawie",
+    "będzie słonecznie przez cały dzień."
+   ],
+   "full": [
+    "Jutro w Warszawie będzie słonecznie przez cały dzień."
+   ]
+  }
+ },
+ "zdanie 5": {
+  "id": "X2",
+  "A": "fw2",
+  "B": "full",
+  "C": "fw3",
+  "segments": {
+   "fw2": [
+    "Przypomnienie o spotkaniu",
+    "z dentystą ustawiłem na piątek."
+   ],
+   "full": [
+    "Przypomnienie o spotkaniu z dentystą ustawiłem na piątek."
+   ],
+   "fw3": [
+    "Przypomnienie o spotkaniu",
+    "z dentystą ustawiłem na piątek."
+   ]
+  }
+ }
+}

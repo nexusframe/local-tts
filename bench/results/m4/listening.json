@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-09",
+  "listeners": 1,
+  "method": "scripts/listen_m4.py, blind, 3 versions for each sentence in random order. The listener named the version that sounds best. Key: listen_key.json.",
+  "note": "Before the test, the splitter got the rule 'no cut after a preposition or conjunction'. The rule 'no cut before an uppercase word' came after the test, from sentence 3.",
+  "picks": {
+    "zdanie 1": {"id": "M1", "pick": "C", "version": "fw2"},
+    "zdanie 2": {"id": "M3", "pick": "B", "version": "fw3 (same segments as full)"},
+    "zdanie 3": {"id": "M5", "pick": "B", "version": "fw3"},
+    "zdanie 4": {"id": "X1", "pick": "A=B=C", "version": "no difference (fw2 and fw3 have the same segments)"},
+    "zdanie 5": {"id": "X2", "pick": "A", "version": "fw2 (fw2 and fw3 have the same segments)"}
+  }
+}

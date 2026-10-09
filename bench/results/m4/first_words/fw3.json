@@ -1,0 +1,205 @@
+{
+  "date": "2026-10-09 03:44:27",
+  "label": "first-words=3",
+  "daemon_pid": 147402,
+  "status": {
+    "event": "status",
+    "voices": [
+      "gosia",
+      "zenski"
+    ],
+    "default_voice": "zenski",
+    "speaking": null,
+    "queued": []
+  },
+  "rss_before": {
+    "rss_mb": 239.7,
+    "peak_rss_mb": 239.7
+  },
+  "ttfa": [
+    {
+      "text": "S1",
+      "rate_tok_s": 20,
+      "tokens": 8,
+      "first_sentence_s": 0.4,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.1331,
+        "min": 0.1311,
+        "max": 0.1345
+      }
+    },
+    {
+      "text": "M1",
+      "rate_tok_s": 20,
+      "tokens": 33,
+      "first_sentence_s": 1.65,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.5008,
+        "min": 0.4978,
+        "max": 0.5131
+      }
+    },
+    {
+      "text": "M3",
+      "rate_tok_s": 20,
+      "tokens": 20,
+      "first_sentence_s": 1.0,
+      "ttfa_s": {
+        "n": 5,
+        "median": 1.2888,
+        "min": 1.2847,
+        "max": 1.2924
+      }
+    },
+    {
+      "text": "M5",
+      "rate_tok_s": 20,
+      "tokens": 31,
+      "first_sentence_s": 1.55,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.6314,
+        "min": 0.6229,
+        "max": 0.6397
+      }
+    },
+    {
+      "text": "L1",
+      "rate_tok_s": 20,
+      "tokens": 389,
+      "first_sentence_s": 0.25,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.2932,
+        "min": 0.2871,
+        "max": 0.3034
+      }
+    },
+    {
+      "text": "S1",
+      "rate_tok_s": 40,
+      "tokens": 8,
+      "first_sentence_s": 0.2,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.0834,
+        "min": 0.082,
+        "max": 0.0853
+      }
+    },
+    {
+      "text": "M1",
+      "rate_tok_s": 40,
+      "tokens": 33,
+      "first_sentence_s": 0.825,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.2769,
+        "min": 0.275,
+        "max": 0.2781
+      }
+    },
+    {
+      "text": "M3",
+      "rate_tok_s": 40,
+      "tokens": 20,
+      "first_sentence_s": 0.5,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.8036,
+        "min": 0.7992,
+        "max": 0.82
+      }
+    },
+    {
+      "text": "M5",
+      "rate_tok_s": 40,
+      "tokens": 31,
+      "first_sentence_s": 0.775,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.3481,
+        "min": 0.3451,
+        "max": 0.3517
+      }
+    },
+    {
+      "text": "L1",
+      "rate_tok_s": 40,
+      "tokens": 389,
+      "first_sentence_s": 0.125,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.1626,
+        "min": 0.16,
+        "max": 0.1724
+      }
+    },
+    {
+      "text": "S1",
+      "rate_tok_s": 80,
+      "tokens": 8,
+      "first_sentence_s": 0.1,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.0602,
+        "min": 0.0567,
+        "max": 0.0718
+      }
+    },
+    {
+      "text": "M1",
+      "rate_tok_s": 80,
+      "tokens": 33,
+      "first_sentence_s": 0.4125,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.1777,
+        "min": 0.1748,
+        "max": 0.1911
+      }
+    },
+    {
+      "text": "M3",
+      "rate_tok_s": 80,
+      "tokens": 20,
+      "first_sentence_s": 0.25,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.5652,
+        "min": 0.5568,
+        "max": 0.5815
+      }
+    },
+    {
+      "text": "M5",
+      "rate_tok_s": 80,
+      "tokens": 31,
+      "first_sentence_s": 0.3875,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.2202,
+        "min": 0.2122,
+        "max": 0.2242
+      }
+    },
+    {
+      "text": "L1",
+      "rate_tok_s": 80,
+      "tokens": 389,
+      "first_sentence_s": 0.0625,
+      "ttfa_s": {
+        "n": 5,
+        "median": 0.1044,
+        "min": 0.1018,
+        "max": 0.1175
+      }
+    }
+  ],
+  "rss_after": {
+    "rss_mb": 433.9,
+    "peak_rss_mb": 433.9
+  }
+}

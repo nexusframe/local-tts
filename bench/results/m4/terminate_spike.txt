@@ -1,0 +1,18 @@
+full synthesis of the long sentence: 537 ms
+interrupt after 20 ms -> synthesis ends 0.4 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 50 ms -> synthesis ends 0.4 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 100 ms -> synthesis ends 0.4 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 200 ms -> synthesis ends 5.2 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 300 ms -> synthesis ends 9.5 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 20 ms -> synthesis ends 0.7 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 50 ms -> synthesis ends 0.7 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 100 ms -> synthesis ends 0.5 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 200 ms -> synthesis ends 3.8 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 300 ms -> synthesis ends 4.4 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 20 ms -> synthesis ends 0.3 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 50 ms -> synthesis ends 0.4 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 100 ms -> synthesis ends 2.3 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 200 ms -> synthesis ends 5.5 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+interrupt after 300 ms -> synthesis ends 88.6 ms later: Fail: [ONNXRuntimeError] : 1 : FAIL : Exiting due to ter
+median 0.7 ms, max 88.6 ms, n 15
+next synthesis OK: 90 ms
