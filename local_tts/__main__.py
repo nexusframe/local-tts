@@ -27,15 +27,16 @@ def parse_args() -> argparse.Namespace:
         f"Default: {', '.join(f'{k}={v}' for k, v in DEFAULT_VOICES.items())}",
     )
     parser.add_argument("--threads", type=int, default=4, help="ONNX Runtime intra-op threads for each voice. Default: %(default)s")
+    parser.add_argument("--no-trz-fix", action="store_true", help="Do not lengthen the phonemes of \"trz\". Piper then reads \"trzy\" like \"czy\".")
     parser.add_argument("-v", "--verbose", action="store_true", help="Show debug messages.")
     return parser.parse_args()
 
 
-def load_voices(models_dir: Path, voices: dict[str, str], threads: int) -> dict[str, PiperBackend]:
+def load_voices(models_dir: Path, voices: dict[str, str], threads: int, fix_trz: bool) -> dict[str, PiperBackend]:
     backends = {}
     for name, model in voices.items():
         start = time.monotonic()
-        backend = PiperBackend(models_dir / model / f"{model}.onnx", threads=threads)
+        backend = PiperBackend(models_dir / model / f"{model}.onnx", threads=threads, fix_trz=fix_trz)
         backend.warm_up()
         log.info("voice %s (%s) loaded in %.2f s", name, model, time.monotonic() - start)
         backends[name] = backend
@@ -46,7 +47,7 @@ def main() -> None:
     args = parse_args()
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     voices = dict(v.split("=", 1) for v in args.voice) if args.voice else DEFAULT_VOICES
-    backends = load_voices(args.models_dir, voices, args.threads)
+    backends = load_voices(args.models_dir, voices, args.threads, fix_trz=not args.no_trz_fix)
     default_voice = next(iter(voices))
     server = Server(lambda on_event: Engine(backends, PwCatPlayer(), on_event, default_voice), args.socket)
     try:

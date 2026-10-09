@@ -16,9 +16,11 @@ import onnxruntime as ort
 from piper import PiperVoice
 from piper.config import PiperConfig
 
+from local_tts.backends.phonemes import lengthen_trz
+
 
 class PiperBackend:
-    def __init__(self, model_path: Path, threads: int = 4) -> None:
+    def __init__(self, model_path: Path, threads: int = 4, fix_trz: bool = True) -> None:
         config_path = model_path.with_name(model_path.name + ".json")
         if not model_path.exists() or not config_path.exists():
             raise FileNotFoundError(f"Piper model or config not found: {model_path}")
@@ -30,6 +32,11 @@ class PiperBackend:
             session=ort.InferenceSession(str(model_path), sess_options=opts, providers=["CPUExecutionProvider"]),
         )
         self.sample_rate = self._voice.config.sample_rate
+        if fix_trz:
+            # PiperVoice.synthesize() calls self.phonemize(). Wrap it for this voice only;
+            # the audio processing after phonemization stays the same.
+            original = self._voice.phonemize
+            self._voice.phonemize = lambda text: lengthen_trz(text, original(text))
 
     def synthesize(self, text: str) -> Iterator[np.ndarray]:
         for chunk in self._voice.synthesize(text):

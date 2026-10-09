@@ -1,0 +1,68 @@
+{
+ "date": "2026-10-09",
+ "listeners": 1,
+ "method": "sentence-level phonemization, order-based trz/cz alignment, 6 WAV clips, blind names",
+ "passages": {
+  "P1": "Trzeba przyznać, że Piotr patrzył na to trzeźwo. Trzy razy sprawdzał, czy okno jest zamknięte, a potem trzymał klucze w trzęsącej się dłoni. Często mówił, że trzydzieści lat pracy nauczyło go cierpliwości.",
+  "P2": "Wczoraj o trzeciej po południu zadzwonił mój przyjaciel. Powiedział, że w Trzebini otwierają nowy teatr i trzeba szybko kupić bilety. Czy pójdziesz z nami? Zostały tylko trzy wolne miejsca w trzecim rzędzie."
+ },
+ "key": {
+  "A": {
+   "passage": "P1",
+   "variant": "V3 przydech",
+   "seconds": 12.5
+  },
+  "B": {
+   "passage": "P2",
+   "variant": "V3 przydech",
+   "seconds": 11.9
+  },
+  "C": {
+   "passage": "P2",
+   "variant": "V1 długie sz",
+   "seconds": 11.8
+  },
+  "D": {
+   "passage": "P1",
+   "variant": "V0 domyślny",
+   "seconds": 12.0
+  },
+  "E": {
+   "passage": "P1",
+   "variant": "V1 długie sz",
+   "seconds": 12.3
+  },
+  "F": {
+   "passage": "P2",
+   "variant": "V0 domyślny",
+   "seconds": 11.7
+  }
+ },
+ "ratings": {
+  "A": {
+   "trz": 1,
+   "natural": 3
+  },
+  "B": {
+   "trz": 3,
+   "natural": 3
+  },
+  "C": {
+   "trz": 4,
+   "natural": 4
+  },
+  "D": {
+   "trz": 1,
+   "natural": 3
+  },
+  "E": {
+   "trz": 2,
+   "natural": 3
+  },
+  "F": {
+   "trz": 2,
+   "natural": 3
+  }
+ },
+ "note": "The naturalness criterion was not defined before this round."
+}

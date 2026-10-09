@@ -1,0 +1,23 @@
+{
+ "date": "2026-10-09",
+ "listeners": 1,
+ "sentence": "Mam trzy koty i trzech braci.",
+ "method": "per-word phonemization, blind order",
+ "key": {
+  "1": "V2 retrofleksyjne",
+  "2": "V4 długie t",
+  "3": "V1 długie sz",
+  "4": "V3 przydech",
+  "5": "V0 domyślny"
+ },
+ "ratings_trz_clarity": {
+  "1": 1,
+  "2": 2,
+  "3": 4,
+  "4": 5,
+  "5": 1
+ },
+ "ratings_naturalness": {
+  "1": 1
+ }
+}
