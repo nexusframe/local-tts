@@ -1,7 +1,7 @@
 import pytest
 
 from local_tts.engine import Engine
-from local_tts.protocol import Speak
+from local_tts.protocol import Begin, Speak
 
 from fakes import EventLog, FakeBackend, FakePlayer
 
@@ -152,3 +152,92 @@ def test_text_is_normalized_before_synthesis(log):
     log.wait_for("done", id=request_id)
     engine.close()
     assert backend.calls == ["Kosztuje pięć złotych.", "Doktor Nowak wraca o czternastej trzydzieści."]
+
+
+def test_stream_plays_the_text_that_comes_in_pieces(log):
+    player = FakePlayer()
+    engine = make_engine(log, player)
+    stream = engine.begin(Begin())
+    for piece in ["Raz", ". Dwa", " i trzy", ". Cztery."]:
+        engine.append(stream, piece)
+    engine.end(stream)
+    log.wait_for("done", id=stream)
+    engine.close()
+    assert player.played == ["zenski:Raz.", "zenski:Dwa i trzy.", "zenski:Cztery."]
+    assert log.names(id=stream) == ["started", "done"]
+
+
+def test_stream_starts_to_play_before_the_text_ends(log):
+    player = FakePlayer()
+    engine = make_engine(log, player)
+    stream = engine.begin(Begin())
+    engine.append(stream, "Jasne, już")
+
+    log.wait_for("started", id=stream)
+    wait_until(lambda: player.played == ["zenski:Jasne,"])
+
+    engine.append(stream, " sprawdzam.")
+    engine.end(stream)
+    log.wait_for("done", id=stream)
+    engine.close()
+    assert player.played == ["zenski:Jasne,", "zenski:już sprawdzam."]
+
+
+def test_cancel_ends_an_open_stream_and_later_pieces_are_ignored(log):
+    player = FakePlayer()
+    engine = make_engine(log, player)
+    stream = engine.begin(Begin())
+    engine.append(stream, "Raz. Dwa")
+    log.wait_for("started", id=stream)
+
+    engine.cancel()
+    log.wait_for("cancelled", id=stream)
+    # The LLM can send more tokens before the client sees the event.
+    engine.append(stream, " i trzy.")
+    engine.end(stream)
+
+    after = engine.speak(Speak(text="Nowe."))
+    log.wait_for("done", id=after)
+    engine.close()
+    assert player.played == ["zenski:Raz.", "zenski:Nowe."]
+    assert log.names(id=stream) == ["started", "cancelled"]
+
+
+def test_speak_waits_until_the_open_stream_ends(log):
+    player = FakePlayer()
+    engine = make_engine(log, player)
+    stream = engine.begin(Begin())
+    queued = engine.speak(Speak(text="Potem."))
+    engine.append(stream, "Najpierw.")
+    engine.end(stream)
+    log.wait_for("done", id=queued)
+    engine.close()
+    assert player.played == ["zenski:Najpierw.", "zenski:Potem."]
+
+
+def test_append_to_an_unknown_or_ended_stream_is_an_error(log):
+    engine = make_engine(log)
+    with pytest.raises(ValueError, match="nobody"):
+        engine.append("nobody", "Hej.")
+    stream = engine.begin(Begin())
+    engine.end(stream)
+    with pytest.raises(ValueError, match=stream):
+        engine.append(stream, "Za późno.")
+    engine.close()
+
+
+def test_abort_cancels_only_that_stream(log):
+    player = FakePlayer(blocking=True)
+    engine = make_engine(log, player)
+    stream = engine.begin(Begin())
+    queued = engine.speak(Speak(text="Potem."))
+    engine.append(stream, "Raz. Dwa")
+    log.wait_for("started", id=stream)
+
+    engine.abort(stream)
+
+    log.wait_for("cancelled", id=stream)
+    log.wait_for("done", id=queued)
+    engine.close()
+    assert player.played == ["zenski:Potem."]
+    assert log.names(id=stream) == ["started", "cancelled"]

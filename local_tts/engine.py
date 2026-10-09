@@ -3,7 +3,9 @@
 Two threads:
 
 - The synthesis thread takes utterances from the request queue, splits them
-  into sentences and puts audio chunks into the audio queue. It does not wait
+  into sentences and puts audio chunks into the audio queue. The text of an
+  utterance comes in pieces: all at once for speak(), or in append() calls
+  for a stream (begin, append, end). It does not wait
   for playback, so the next sentence and the next utterance are ready early.
 - The playback thread writes the chunks to the player and sends the events.
 
@@ -14,31 +16,38 @@ exactly one final event: done, cancelled or error.
 
 from __future__ import annotations
 
+import collections
 import itertools
 import queue
 import threading
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, Mapping
 
 import numpy as np
 
 from local_tts.backends.base import Backend
 from local_tts.player import Player
-from local_tts.protocol import Speak
+from local_tts.protocol import Begin, Speak
 from local_tts.normalizer import normalize
-from local_tts.splitter import split_sentences
+from local_tts.splitter import SentenceStream, split_sentences
 
 EventSink = Callable[..., None]
 
 _STOP = object()
+# Last item in the piece queue of an utterance.
+_END_OF_TEXT = object()
 
 
 @dataclass(frozen=True)
 class _Utterance:
     id: str
-    text: str
     voice: str
     epoch: int
+    early_first: bool
+    # Text pieces, then _END_OF_TEXT.
+    pieces: queue.Queue
+    # Set by abort(): this utterance only is cancelled.
+    aborted: threading.Event = field(default_factory=threading.Event)
 
 
 @dataclass(frozen=True)
@@ -74,6 +83,11 @@ class Engine:
         # Ids of utterances without a final event, in request order.
         self._pending: dict[str, None] = {}
         self._speaking: str | None = None
+        # Streams that have no end() yet.
+        self._streams: dict[str, _Utterance] = {}
+        # Streams that cancel() closed. The client can still send pieces for
+        # them until it gets the cancelled event, so these are ignored.
+        self._cancelled_streams: collections.deque[str] = collections.deque(maxlen=64)
         self._state_lock = threading.Lock()
         # Held while the playback thread writes audio. cancel() takes it to be
         # sure that no audio of the old epoch reaches the player after stop().
@@ -94,16 +108,66 @@ class Engine:
             thread.join()
 
     def speak(self, request: Speak) -> str:
+        utterance = self._enqueue(request, early_first=False)
+        utterance.pieces.put(request.text)
+        utterance.pieces.put(_END_OF_TEXT)
+        return utterance.id
+
+    def begin(self, request: Begin) -> str:
+        """Open a stream. The first part of the first sentence is synthesized early."""
+        utterance = self._enqueue(request, early_first=True, stream=True)
+        return utterance.id
+
+    def append(self, stream_id: str, text: str) -> None:
+        if (utterance := self._open_stream(stream_id)) is not None:
+            utterance.pieces.put(text)
+
+    def end(self, stream_id: str) -> None:
+        with self._state_lock:
+            utterance = self._streams.pop(stream_id, None)
+        if utterance is not None:
+            utterance.pieces.put(_END_OF_TEXT)
+        else:
+            self._open_stream(stream_id)  # Raises, if the stream was not cancelled.
+
+    def abort(self, stream_id: str) -> None:
+        """Cancel one open stream, for example when its client disconnects. Other utterances continue."""
+        with self._state_lock:
+            utterance = self._streams.pop(stream_id, None)
+            if utterance is None:
+                return
+            self._cancelled_streams.append(stream_id)
+            utterance.aborted.set()
+        utterance.pieces.put(_END_OF_TEXT)
+        # Like cancel(): the first stop() unblocks a write() that holds the write lock.
+        if self._speaking == stream_id:
+            self._player.stop()
+        with self._write_lock:
+            if self._speaking == stream_id:
+                self._player.stop()
+
+    def _open_stream(self, stream_id: str) -> _Utterance | None:
+        """Return the open stream, or None for a cancelled stream. Raise for other ids."""
+        with self._state_lock:
+            utterance = self._streams.get(stream_id)
+            if utterance is None and stream_id not in self._cancelled_streams:
+                raise ValueError(f"no open stream {stream_id!r}")
+        return utterance
+
+    def _enqueue(self, request: Speak | Begin, early_first: bool, stream: bool = False) -> _Utterance:
         voice = request.voice or self._default_voice
         if voice not in self._backends:
             raise ValueError(f"unknown voice {voice!r}, available: {sorted(self._backends)}")
         request_id = request.id or f"u{next(self._ids)}"
         if request.interrupt:
             self.cancel()
+        utterance = _Utterance(request_id, voice, self._epoch, early_first, queue.Queue())
         with self._state_lock:
             self._pending[request_id] = None
-        self._requests.put(_Utterance(request_id, request.text, voice, self._epoch))
-        return request_id
+            if stream:
+                self._streams[request_id] = utterance
+        self._requests.put(utterance)
+        return utterance
 
     def cancel(self) -> None:
         with self._cancel_lock:
@@ -111,6 +175,12 @@ class Engine:
             self._player.stop()
             with self._write_lock:
                 self._player.stop()
+            with self._state_lock:
+                streams, self._streams = self._streams, {}
+                self._cancelled_streams.extend(streams)
+            for utterance in streams.values():
+                # Wake the synthesis thread if it waits for a piece. The epoch check discards it.
+                utterance.pieces.put(_END_OF_TEXT)
             while True:
                 try:
                     item = self._requests.get_nowait()
@@ -141,7 +211,7 @@ class Engine:
         self._on_event(event, id=id, **fields)
 
     def _current(self, utterance: _Utterance) -> bool:
-        return utterance.epoch == self._epoch
+        return utterance.epoch == self._epoch and not utterance.aborted.is_set()
 
     def _synthesis_loop(self) -> None:
         while (utterance := self._requests.get()) is not _STOP:
@@ -151,12 +221,22 @@ class Engine:
     def _synthesize(self, utterance: _Utterance) -> _End:
         """Put the audio chunks of one utterance into the audio queue. Return its end marker."""
         backend = self._backends[utterance.voice]
+        stream = SentenceStream(early_first=utterance.early_first)
         try:
-            for sentence in split_sentences(normalize(utterance.text)):
-                for pcm in backend.synthesize(sentence):
-                    if not self._current(utterance):
-                        return _End(utterance)
-                    self._audio.put(_Chunk(utterance, pcm, backend.sample_rate))
+            while True:
+                piece = utterance.pieces.get()
+                if not self._current(utterance):
+                    return _End(utterance)
+                segments = stream.flush() if piece is _END_OF_TEXT else stream.feed(piece)
+                for segment in segments:
+                    # The normalizer can make new sentence ends, so split again.
+                    for sentence in split_sentences(normalize(segment)):
+                        for pcm in backend.synthesize(sentence):
+                            if not self._current(utterance):
+                                return _End(utterance)
+                            self._audio.put(_Chunk(utterance, pcm, backend.sample_rate))
+                if piece is _END_OF_TEXT:
+                    break
         except Exception as exc:
             return _End(utterance, error=f"{type(exc).__name__}: {exc}")
         return _End(utterance)
