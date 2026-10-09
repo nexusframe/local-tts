@@ -70,8 +70,11 @@ class Engine:
         player: Player,
         on_event: EventSink,
         default_voice: str,
+        first_words: int = 2,
     ) -> None:
         self._backends = dict(backends)
+        # Word limit of the early first segment of a stream (see SentenceStream).
+        self._first_words = first_words
         self._player = player
         self._on_event = on_event
         self._default_voice = default_voice
@@ -236,7 +239,7 @@ class Engine:
     def _synthesize(self, utterance: _Utterance) -> _End:
         """Put the audio chunks of one utterance into the audio queue. Return its end marker."""
         backend = self._backends[utterance.voice]
-        stream = SentenceStream(early_first=utterance.early_first)
+        stream = SentenceStream(early_first=utterance.early_first, first_words=self._first_words)
         try:
             while True:
                 piece = utterance.pieces.get()

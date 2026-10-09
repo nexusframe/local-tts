@@ -28,6 +28,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--threads", type=int, default=4, help="ONNX Runtime intra-op threads for each voice. Default: %(default)s")
     parser.add_argument("--no-trz-fix", action="store_true", help="Do not lengthen the phonemes of \"trz\". Piper then reads \"trzy\" like \"czy\".")
+    parser.add_argument(
+        "--first-words", type=int, default=2,
+        help="For a stream: send the first part of the first sentence to synthesis after this number of words, "
+        "if no comma comes first. Default: %(default)s",
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Show debug messages.")
     return parser.parse_args()
 
@@ -49,7 +54,7 @@ def main() -> None:
     voices = dict(v.split("=", 1) for v in args.voice) if args.voice else DEFAULT_VOICES
     backends = load_voices(args.models_dir, voices, args.threads, fix_trz=not args.no_trz_fix)
     default_voice = next(iter(voices))
-    server = Server(lambda on_event: Engine(backends, PwCatPlayer(), on_event, default_voice), args.socket)
+    server = Server(lambda on_event: Engine(backends, PwCatPlayer(), on_event, default_voice, first_words=args.first_words), args.socket)
     try:
         asyncio.run(server.serve_forever())
     except KeyboardInterrupt:

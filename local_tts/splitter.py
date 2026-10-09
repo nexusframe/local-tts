@@ -20,6 +20,13 @@ _LAST_WORD = re.compile(r"(\S+)$")
 _COMMA = re.compile(r",\s")
 _COMPLETE_WORD = re.compile(r"\S+(?=\s)")
 _PLAIN_WORD = re.compile(r"[^\W\d_]+")
+# A Markdown list item, as in normalizer/cleanup.py.
+_LIST_ITEM = re.compile(r"^\s*(?:[-*+•]|\d+[.)])\s", re.MULTILINE)
+# Prepositions and conjunctions. A pause after them breaks the intonation.
+_NO_CUT_AFTER = frozenset({
+    "a", "ale", "bez", "czy", "dla", "do", "i", "ku", "lub", "na", "nad", "nie", "o", "od", "oraz",
+    "po", "pod", "przed", "przez", "przy", "u", "w", "we", "z", "za", "ze", "że",
+})
 
 
 def _ends_with_abbreviation(head: str) -> bool:
@@ -53,7 +60,7 @@ class SentenceStream:
     so that synthesis starts before the LLM completes the sentence.
     """
 
-    def __init__(self, early_first: bool = True, first_words: int = 6) -> None:
+    def __init__(self, early_first: bool = True, first_words: int = 2) -> None:
         self._waiting_first = early_first
         self._first_words = first_words
         self._buffer = ""
@@ -68,6 +75,9 @@ class SentenceStream:
         return segments
 
     def _early_first_segment(self) -> list[str]:
+        if _LIST_ITEM.search(self._buffer):
+            # The normalizer ends each list item with a period. Wait for the sentence end.
+            return []
         comma = _COMMA.search(self._buffer)
         if comma is not None:
             return [self._cut(comma.start() + 1)]
@@ -76,7 +86,13 @@ class SentenceStream:
         for before, after in zip(words[self._first_words - 1 :], words[self._first_words :]):
             # The normalizer reads numbers and abbreviations with the words
             # next to them, so cut only between two plain words.
-            if _PLAIN_WORD.fullmatch(before.group()) and _PLAIN_WORD.fullmatch(after.group()):
+            if (
+                _PLAIN_WORD.fullmatch(before.group())
+                and _PLAIN_WORD.fullmatch(after.group())
+                and before.group().lower() not in _NO_CUT_AFTER
+                # An uppercase word continues a name, for example "Agnieszka | Brzezińska".
+                and not after.group()[0].isupper()
+            ):
                 return [self._cut(before.end())]
         return []
 

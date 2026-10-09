@@ -17,3 +17,10 @@ class Backend(Protocol):
         inside a sentence gives a shorter cancel latency.
         """
         ...
+
+    def interrupt(self) -> None:
+        """Stop the current synthesize() call. Called from another thread.
+
+        The stopped call can raise. A call that starts after interrupt() runs normally.
+        """
+        ...

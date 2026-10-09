@@ -95,10 +95,29 @@ def test_first_segment_ends_at_the_first_comma():
 def test_first_segment_without_comma_ends_after_the_word_limit():
     stream = SentenceStream(first_words=4)
     pieces = ["Dzisiaj", " rano", " poszedłem", " do", " sklepu", " po", " chleb."]
-    assert feed_all(stream, pieces) == [[], [], [], [], [], ["Dzisiaj rano poszedłem do"], [], ["sklepu po chleb."]]
+    assert feed_all(stream, pieces) == [[], [], [], [], [], [], ["Dzisiaj rano poszedłem do sklepu"], ["po chleb."]]
 
 
 def test_word_limit_cut_is_never_next_to_a_number_or_abbreviation():
     stream = SentenceStream(first_words=2)
     pieces = ["Idę", " do", " 5", " km", " ul.", " Długą", " i", " wracam."]
     assert feed_all(stream, pieces) == [[], [], [], [], [], [], [], ["Idę do 5 km ul. Długą"], ["i wracam."]]
+
+
+def test_word_limit_cut_is_never_after_a_preposition_or_conjunction():
+    stream = SentenceStream(first_words=2)
+    pieces = ["Jutro", " w", " Warszawie", " będzie", " słonecznie."]
+    assert feed_all(stream, pieces) == [[], [], [], [], ["Jutro w Warszawie"], ["będzie słonecznie."]]
+
+
+def test_word_limit_cut_is_never_inside_a_name():
+    stream = SentenceStream(first_words=2)
+    pieces = ["Pani", " Agnieszka", " Brzezińska", " i", " pan", " Grzegorz."]
+    assert feed_all(stream, pieces) == [[], [], [], [], ["Pani Agnieszka Brzezińska"], [], ["i pan Grzegorz."]]
+
+
+def test_no_early_cut_inside_a_list_item():
+    # The normalizer ends each list item with a period, so a cut there would sound like an item end.
+    stream = SentenceStream(first_words=2)
+    pieces = ["- kup", " świeży", " chleb", " i", " mleko\n"]
+    assert feed_all(stream, pieces) == [[], [], [], [], [], ["- kup świeży chleb i mleko"]]

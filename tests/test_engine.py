@@ -272,3 +272,16 @@ def test_abort_stops_the_synthesis_of_its_stream(log):
     log.wait_for("cancelled", id=stream, timeout=1.0)
     engine.close()
     assert backend.interrupts == 1
+
+
+def test_first_words_sets_the_word_limit_of_the_early_first_segment(log):
+    player = FakePlayer()
+    engine = Engine({"zenski": FakeBackend("zenski")}, player, on_event=log, default_voice="zenski", first_words=2)
+    engine.start()
+    stream = engine.begin(Begin())
+    engine.append(stream, "Raz dwa trzy cztery")
+    wait_until(lambda: player.played == ["zenski:Raz dwa"])
+    engine.end(stream)
+    log.wait_for("done", id=stream)
+    engine.close()
+    assert player.played == ["zenski:Raz dwa", "zenski:trzy cztery"]
