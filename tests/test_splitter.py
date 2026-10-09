@@ -58,6 +58,11 @@ def test_no_split_after_abbreviations_that_the_normalizer_expands():
     ]
 
 
+def test_line_end_is_a_boundary_but_a_list_number_is_not_a_sentence():
+    text = "Oto propozycje:\n\n1. **Ryba**: ryż, jajka\n2. Paella np.\n- Risotto"
+    assert split_sentences(text) == ["Oto propozycje:", "1. **Ryba**: ryż, jajka", "2. Paella np.", "- Risotto"]
+
+
 def test_ok_before_a_word_ends_the_sentence():
     assert split_sentences("Jest ok. Wracam.") == ["Jest ok.", "Wracam."]
 
@@ -121,3 +126,19 @@ def test_no_early_cut_inside_a_list_item():
     stream = SentenceStream(first_words=2)
     pieces = ["- kup", " świeży", " chleb", " i", " mleko\n"]
     assert feed_all(stream, pieces) == [[], [], [], [], [], ["- kup świeży chleb i mleko"]]
+
+
+def test_stream_gives_a_line_when_the_next_line_starts():
+    # LLM answers with Markdown lists often have no period at the end of a line.
+    stream = SentenceStream(early_first=False)
+    pieces = ["Oto kilka propozycji:", "\n\n", "1. **Ryba**", ": ryż, jajka", "\n", "2. Paella", "\n"]
+    assert feed_all(stream, pieces) == [
+        [],
+        [],
+        ["Oto kilka propozycji:"],
+        [],
+        [],
+        ["1. **Ryba**: ryż, jajka"],
+        [],
+        ["2. Paella"],
+    ]

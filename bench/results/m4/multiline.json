@@ -1,0 +1,73 @@
+{
+  "note": "Line-end boundary fix. Tokens: measure_m4.tokens(), 5 runs. Daemon defaults (--first-words 2).",
+  "texts": {
+    "P4": "Oto kilka propozycji dań z ryżem, jajkami i papryką:\n\n1. **Ryba po grecku**: ryż, jajka, papryka, oliwki, pomidory, cebula, zioła (oregano, bazylia)\n2. **Paella**: ryż, mięso (np. kurczak, wieprzowina), owoce morza, warzywa (papryka, cebula), szafranoli\n3. **Risotto**: ryż, warzywa (papryka, cebula), przyprawy (parmezan, czosnek, wino)\n4. **Sałatka z ryżem i jajkami**: ryż, jajka, papryka,",
+    "P4min": "Oto kilka propozycji dań z ryżem, jajkami i papryką:\n\n1. **Ryba po grecku**: ryż, jajka."
+  },
+  "results": [
+    {
+      "text": "P4",
+      "speak": true,
+      "audio_s": {
+        "n": 5,
+        "median": 24.5319,
+        "min": 24.23,
+        "max": 24.5899
+      },
+      "playback_minus_audio_s": {
+        "n": 5,
+        "median": 0.132,
+        "min": 0.1192,
+        "max": 0.1586
+      }
+    },
+    {
+      "text": "P4",
+      "rate_tok_s": 25,
+      "audio_s": {
+        "n": 5,
+        "median": 24.4506,
+        "min": 23.8701,
+        "max": 24.9034
+      },
+      "playback_minus_audio_s": {
+        "n": 5,
+        "median": 0.1354,
+        "min": 0.128,
+        "max": 0.1748
+      }
+    },
+    {
+      "text": "P4min",
+      "speak": true,
+      "audio_s": {
+        "n": 5,
+        "median": 5.387,
+        "min": 5.2825,
+        "max": 5.4683
+      },
+      "playback_minus_audio_s": {
+        "n": 5,
+        "median": 0.1559,
+        "min": 0.1263,
+        "max": 0.1635
+      }
+    },
+    {
+      "text": "P4min",
+      "rate_tok_s": 25,
+      "audio_s": {
+        "n": 5,
+        "median": 5.5612,
+        "min": 5.5496,
+        "max": 5.6308
+      },
+      "playback_minus_audio_s": {
+        "n": 5,
+        "median": 0.1289,
+        "min": 0.1063,
+        "max": 0.1756
+      }
+    }
+  ]
+}

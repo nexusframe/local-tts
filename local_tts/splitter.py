@@ -5,8 +5,9 @@ from __future__ import annotations
 import re
 
 # A sentence ends at . ! ? or …, then whitespace, then an uppercase letter,
-# a digit or a quotation mark.
-_CANDIDATE = re.compile(r"[.!?…]+\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ0-9\"„«])")
+# a digit or a quotation mark. A line end before more text is also a boundary,
+# because LLM answers (Markdown lists) often have no period at the end of a line.
+_CANDIDATE = re.compile(r"[.!?…]+\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ0-9\"„«])|[^\S\n]*\n\s*(?=\S)")
 
 # Abbreviations that can stand before an uppercase word inside a sentence.
 _ABBREVIATIONS = frozenset({"np", "m.in", "dr", "ul", "tzn", "tj", "tel", "inż", "prof", "hab", "godz", "tys"})
@@ -15,6 +16,9 @@ _ABBREVIATIONS = frozenset({"np", "m.in", "dr", "ul", "tzn", "tj", "tel", "inż"
 _OK_BEFORE_NUMBER = re.compile(r"(?<![\w.])[Oo]k\.\s+\d")
 
 _LAST_WORD = re.compile(r"(\S+)$")
+
+# The number of a list item, for example "2." in "2. Paella", is not a sentence.
+_LIST_NUMBER = re.compile(r"\d+[.)]")
 
 # A comma between words, not inside a number like 3,5.
 _COMMA = re.compile(r",\s")
@@ -40,7 +44,11 @@ def split_sentences(text: str) -> list[str]:
     start = 0
     for match in _CANDIDATE.finditer(text):
         end = match.start() + len(match.group().rstrip())
-        if _ends_with_abbreviation(text[start:end]) or _OK_BEFORE_NUMBER.match(text, end - 3):
+        if "\n" not in match.group() and (
+            _ends_with_abbreviation(text[start:end])
+            or _OK_BEFORE_NUMBER.match(text, end - 3)
+            or _LIST_NUMBER.fullmatch(text, start, end)
+        ):
             continue
         sentences.append(text[start:end])
         start = match.end()

@@ -31,6 +31,8 @@ Rules of the early first segment (only the first segment of a stream):
 2. If no comma comes first: cut after `--first-words` complete words, between two plain words (letters only).
 3. Do not cut after a preposition or conjunction („Jutro w | Warszawie”), before an uppercase word („Agnieszka | Brzezińska”), next to a number or an abbreviation, or in a Markdown list item.
 
+Segment boundaries for all segments (also `speak`): a sentence end (`.`, `!`, `?`, `…` before an uppercase letter, a digit or a quotation mark), and a line end before more text (section 7). The number of a list item („2.” in „2. Paella”) is not a sentence.
+
 Commands:
 
 ```
@@ -98,3 +100,39 @@ Playback time minus audio length (`(done - started) - audio_seconds`, contains t
 ## 6. Decision
 
 Date: 2026-10-09. Default `--first-words 2` with the rules in section 1. Reason: only 2 words gives a median TTFA in the target at 40 tok/s for all measured texts (M5: 397 ms with `pw-cat`, maximum 416 ms), and the listening test did not show a worse result for the early cut, except a cut inside a name (now blocked).
+
+## 7. Real LLM test: line ends were not segment boundaries
+
+Date: 2026-10-09. Found by the real LLM test in `~/projects/local-assistant` (Bielik 1.5B Q4_K_M, llama.cpp b11523, approximately 23 tok/s). Data after the fix: `bench/results/m4/multiline.json`.
+
+### Cause (measured)
+
+`split_sentences()` and `SentenceStream` did not use a line end as a boundary. The LLM answer P4 is a Markdown list without a period at the end of a line, so all the text was one sentence. In a stream, the early first segment „Oto kilka” came after the 7th piece, and all the other text came only at `flush()`, after the end of the generation. The `speak` path did not have the pause, because it gets all the text at the start.
+
+### Fix
+
+1. A line end (`\n`, `\n\n`) before more text is a boundary. The abbreviation rules do not apply to a line end.
+2. The number of a list item is not a sentence. Before, „2. Paella” in raw text was cut after „2.”. The normalizer removed the number before the split, so this was not visible in the batch path.
+3. The early first segment rules (section 1) do not change.
+
+### Measured facts
+
+Playback time minus audio length, 5 runs, tokens of up to 3 characters at 25 tok/s (`tokens()` in `scripts/measure_m4.py`), daemon defaults. The „before” value is from the local-assistant test.
+
+| Text | `speak` | stream 25 tok/s, before | stream 25 tok/s, after |
+|---|---|---|---|
+| P4, 4 list items without periods (24.5 s of audio) | 132 ms (max 159) | 5819 ms | 135 ms (max 175) |
+| P4 minimal: introduction and 1 list item | 156 ms (max 164) | 647 ms | 129 ms (max 176) |
+
+Segments of P4 in the stream (pieces of 3 characters): „Oto kilka” (piece 7), the rest of the introduction (piece 19), list items 1-3 (pieces 50, 85, 113), list item 4 at `flush()`. The normalizer gives each list item a period at the end, and removes the number, `**` and the parentheses.
+
+Unit tests: 884 passed, 1 expected failure (N19), 8 unexpected passes (as before).
+
+### Change of the parity test
+
+`test_stream_parity.py` compared the streamed sentences with `split_sentences(normalize(text))`. With line boundaries, the sentences are not always the same: for „- mleko\n- chleb” the batch path gives one sentence „mleko. chleb.” (no uppercase letter after the period), and the stream gives 2 sentences. Now the test compares the stream with the `speak` path of the engine (`SentenceStream` with all the text in one piece). A new test makes sure that the words of the `speak` path are the same as the batch path, for all 139 texts.
+
+### Limits
+
+1. The M4 corpus did not have answers with more than one line. P4 is 1 real answer.
+2. A line end inside a sentence (an LLM that wraps long lines) is now a boundary, with a short pause. The real LLM test did not show this.
