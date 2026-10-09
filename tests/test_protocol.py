@@ -1,6 +1,6 @@
 import pytest
 
-from local_tts.protocol import Cancel, ProtocolError, Speak, Status, encode_event, parse_request
+from local_tts.protocol import Append, Begin, Cancel, End, ProtocolError, Speak, Status, encode_event, parse_request
 
 
 def test_speak_with_only_text_uses_defaults():
@@ -17,6 +17,21 @@ def test_cancel_and_status_commands():
     assert parse_request('{"cmd": "status"}') == Status()
 
 
+def test_begin_opens_a_stream_with_the_speak_options():
+    assert parse_request('{"cmd": "begin"}') == Begin()
+    line = '{"cmd": "begin", "voice": "gosia", "interrupt": true, "id": "s1"}'
+    assert parse_request(line) == Begin(voice="gosia", interrupt=True, id="s1")
+
+
+def test_append_keeps_the_text_as_sent_also_whitespace():
+    assert parse_request('{"cmd": "append", "id": "s1", "text": "Dzień"}') == Append(id="s1", text="Dzień")
+    assert parse_request('{"cmd": "append", "id": "s1", "text": " "}') == Append(id="s1", text=" ")
+
+
+def test_end_closes_a_stream():
+    assert parse_request('{"cmd": "end", "id": "s1"}') == End(id="s1")
+
+
 @pytest.mark.parametrize(
     "line",
     [
@@ -30,6 +45,11 @@ def test_cancel_and_status_commands():
         '{"cmd": "speak", "text": "Hej.", "voice": 1}',
         '{"cmd": "speak", "text": "Hej.", "interrupt": "yes"}',
         '{"cmd": "speak", "text": "Hej.", "id": 7}',
+        '{"cmd": "begin", "interrupt": 1}',
+        '{"cmd": "append", "text": "Hej"}',
+        '{"cmd": "append", "id": "s1"}',
+        '{"cmd": "append", "id": "s1", "text": 5}',
+        '{"cmd": "end"}',
     ],
 )
 def test_invalid_requests_raise_protocol_error(line):

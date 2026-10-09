@@ -19,6 +19,30 @@ class Speak:
 
 
 @dataclass(frozen=True)
+class Begin:
+    """Open a stream: the text comes later in Append requests."""
+
+    voice: str | None = None
+    interrupt: bool = False
+    id: str | None = None
+
+
+@dataclass(frozen=True)
+class Append:
+    """Add text to an open stream. The text can be any part of a word."""
+
+    id: str
+    text: str
+
+
+@dataclass(frozen=True)
+class End:
+    """Close a stream. The daemon speaks the rest of the text."""
+
+    id: str
+
+
+@dataclass(frozen=True)
 class Cancel:
     pass
 
@@ -28,7 +52,7 @@ class Status:
     pass
 
 
-Request = Speak | Cancel | Status
+Request = Speak | Begin | Append | End | Cancel | Status
 
 
 def parse_request(line: str | bytes) -> Request:
@@ -43,18 +67,40 @@ def parse_request(line: str | bytes) -> Request:
         return Cancel()
     if cmd == "status":
         return Status()
+    if cmd == "begin":
+        return Begin(**_speak_options(message))
+    if cmd == "append":
+        text = message.get("text")
+        if not isinstance(text, str):
+            raise ProtocolError("append needs a string 'text'")
+        return Append(id=_stream_id(message), text=text)
+    if cmd == "end":
+        return End(id=_stream_id(message))
     if cmd != "speak":
         raise ProtocolError(f"unknown cmd: {cmd!r}")
 
     text = message.get("text")
     if not isinstance(text, str) or not text.strip():
         raise ProtocolError("speak needs a non-empty string 'text'")
-    voice = _optional(message, "voice", str)
-    request_id = _optional(message, "id", str)
+    return Speak(text=text, **_speak_options(message))
+
+
+def _speak_options(message: dict) -> dict:
     interrupt = message.get("interrupt", False)
     if not isinstance(interrupt, bool):
         raise ProtocolError("'interrupt' must be true or false")
-    return Speak(text=text, voice=voice, interrupt=interrupt, id=request_id)
+    return {
+        "voice": _optional(message, "voice", str),
+        "interrupt": interrupt,
+        "id": _optional(message, "id", str),
+    }
+
+
+def _stream_id(message: dict) -> str:
+    stream_id = message.get("id")
+    if not isinstance(stream_id, str):
+        raise ProtocolError(f"{message['cmd']} needs a string 'id' of an open stream")
+    return stream_id
 
 
 def _optional(message: dict, key: str, kind: type) -> object:
