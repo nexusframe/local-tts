@@ -83,6 +83,8 @@ class Engine:
         # Ids of utterances without a final event, in request order.
         self._pending: dict[str, None] = {}
         self._speaking: str | None = None
+        # The utterance whose sentence the backend synthesizes now.
+        self._synthesizing: _Utterance | None = None
         # Streams that have no end() yet.
         self._streams: dict[str, _Utterance] = {}
         # Streams that cancel() closed. The client can still send pieces for
@@ -138,6 +140,7 @@ class Engine:
                 return
             self._cancelled_streams.append(stream_id)
             utterance.aborted.set()
+        self._interrupt_synthesis(lambda current: current is utterance)
         utterance.pieces.put(_END_OF_TEXT)
         # Like cancel(): the first stop() unblocks a write() that holds the write lock.
         if self._speaking == stream_id:
@@ -145,6 +148,17 @@ class Engine:
         with self._write_lock:
             if self._speaking == stream_id:
                 self._player.stop()
+
+    def _interrupt_synthesis(self, matches: Callable[[_Utterance], bool]) -> None:
+        """Stop the sentence that the backend synthesizes now, so that new text does not wait for it.
+
+        If the interrupt comes just before the backend starts the run, the run is
+        not stopped. Then the new text waits for one sentence, as in M1.
+        """
+        with self._state_lock:
+            utterance = self._synthesizing
+            if utterance is not None and matches(utterance):
+                self._backends[utterance.voice].interrupt()
 
     def _open_stream(self, stream_id: str) -> _Utterance | None:
         """Return the open stream, or None for a cancelled stream. Raise for other ids."""
@@ -172,6 +186,7 @@ class Engine:
     def cancel(self) -> None:
         with self._cancel_lock:
             self._epoch += 1
+            self._interrupt_synthesis(lambda utterance: True)
             self._player.stop()
             with self._write_lock:
                 self._player.stop()
@@ -231,13 +246,23 @@ class Engine:
                 for segment in segments:
                     # The normalizer can make new sentence ends, so split again.
                     for sentence in split_sentences(normalize(segment)):
-                        for pcm in backend.synthesize(sentence):
+                        with self._state_lock:
                             if not self._current(utterance):
                                 return _End(utterance)
-                            self._audio.put(_Chunk(utterance, pcm, backend.sample_rate))
+                            self._synthesizing = utterance
+                        try:
+                            for pcm in backend.synthesize(sentence):
+                                if not self._current(utterance):
+                                    return _End(utterance)
+                                self._audio.put(_Chunk(utterance, pcm, backend.sample_rate))
+                        finally:
+                            with self._state_lock:
+                                self._synthesizing = None
                 if piece is _END_OF_TEXT:
                     break
         except Exception as exc:
+            if not self._current(utterance):
+                return _End(utterance)  # interrupt() stopped the backend.
             return _End(utterance, error=f"{type(exc).__name__}: {exc}")
         return _End(utterance)
 

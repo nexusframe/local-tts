@@ -18,11 +18,37 @@ class FakeBackend:
         self.fail_on = fail_on
         self.calls: list[str] = []
 
+    def interrupt(self) -> None:
+        pass
+
     def synthesize(self, text: str):
         self.calls.append(text)
         if self.fail_on is not None and self.fail_on in text:
             raise RuntimeError(f"cannot synthesize {text!r}")
         yield FakeChunk(self.name, text)
+
+
+class SlowBackend(FakeBackend):
+    """Like a long sentence in Piper: synthesize() blocks until interrupt(), then raises."""
+
+    def __init__(self, name: str = "fake", slow_on: str = "Długie") -> None:
+        super().__init__(name)
+        self.slow_on = slow_on
+        self.interrupts = 0
+        self._interrupted = threading.Event()
+
+    def synthesize(self, text: str):
+        if self.slow_on in text:
+            self.calls.append(text)
+            if not self._interrupted.wait(timeout=5.0):
+                raise AssertionError("synthesis was not interrupted")
+            self._interrupted.clear()
+            raise RuntimeError("Exiting due to terminate flag")
+        yield from super().synthesize(text)
+
+    def interrupt(self) -> None:
+        self.interrupts += 1
+        self._interrupted.set()
 
 
 class FakeChunk(np.ndarray):

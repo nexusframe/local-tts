@@ -3,7 +3,7 @@ import pytest
 from local_tts.engine import Engine
 from local_tts.protocol import Begin, Speak
 
-from fakes import EventLog, FakeBackend, FakePlayer
+from fakes import EventLog, FakeBackend, FakePlayer, SlowBackend
 
 
 @pytest.fixture
@@ -241,3 +241,34 @@ def test_abort_cancels_only_that_stream(log):
     engine.close()
     assert player.played == ["zenski:Potem."]
     assert log.names(id=stream) == ["started", "cancelled"]
+
+
+def test_interrupt_stops_the_synthesis_of_a_long_sentence(log):
+    backend = SlowBackend("zenski")
+    player = FakePlayer()
+    engine = make_engine(log, player, zenski=backend)
+    old = engine.speak(Speak(text="Krótkie. Długie zdanie."))
+    log.wait_for("started", id=old)
+    wait_until(lambda: "Długie zdanie." in backend.calls)
+
+    new = engine.speak(Speak(text="Nowe.", interrupt=True))
+
+    log.wait_for("done", id=new, timeout=1.0)
+    engine.close()
+    assert backend.interrupts >= 1
+    assert log.names(id=old) == ["started", "cancelled"]
+    assert player.played == ["zenski:Krótkie.", "zenski:Nowe."]
+
+
+def test_abort_stops_the_synthesis_of_its_stream(log):
+    backend = SlowBackend("zenski")
+    engine = make_engine(log, zenski=backend)
+    stream = engine.begin(Begin())
+    engine.append(stream, "Długie zdanie. Dalej")
+    wait_until(lambda: backend.calls == ["Długie zdanie."])
+
+    engine.abort(stream)
+
+    log.wait_for("cancelled", id=stream, timeout=1.0)
+    engine.close()
+    assert backend.interrupts == 1
