@@ -16,8 +16,24 @@ import numpy as np
 import onnxruntime as ort
 from piper import PiperVoice
 from piper.config import PiperConfig
+from piper.phonemize_espeak import EspeakPhonemizer
+# piper-tts uses this lock for its espeak-ng calls. espeak-ng has one global state,
+# so English calls take the same lock. Private name: piper-tts is pinned to 1.8.0.
+from piper.voice import _ESPEAK_PHONEMIZER_LOCK
 
-from local_tts.backends.phonemes import lengthen_trz
+from local_tts.backends.phonemes import lengthen_trz, phonemize_mixed, to_polish_phonemes
+
+_english_espeak: EspeakPhonemizer | None = None
+
+
+def _english_phonemes(text: str) -> list[list[str]]:
+    """English text (an <en> span) to phonemes that the Polish voices know."""
+    global _english_espeak
+    with _ESPEAK_PHONEMIZER_LOCK:
+        if _english_espeak is None:
+            _english_espeak = EspeakPhonemizer()
+        sentences = _english_espeak.phonemize("en-us", text)
+    return [list(to_polish_phonemes("".join(s))) for s in sentences]
 
 
 class _InterruptibleSession:
@@ -68,11 +84,21 @@ class PiperBackend:
             session=self._session,
         )
         self.sample_rate = self._voice.config.sample_rate
-        if fix_trz:
+        # "pl" or "en", from the espeak-ng voice of the model ("pl", "en-us", "en-gb-x-rp").
+        self.language = self._voice.config.espeak_voice.split("-")[0]
+        if self.language == "pl":
             # PiperVoice.synthesize() calls self.phonemize(). Wrap it for this voice only;
             # the audio processing after phonemization stays the same.
-            original = self._voice.phonemize
-            self._voice.phonemize = lambda text: lengthen_trz(text, original(text))
+            espeak_polish = self._voice.phonemize
+            if fix_trz:
+                polish = lambda text: lengthen_trz(text, espeak_polish(text))
+            else:
+                polish = espeak_polish
+            self._voice.phonemize = lambda text: phonemize_mixed(text, polish, _english_phonemes)
+
+    def phonemize(self, text: str) -> list[list[str]]:
+        """The phonemes that synthesize() uses for the text, grouped by sentence."""
+        return self._voice.phonemize(text)
 
     def synthesize(self, text: str) -> Iterator[np.ndarray]:
         for chunk in self._voice.synthesize(text):

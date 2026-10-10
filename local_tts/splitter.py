@@ -7,10 +7,13 @@ import re
 # A sentence ends at . ! ? or …, then whitespace, then an uppercase letter,
 # a digit or a quotation mark. A line end before more text is also a boundary,
 # because LLM answers (Markdown lists) often have no period at the end of a line.
-_CANDIDATE = re.compile(r"[.!?…]+\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ0-9\"„«])|[^\S\n]*\n\s*(?=\S)")
+# An <en> tag (English text, see normalizer/english.py) can stand next to the boundary.
+_CANDIDATE = re.compile(r"[.!?…]+(?:</en>)?\s+(?=[A-ZĄĆĘŁŃÓŚŹŻ0-9\"„«]|<en>)|[^\S\n]*\n\s*(?=\S)")
 
 # Abbreviations that can stand before an uppercase word inside a sentence.
-_ABBREVIATIONS = frozenset({"np", "m.in", "dr", "ul", "tzn", "tj", "tel", "inż", "prof", "hab", "godz", "tys"})
+_ABBREVIATIONS = frozenset({"np", "m.in", "dr", "ul", "tzn", "tj", "tel", "inż", "prof", "hab", "godz", "tys",
+                            # English titles, for the English voices.
+                            "mr", "mrs", "ms", "vs"})
 
 # "ok." is an abbreviation only before a number (the normalizer gives "około").
 _OK_BEFORE_NUMBER = re.compile(r"(?<![\w.])[Oo]k\.\s+\d")
@@ -24,6 +27,7 @@ _LIST_NUMBER = re.compile(r"\d+[.)]")
 _COMMA = re.compile(r",\s")
 _COMPLETE_WORD = re.compile(r"\S+(?=\s)")
 _PLAIN_WORD = re.compile(r"[^\W\d_]+")
+_TAG = re.compile(r"</?en>")
 # A Markdown list item, as in normalizer/cleanup.py.
 _LIST_ITEM = re.compile(r"^\s*(?:[-*+•]|\d+[.)])\s", re.MULTILINE)
 # Prepositions and conjunctions. A pause after them breaks the intonation.
@@ -35,7 +39,8 @@ _NO_CUT_AFTER = frozenset({
 
 def _ends_with_abbreviation(head: str) -> bool:
     match = _LAST_WORD.search(head)
-    return bool(match) and match.group(1).rstrip(".").lower() in _ABBREVIATIONS
+    # Markup can stand before the word, for example "**dr.".
+    return bool(match) and match.group(1).rstrip(".").lstrip("*_(\"„«").lower() in _ABBREVIATIONS
 
 
 def split_sentences(text: str) -> list[str]:
@@ -54,7 +59,23 @@ def split_sentences(text: str) -> list[str]:
         start = match.end()
     if text[start:]:
         sentences.append(text[start:])
-    return sentences
+    return _balance_tags(sentences)
+
+
+def _inside_english(segment: str) -> bool:
+    return segment.rfind("<en>") > segment.rfind("</en>")
+
+
+def _balance_tags(segments: list[str]) -> list[str]:
+    """Close an <en> span at the end of a segment and open it again in the next segment.
+
+    The last segment can stay open: in a stream, its text can still grow.
+    """
+    for i in range(len(segments) - 1):
+        if _inside_english(segments[i]):
+            segments[i] += "</en>"
+            segments[i + 1] = "<en>" + segments[i + 1].lstrip()
+    return segments
 
 
 class SentenceStream:
@@ -91,22 +112,26 @@ class SentenceStream:
             return [self._cut(comma.start() + 1)]
         # Words with whitespace after them. The last word can still grow.
         words = list(_COMPLETE_WORD.finditer(self._buffer))
-        for before, after in zip(words[self._first_words - 1 :], words[self._first_words :]):
+        for before_match, after_match in zip(words[self._first_words - 1 :], words[self._first_words :]):
+            # A tag does not change the word ("<en>commit</en>" is a plain word).
+            before, after = _TAG.sub("", before_match.group()), _TAG.sub("", after_match.group())
             # The normalizer reads numbers and abbreviations with the words
             # next to them, so cut only between two plain words.
             if (
-                _PLAIN_WORD.fullmatch(before.group())
-                and _PLAIN_WORD.fullmatch(after.group())
-                and before.group().lower() not in _NO_CUT_AFTER
+                _PLAIN_WORD.fullmatch(before)
+                and _PLAIN_WORD.fullmatch(after)
+                and before.lower() not in _NO_CUT_AFTER
                 # An uppercase word continues a name, for example "Agnieszka | Brzezińska".
-                and not after.group()[0].isupper()
+                and not after[0].isupper()
             ):
-                return [self._cut(before.end())]
+                return [self._cut(before_match.end())]
         return []
 
     def _cut(self, position: int) -> str:
         head, self._buffer = self._buffer[:position], self._buffer[position:]
-        return head.strip()
+        head, rest = _balance_tags([head.strip(), self._buffer])
+        self._buffer = rest
+        return head
 
     def _complete_sentences(self) -> list[str]:
         sentences = split_sentences(self._buffer)

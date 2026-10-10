@@ -121,7 +121,8 @@ def wait_until(condition, timeout=2.0):
 def test_status_shows_voices_current_speech_and_queue(log):
     player = FakePlayer(blocking=True)
     engine = make_engine(log, player, zenski=FakeBackend("zenski"), gosia=FakeBackend("gosia"))
-    assert engine.status() == {"voices": ["gosia", "zenski"], "default_voice": "zenski", "speaking": None, "queued": []}
+    assert engine.status() == {"voices": ["gosia", "zenski"], "languages": {"gosia": "pl", "zenski": "pl"},
+                               "default_voice": "zenski", "speaking": None, "queued": []}
 
     first = engine.speak(Speak(text="Raz."))
     second = engine.speak(Speak(text="Dwa.", voice="gosia"))
@@ -152,6 +153,22 @@ def test_text_is_normalized_before_synthesis(log):
     log.wait_for("done", id=request_id)
     engine.close()
     assert backend.calls == ["Kosztuje pięć złotych.", "Doktor Nowak wraca o czternastej trzydzieści."]
+
+
+def test_english_voice_gets_no_polish_normalization(log):
+    # espeak-ng en reads numbers and times itself. Markup and tags are still removed.
+    backend = FakeBackend("en_male", language="en")
+    engine = make_engine(log, zenski=FakeBackend("zenski"), en_male=backend)
+    request_id = engine.speak(Speak(text="Meeting at 9:30, **Dr. Smith**. <en>Bring</en> 5 cups [pause] now.", voice="en_male"))
+    log.wait_for("done", id=request_id)
+    engine.close()
+    assert backend.calls == ["Meeting at 9:30, Dr. Smith.", "Bring 5 cups now."]
+
+
+def test_status_shows_the_language_of_each_voice(log):
+    engine = make_engine(log, zenski=FakeBackend("zenski"), en_male=FakeBackend("en_male", language="en"))
+    assert engine.status()["languages"] == {"en_male": "en", "zenski": "pl"}
+    engine.close()
 
 
 def test_stream_plays_the_text_that_comes_in_pieces(log):

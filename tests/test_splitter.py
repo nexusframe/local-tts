@@ -142,3 +142,11 @@ def test_stream_gives_a_line_when_the_next_line_starts():
         [],
         ["2. Paella"],
     ]
+
+
+def test_abbreviation_with_markup_before_it_is_not_a_sentence_end():
+    assert split_sentences("Dzwonił **dr. Nowak** wczoraj.") == ["Dzwonił **dr. Nowak** wczoraj."]
+
+
+def test_no_split_after_english_titles():
+    assert split_sentences("Call Mr. Smith and Mrs. Jones. Then rest.") == ["Call Mr. Smith and Mrs. Jones.", "Then rest."]

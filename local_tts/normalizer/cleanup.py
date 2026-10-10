@@ -29,10 +29,11 @@ def _end_list_item(line: str) -> str:
     return item if item.endswith((".", "!", "?", "…", ":", ";")) else item + "."
 
 
-def cleanup(text: str) -> str:
+def cleanup(text: str, polish: bool = True) -> str:
+    """polish=False: for an English voice, a URL becomes its domain without "kropka"."""
     text = _CODE_FENCE.sub("", text)
     text = _MD_LINK.sub(r"\1", text)
-    text = _URL.sub(_spoken_domain, text)
+    text = _URL.sub(_spoken_domain if polish else r"\1", text)
     text = _TAG.sub(" ", text)
     text = _EMPHASIS.sub("", text)
     text = _HEADING.sub("", text)

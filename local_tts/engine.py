@@ -28,7 +28,7 @@ import numpy as np
 from local_tts.backends.base import Backend
 from local_tts.player import Player
 from local_tts.protocol import Begin, Speak
-from local_tts.normalizer import normalize
+from local_tts.normalizer import normalize, normalize_english
 from local_tts.splitter import SentenceStream, split_sentences
 
 EventSink = Callable[..., None]
@@ -213,6 +213,7 @@ class Engine:
         with self._state_lock:
             return {
                 "voices": sorted(self._backends),
+                "languages": {name: backend.language for name, backend in sorted(self._backends.items())},
                 "default_voice": self._default_voice,
                 "speaking": self._speaking,
                 "queued": [i for i in self._pending if i != self._speaking],
@@ -239,6 +240,7 @@ class Engine:
     def _synthesize(self, utterance: _Utterance) -> _End:
         """Put the audio chunks of one utterance into the audio queue. Return its end marker."""
         backend = self._backends[utterance.voice]
+        normalize_text = normalize if backend.language == "pl" else normalize_english
         stream = SentenceStream(early_first=utterance.early_first, first_words=self._first_words)
         try:
             while True:
@@ -248,7 +250,7 @@ class Engine:
                 segments = stream.flush() if piece is _END_OF_TEXT else stream.feed(piece)
                 for segment in segments:
                     # The normalizer can make new sentence ends, so split again.
-                    for sentence in split_sentences(normalize(segment)):
+                    for sentence in split_sentences(normalize_text(segment)):
                         with self._state_lock:
                             if not self._current(utterance):
                                 return _End(utterance)

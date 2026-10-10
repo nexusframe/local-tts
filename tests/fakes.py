@@ -13,9 +13,10 @@ class FakeBackend:
 
     sample_rate = 22050
 
-    def __init__(self, name: str = "fake", fail_on: str | None = None) -> None:
+    def __init__(self, name: str = "fake", fail_on: str | None = None, language: str = "pl") -> None:
         self.name = name
         self.fail_on = fail_on
+        self.language = language
         self.calls: list[str] = []
 
     def interrupt(self) -> None:

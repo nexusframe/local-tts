@@ -9,6 +9,7 @@ import numpy as np
 
 class Backend(Protocol):
     sample_rate: int
+    language: str  # "pl" or "en": the engine selects the normalizer for it
 
     def synthesize(self, text: str) -> Iterator[np.ndarray]:
         """Yield mono int16 PCM chunks for one sentence.
