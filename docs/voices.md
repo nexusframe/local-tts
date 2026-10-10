@@ -20,7 +20,29 @@ Example: a Polish male voice and English voices:
   --voice en_female=en_GB-cori-medium
 ```
 
-Each loaded voice adds about 140 MB RSS after load. The prototype target is daemon RSS ≤ 1.5 GB.
+Default voices (`DEFAULT_VOICES`, 2026-10-11). The first voice is the default voice.
+
+| Name | Model | Language |
+|---|---|---|
+| `zenski` | `pl_PL-zenski_wg_glos-medium` | pl |
+| `jarvis` | `pl_PL-jarvis_wg_glos-medium` | pl |
+| `en_hfc_female` | `en_US-hfc_female-medium` | en |
+| `en_cori` | `en_GB-cori-medium` | en |
+| `en_bryce` | `en_US-bryce-medium` | en |
+| `en_hfc_male` | `en_US-hfc_male-medium` | en |
+
+`gosia` is not a default voice. Load it with `--voice gosia=pl_PL-gosia-medium`.
+
+Memory, measured with the default voices (one process, 4 threads for each voice, one long sentence for each voice):
+
+| Default set | RSS after load | RSS after one synthesis for each voice |
+|---|---:|---:|
+| 7 voices (with `gosia`) | 600 MB | 1766 MB |
+| 6 voices (current) | 515 MB | 1509 MB |
+
+Each voice adds about 85 MB at load and about 160 MB at its first synthesis. ONNX Runtime keeps that memory (CPU memory arena).
+The prototype target is daemon RSS ≤ 1.5 GB: the current set is at the limit. Each added voice goes above it.
+A test with the ORT memory arena off is an open item for M5.
 
 ## Voice language
 

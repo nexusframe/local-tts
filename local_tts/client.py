@@ -2,7 +2,7 @@
 
 Examples:
     python -m local_tts.client speak "Dzień dobry."
-    python -m local_tts.client speak --voice gosia --interrupt "Stop."
+    python -m local_tts.client speak --voice jarvis --interrupt "Stop."
     python -m local_tts.client cancel
     python -m local_tts.client status
 """
