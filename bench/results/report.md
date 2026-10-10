@@ -20,14 +20,28 @@ TTFA is for S1 (short sentence). RTF is pooled over all 11 raw texts (110 runs).
 
 | Backend | Model | Threads | Cold start | TTFA median | TTFA p95 | RTF median | RTF p95 | Peak RSS | Streaming |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| piper | en_GB-alan-medium (alan) | **t4c4** | 1.56 s | 97 ms | 106 ms | 0.059 | 0.066 | 746 MB | sentence/chunk level only |
+| piper | en_GB-cori-medium (cori) | **t4c4** | 1.85 s | 108 ms | 134 ms | 0.059 | 0.069 | 485 MB | sentence/chunk level only |
+| piper | en_US-amy-medium (amy) | **t4c4** | 1.81 s | 105 ms | 114 ms | 0.070 | 0.171 | 708 MB | sentence/chunk level only |
+| piper | en_US-bryce-medium (bryce) | **t4c4** | 1.72 s | 108 ms | 116 ms | 0.059 | 0.068 | 705 MB | sentence/chunk level only |
+| piper | en_US-hfc_female-medium (hfc_female) | **t4c4** | 1.56 s | 91 ms | 98 ms | 0.060 | 0.065 | 486 MB | sentence/chunk level only |
+| piper | en_US-hfc_male-medium (hfc_male) | **t4c4** | 1.55 s | 102 ms | 130 ms | 0.061 | 0.072 | 460 MB | sentence/chunk level only |
+| piper | en_US-joe-medium (joe) | **t4c4** | 3.43 s | 113 ms | 154 ms | 0.069 | 0.090 | 613 MB | sentence/chunk level only |
+| piper | en_US-john-medium (john) | **t4c4** | 1.70 s | 155 ms | 185 ms | 0.068 | 0.094 | 613 MB | sentence/chunk level only |
+| piper | en_US-kristin-medium (kristin) | **t4c4** | 1.66 s | 103 ms | 121 ms | 0.067 | 0.085 | 602 MB | sentence/chunk level only |
+| piper | en_US-lessac-medium (lessac) | **t4c4** | 1.50 s | 106 ms | 110 ms | 0.057 | 0.068 | 709 MB | sentence/chunk level only |
 | piper | pl_PL-bass-high (bass) | t1c2 | – | 1430 ms | 1527 ms | 0.721 | 0.741 | 644 MB |  |
 | piper | pl_PL-bass-high (bass) | t2c2 | – | 813 ms | 849 ms | 0.447 | 0.457 | 646 MB |  |
 | piper | pl_PL-bass-high (bass) | **t4c4** | 2.17 s | 636 ms | 643 ms | 0.308 | 0.316 | 492 MB | sentence/chunk level only |
 | piper | pl_PL-bass-high (bass) | t8c8 | – | 650 ms | 700 ms | 0.326 | 0.341 | 492 MB |  |
+| piper | pl_PL-darkman-medium (darkman) | **t4c4** | 1.56 s | 110 ms | 131 ms | 0.061 | 0.096 | 602 MB | sentence/chunk level only |
 | piper | pl_PL-gosia-medium (gosia) | t1c2 | – | 181 ms | 191 ms | 0.100 | 0.103 | 423 MB |  |
 | piper | pl_PL-gosia-medium (gosia) | t2c2 | – | 114 ms | 119 ms | 0.067 | 0.069 | 558 MB |  |
 | piper | pl_PL-gosia-medium (gosia) | **t4c4** | 1.45 s | 96 ms | 101 ms | 0.055 | 0.057 | 566 MB | sentence/chunk level only |
 | piper | pl_PL-gosia-medium (gosia) | t8c8 | – | 118 ms | 136 ms | 0.065 | 0.073 | 575 MB |  |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | **t4c4** | 1.74 s | 70 ms | 82 ms | 0.063 | 0.071 | 590 MB | sentence/chunk level only |
+| piper | pl_PL-mc_speech-medium (mc_speech) | **t4c4** | 1.61 s | 155 ms | 185 ms | 0.063 | 0.109 | 431 MB | sentence/chunk level only |
+| piper | pl_PL-meski_wg_glos-medium (meski) | **t4c4** | 1.67 s | 65 ms | 74 ms | 0.060 | 0.075 | 548 MB | sentence/chunk level only |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | t1c2 | – | 125 ms | 130 ms | 0.101 | 0.103 | 571 MB |  |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | t2c2 | – | 81 ms | 86 ms | 0.068 | 0.070 | 548 MB |  |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | **t4c4** | 1.58 s | 62 ms | 70 ms | 0.055 | 0.058 | 419 MB | sentence/chunk level only |
@@ -52,14 +66,28 @@ TTFA is for S1 (short sentence). RTF is pooled over all 11 raw texts (110 runs).
 
 | Backend | Model | Config | Mean RTF | TTFA S1 | TTFA M1 | RTF L1 median | RTF L1 p95 | CPU cores | Load time | RSS after load | Peak RSS | Other CPU median | Other CPU max |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| piper | en_GB-alan-medium (alan) | t4c4 (best) | 0.059 | 97 ms | 436 ms | 0.059 | 0.061 | 4.00 | 1.42 s | 139 MB | 746 MB | 0.10 | 1.85 |
+| piper | en_GB-cori-medium (cori) | t4c4 (best) | 0.059 | 108 ms | 375 ms | 0.061 | 0.062 | 4.00 | 1.47 s | 146 MB | 485 MB | 0.10 | 2.53 |
+| piper | en_US-amy-medium (amy) | t4c4 (best) | 0.088 | 105 ms | 430 ms | 0.062 | 0.070 | 3.95 | 1.30 s | 139 MB | 708 MB | 0.93 | 5.20 |
+| piper | en_US-bryce-medium (bryce) | t4c4 (best) | 0.059 | 108 ms | 483 ms | 0.059 | 0.061 | 4.00 | 1.45 s | 146 MB | 705 MB | 0.11 | 2.17 |
+| piper | en_US-hfc_female-medium (hfc_female) | t4c4 (best) | 0.060 | 91 ms | 408 ms | 0.061 | 0.062 | 4.00 | 1.31 s | 139 MB | 486 MB | 0.10 | 0.71 |
+| piper | en_US-hfc_male-medium (hfc_male) | t4c4 (best) | 0.061 | 102 ms | 378 ms | 0.060 | 0.063 | 4.00 | 1.30 s | 139 MB | 460 MB | 0.12 | 1.86 |
+| piper | en_US-joe-medium (joe) | t4c4 (best) | 0.070 | 113 ms | 446 ms | 0.075 | 0.093 | 3.99 | 1.44 s | 139 MB | 613 MB | 0.76 | 3.46 |
+| piper | en_US-john-medium (john) | t4c4 (best) | 0.071 | 155 ms | 713 ms | 0.066 | 0.083 | 3.99 | 1.58 s | 146 MB | 613 MB | 0.69 | 4.20 |
+| piper | en_US-kristin-medium (kristin) | t4c4 (best) | 0.067 | 103 ms | 448 ms | 0.060 | 0.061 | 3.99 | 1.50 s | 146 MB | 602 MB | 0.63 | 2.84 |
+| piper | en_US-lessac-medium (lessac) | t4c4 (best) | 0.057 | 106 ms | 354 ms | 0.056 | 0.057 | 3.99 | 1.33 s | 138 MB | 709 MB | 0.43 | 2.71 |
 | piper | pl_PL-bass-high (bass) | t1c2 | 0.723 | 1430 ms | 3646 ms | 0.717 | 0.720 | 1.00 | 1.63 s | 192 MB | 644 MB | 0.05 | 0.54 |
 | piper | pl_PL-bass-high (bass) | t2c2 | 0.446 | 813 ms | 2264 ms | 0.447 | 0.447 | 2.00 | 1.49 s | 192 MB | 646 MB | 0.06 | 0.72 |
 | piper | pl_PL-bass-high (bass) | t4c4 (best) | 0.309 | 636 ms | 1559 ms | 0.308 | 0.308 | 4.00 | 1.54 s | 192 MB | 492 MB | 0.07 | 0.23 |
 | piper | pl_PL-bass-high (bass) | t8c8 | 0.326 | 650 ms | 1641 ms | 0.323 | 0.324 | 7.93 | 1.54 s | 192 MB | 492 MB | 0.08 | 0.27 |
+| piper | pl_PL-darkman-medium (darkman) | t4c4 (best) | 0.062 | 110 ms | 317 ms | 0.063 | 0.071 | 4.00 | 1.26 s | 139 MB | 602 MB | 0.26 | 4.06 |
 | piper | pl_PL-gosia-medium (gosia) | t1c2 | 0.100 | 181 ms | 492 ms | 0.100 | 0.101 | 1.00 | 1.25 s | 136 MB | 423 MB | 0.06 | 0.31 |
 | piper | pl_PL-gosia-medium (gosia) | t2c2 | 0.066 | 114 ms | 309 ms | 0.067 | 0.068 | 2.00 | 1.18 s | 136 MB | 558 MB | 0.06 | 0.52 |
 | piper | pl_PL-gosia-medium (gosia) | t4c4 (best) | 0.055 | 96 ms | 262 ms | 0.054 | 0.055 | 4.00 | 1.20 s | 136 MB | 566 MB | 0.07 | 0.63 |
 | piper | pl_PL-gosia-medium (gosia) | t8c8 | 0.065 | 118 ms | 313 ms | 0.063 | 0.064 | 7.96 | 1.22 s | 137 MB | 575 MB | 0.07 | 0.68 |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | t4c4 (best) | 0.062 | 70 ms | 264 ms | 0.064 | 0.066 | 3.99 | 1.46 s | 145 MB | 590 MB | 0.26 | 1.67 |
+| piper | pl_PL-mc_speech-medium (mc_speech) | t4c4 (best) | 0.068 | 155 ms | 252 ms | 0.064 | 0.083 | 4.00 | 1.36 s | 139 MB | 431 MB | 0.22 | 4.10 |
+| piper | pl_PL-meski_wg_glos-medium (meski) | t4c4 (best) | 0.060 | 65 ms | 250 ms | 0.072 | 0.079 | 4.00 | 1.41 s | 145 MB | 548 MB | 0.62 | 3.17 |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | t1c2 | 0.101 | 125 ms | 452 ms | 0.100 | 0.101 | 1.01 | 1.54 s | 141 MB | 571 MB | 0.05 | 0.58 |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | t2c2 | 0.067 | 81 ms | 287 ms | 0.068 | 0.069 | 2.00 | 1.33 s | 142 MB | 548 MB | 0.05 | 0.58 |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | t4c4 (best) | 0.055 | 62 ms | 248 ms | 0.055 | 0.055 | 4.00 | 1.37 s | 142 MB | 419 MB | 0.07 | 0.83 |
@@ -84,6 +112,166 @@ Other CPU: CPU cores used by other processes on the machine during the measured 
 
 ## 3. Results per text (best thread configuration)
 
+### piper: en_GB-alan-medium (alan), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.88 | 1.78–1.92 | 97 ms | 106 ms | 0.097 | 0.051 | 0.056 | 0.051–0.057 | 4.01 | 1.63 | 0 | – |
+| S2 | 3.60 | 3.44–3.65 | 218 ms | 232 ms | 0.218 | 0.061 | 0.066 | 0.056–0.067 | 4.00 | 1.66 | 0 | – |
+| M1 | 7.27 | 7.11–7.40 | 436 ms | 454 ms | 0.436 | 0.060 | 0.064 | 0.058–0.064 | 4.00 | 1.64 | 0 | – |
+| M2 | 7.29 | 7.14–7.33 | 433 ms | 470 ms | 0.433 | 0.060 | 0.065 | 0.058–0.067 | 4.00 | 1.25 | 0 | – |
+| M3 | 7.59 | 7.48–7.67 | 368 ms | 403 ms | 0.457 | 0.060 | 0.064 | 0.054–0.065 | 4.00 | 1.05 | 0 | – |
+| M4 | 7.59 | 7.34–7.67 | 61 ms | 72 ms | 0.454 | 0.060 | 0.065 | 0.055–0.066 | 4.00 | 1.74 | 0 | – |
+| M5 | 7.37 | 7.24–7.57 | 441 ms | 528 ms | 0.441 | 0.059 | 0.072 | 0.058–0.078 | 3.99 | 1.38 | 0 | – |
+| M6 | 5.89 | 5.68–6.07 | 56 ms | 63 ms | 0.352 | 0.060 | 0.064 | 0.059–0.066 | 4.00 | 2.37 | 0 | – |
+| M7 | 3.72 | 3.63–3.76 | 212 ms | 229 ms | 0.212 | 0.057 | 0.062 | 0.054–0.063 | 4.02 | 1.86 | 0 | – |
+| M8 | 4.14 | 4.01–4.23 | 243 ms | 289 ms | 0.243 | 0.059 | 0.069 | 0.054–0.071 | 4.00 | 1.42 | 0 | – |
+| L1 | 84.01 | 83.55–84.23 | 82 ms | 88 ms | 4.984 | 0.059 | 0.061 | 0.056–0.061 | 3.96 | 1.77 | 0 | – |
+
+### piper: en_GB-cori-medium (cori), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 2.00 | 1.76–2.24 | 108 ms | 134 ms | 0.108 | 0.050 | 0.066 | 0.049–0.070 | 3.98 | 1.68 | 0 | – |
+| S2 | 3.96 | 3.85–4.46 | 238 ms | 258 ms | 0.238 | 0.060 | 0.064 | 0.054–0.065 | 4.00 | 1.56 | 0 | – |
+| M1 | 6.30 | 5.96–6.49 | 375 ms | 393 ms | 0.375 | 0.059 | 0.064 | 0.054–0.064 | 4.01 | 1.90 | 0 | – |
+| M2 | 6.92 | 6.77–7.15 | 413 ms | 434 ms | 0.413 | 0.060 | 0.063 | 0.058–0.064 | 4.00 | 1.31 | 0 | – |
+| M3 | 6.88 | 6.43–7.08 | 342 ms | 360 ms | 0.418 | 0.060 | 0.064 | 0.054–0.064 | 4.01 | 1.14 | 0 | – |
+| M4 | 6.42 | 6.28–6.69 | 57 ms | 82 ms | 0.457 | 0.071 | 0.093 | 0.056–0.100 | 3.99 | 2.03 | 0 | – |
+| M5 | 6.39 | 6.11–7.01 | 376 ms | 427 ms | 0.376 | 0.059 | 0.065 | 0.054–0.067 | 4.00 | 1.46 | 0 | – |
+| M6 | 5.90 | 5.70–6.20 | 52 ms | 60 ms | 0.335 | 0.056 | 0.060 | 0.054–0.060 | 4.00 | 2.42 | 0 | – |
+| M7 | 4.05 | 3.62–4.19 | 244 ms | 270 ms | 0.244 | 0.060 | 0.067 | 0.059–0.068 | 4.01 | 1.71 | 0 | – |
+| M8 | 5.02 | 4.45–5.35 | 292 ms | 308 ms | 0.292 | 0.058 | 0.059 | 0.058–0.059 | 4.01 | 1.18 | 0 | – |
+| L1 | 77.00 | 75.99–77.93 | 85 ms | 102 ms | 4.655 | 0.061 | 0.062 | 0.057–0.062 | 3.96 | 1.94 | 0 | – |
+
+### piper: en_US-amy-medium (amy), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 2.11 | 2.06–2.17 | 105 ms | 114 ms | 0.105 | 0.049 | 0.054 | 0.048–0.054 | 4.03 | 1.41 | 0 | – |
+| S2 | 3.76 | 3.70–3.84 | 209 ms | 218 ms | 0.209 | 0.055 | 0.058 | 0.051–0.059 | 4.00 | 1.60 | 0 | – |
+| M1 | 6.97 | 6.90–7.13 | 430 ms | 475 ms | 0.429 | 0.061 | 0.068 | 0.060–0.069 | 3.99 | 1.69 | 0 | – |
+| M2 | 6.65 | 6.56–6.82 | 399 ms | 534 ms | 0.399 | 0.060 | 0.080 | 0.054–0.091 | 3.99 | 1.36 | 0 | – |
+| M3 | 7.17 | 7.11–7.30 | 377 ms | 568 ms | 0.460 | 0.063 | 0.096 | 0.058–0.097 | 3.98 | 1.10 | 0 | – |
+| M4 | 7.98 | 7.87–8.22 | 150 ms | 242 ms | 1.072 | 0.136 | 0.157 | 0.121–0.160 | 3.46 | 1.60 | 0 | – |
+| M5 | 6.44 | 6.35–6.61 | 767 ms | 1209 ms | 0.767 | 0.118 | 0.187 | 0.072–0.223 | 3.47 | 1.51 | 0 | – |
+| M6 | 6.59 | 6.47–6.77 | 120 ms | 197 ms | 0.720 | 0.110 | 0.161 | 0.087–0.177 | 3.64 | 2.13 | 0 | – |
+| M7 | 3.79 | 3.65–3.83 | 563 ms | 792 ms | 0.563 | 0.148 | 0.212 | 0.099–0.227 | 3.34 | 1.84 | 0 | – |
+| M8 | 4.77 | 4.71–4.89 | 533 ms | 959 ms | 0.533 | 0.111 | 0.200 | 0.083–0.252 | 3.75 | 1.25 | 0 | – |
+| L1 | 82.49 | 82.25–82.86 | 92 ms | 118 ms | 5.121 | 0.062 | 0.070 | 0.058–0.070 | 3.94 | 1.81 | 0 | – |
+
+### piper: en_US-bryce-medium (bryce), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 2.22 | 2.17–2.29 | 108 ms | 116 ms | 0.108 | 0.049 | 0.052 | 0.048–0.053 | 3.99 | 1.38 | 0 | – |
+| S2 | 4.73 | 4.69–4.85 | 281 ms | 303 ms | 0.281 | 0.059 | 0.064 | 0.056–0.068 | 4.00 | 1.25 | 0 | – |
+| M1 | 7.96 | 7.79–8.06 | 483 ms | 505 ms | 0.483 | 0.061 | 0.063 | 0.059–0.065 | 4.00 | 1.49 | 0 | – |
+| M2 | 7.68 | 7.57–7.94 | 448 ms | 503 ms | 0.449 | 0.058 | 0.066 | 0.054–0.068 | 4.00 | 1.18 | 0 | – |
+| M3 | 8.07 | 7.95–8.25 | 394 ms | 423 ms | 0.484 | 0.059 | 0.064 | 0.054–0.064 | 4.00 | 1.00 | 0 | – |
+| M4 | 8.71 | 8.59–8.86 | 69 ms | 78 ms | 0.519 | 0.059 | 0.063 | 0.055–0.063 | 4.00 | 1.49 | 0 | – |
+| M5 | 7.80 | 7.69–7.96 | 464 ms | 506 ms | 0.464 | 0.059 | 0.065 | 0.058–0.065 | 3.99 | 1.30 | 0 | – |
+| M6 | 6.66 | 6.51–6.75 | 66 ms | 88 ms | 0.417 | 0.063 | 0.087 | 0.055–0.088 | 4.00 | 2.14 | 0 | – |
+| M7 | 4.64 | 4.57–4.84 | 273 ms | 305 ms | 0.273 | 0.058 | 0.065 | 0.053–0.066 | 4.00 | 1.53 | 0 | – |
+| M8 | 4.70 | 4.54–4.78 | 281 ms | 307 ms | 0.281 | 0.060 | 0.067 | 0.058–0.069 | 4.02 | 1.26 | 0 | – |
+| L1 | 91.70 | 91.35–92.32 | 83 ms | 87 ms | 5.406 | 0.059 | 0.061 | 0.057–0.062 | 3.94 | 1.62 | 0 | – |
+
+### piper: en_US-hfc_female-medium (hfc_female), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.79 | 1.63–1.95 | 91 ms | 98 ms | 0.091 | 0.051 | 0.052 | 0.050–0.052 | 4.02 | 1.72 | 0 | – |
+| S2 | 3.33 | 3.27–3.41 | 207 ms | 229 ms | 0.207 | 0.062 | 0.069 | 0.061–0.072 | 4.00 | 1.81 | 0 | – |
+| M1 | 6.68 | 6.54–6.80 | 408 ms | 459 ms | 0.408 | 0.062 | 0.068 | 0.059–0.070 | 3.99 | 1.78 | 0 | – |
+| M2 | 6.13 | 5.94–6.22 | 356 ms | 381 ms | 0.356 | 0.058 | 0.061 | 0.054–0.061 | 3.99 | 1.47 | 0 | – |
+| M3 | 6.22 | 5.97–6.48 | 318 ms | 354 ms | 0.381 | 0.061 | 0.068 | 0.060–0.072 | 4.00 | 1.33 | 0 | – |
+| M4 | 7.11 | 6.86–7.34 | 60 ms | 73 ms | 0.425 | 0.061 | 0.065 | 0.056–0.066 | 4.00 | 1.89 | 0 | – |
+| M5 | 6.25 | 6.07–6.39 | 364 ms | 383 ms | 0.364 | 0.058 | 0.060 | 0.054–0.061 | 4.01 | 1.60 | 0 | – |
+| M6 | 5.58 | 5.45–5.62 | 55 ms | 64 ms | 0.343 | 0.062 | 0.066 | 0.060–0.068 | 4.00 | 2.50 | 0 | – |
+| M7 | 3.24 | 3.15–3.40 | 198 ms | 204 ms | 0.199 | 0.061 | 0.062 | 0.060–0.063 | 4.01 | 2.18 | 0 | – |
+| M8 | 4.38 | 4.08–4.49 | 256 ms | 266 ms | 0.256 | 0.059 | 0.060 | 0.058–0.060 | 4.00 | 1.35 | 0 | – |
+| L1 | 76.13 | 74.94–77.45 | 77 ms | 81 ms | 4.640 | 0.061 | 0.062 | 0.058–0.062 | 3.96 | 1.92 | 0 | – |
+
+### piper: en_US-hfc_male-medium (hfc_male), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.71 | 1.58–1.76 | 102 ms | 130 ms | 0.102 | 0.060 | 0.076 | 0.050–0.080 | 4.05 | 1.70 | 0 | – |
+| S2 | 3.17 | 3.06–3.46 | 195 ms | 209 ms | 0.195 | 0.061 | 0.063 | 0.057–0.063 | 4.00 | 1.95 | 0 | – |
+| M1 | 6.24 | 6.06–6.50 | 378 ms | 421 ms | 0.378 | 0.060 | 0.066 | 0.060–0.066 | 4.00 | 1.91 | 0 | – |
+| M2 | 5.63 | 5.49–5.75 | 338 ms | 386 ms | 0.338 | 0.060 | 0.068 | 0.059–0.072 | 4.00 | 1.59 | 0 | – |
+| M3 | 6.04 | 5.84–6.15 | 296 ms | 327 ms | 0.357 | 0.060 | 0.063 | 0.055–0.066 | 4.00 | 1.30 | 0 | – |
+| M4 | 6.26 | 5.96–6.46 | 51 ms | 58 ms | 0.390 | 0.063 | 0.075 | 0.058–0.084 | 4.00 | 2.04 | 0 | – |
+| M5 | 5.87 | 5.62–6.12 | 359 ms | 411 ms | 0.359 | 0.061 | 0.070 | 0.059–0.071 | 3.99 | 1.67 | 0 | – |
+| M6 | 5.00 | 4.83–5.20 | 46 ms | 65 ms | 0.314 | 0.062 | 0.075 | 0.061–0.079 | 4.00 | 2.78 | 0 | – |
+| M7 | 3.05 | 2.94–3.17 | 206 ms | 230 ms | 0.206 | 0.067 | 0.074 | 0.057–0.075 | 4.00 | 2.28 | 0 | – |
+| M8 | 4.28 | 4.05–4.52 | 241 ms | 261 ms | 0.241 | 0.056 | 0.061 | 0.053–0.062 | 4.01 | 1.33 | 0 | – |
+| L1 | 70.30 | 69.29–70.98 | 74 ms | 84 ms | 4.257 | 0.060 | 0.063 | 0.059–0.064 | 3.98 | 2.10 | 0 | – |
+
+### piper: en_US-joe-medium (joe), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.80 | 1.75–1.85 | 113 ms | 154 ms | 0.113 | 0.063 | 0.085 | 0.051–0.089 | 4.01 | 1.71 | 0 | – |
+| S2 | 3.34 | 3.20–3.45 | 230 ms | 249 ms | 0.230 | 0.069 | 0.074 | 0.060–0.075 | 4.00 | 1.87 | 0 | – |
+| M1 | 6.71 | 6.62–6.88 | 446 ms | 528 ms | 0.446 | 0.066 | 0.079 | 0.060–0.080 | 3.99 | 1.76 | 0 | – |
+| M2 | 6.27 | 6.15–6.39 | 411 ms | 458 ms | 0.411 | 0.065 | 0.074 | 0.063–0.074 | 4.00 | 1.42 | 0 | – |
+| M3 | 6.55 | 6.39–6.61 | 360 ms | 420 ms | 0.438 | 0.067 | 0.074 | 0.058–0.076 | 3.99 | 1.21 | 0 | – |
+| M4 | 6.90 | 6.84–7.08 | 77 ms | 99 ms | 0.614 | 0.088 | 0.115 | 0.070–0.126 | 3.98 | 1.86 | 0 | – |
+| M5 | 6.69 | 6.59–6.77 | 452 ms | 498 ms | 0.452 | 0.068 | 0.074 | 0.058–0.074 | 3.99 | 1.49 | 0 | – |
+| M6 | 5.53 | 5.47–5.65 | 58 ms | 76 ms | 0.368 | 0.067 | 0.089 | 0.061–0.092 | 4.00 | 2.54 | 0 | – |
+| M7 | 3.62 | 3.54–3.69 | 246 ms | 257 ms | 0.246 | 0.069 | 0.071 | 0.064–0.072 | 3.99 | 1.96 | 0 | – |
+| M8 | 4.31 | 4.28–4.43 | 308 ms | 372 ms | 0.308 | 0.071 | 0.085 | 0.064–0.086 | 3.99 | 1.36 | 0 | – |
+| L1 | 76.92 | 76.25–77.59 | 90 ms | 108 ms | 5.788 | 0.075 | 0.093 | 0.070–0.096 | 3.93 | 1.94 | 0 | – |
+
+### piper: en_US-john-medium (john), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 2.32 | 2.11–2.73 | 155 ms | 185 ms | 0.155 | 0.065 | 0.085 | 0.054–0.094 | 4.02 | 1.31 | 0 | – |
+| S2 | 3.87 | 3.70–4.10 | 275 ms | 343 ms | 0.275 | 0.069 | 0.088 | 0.063–0.092 | 4.00 | 1.56 | 0 | – |
+| M1 | 7.92 | 7.49–8.03 | 713 ms | 884 ms | 0.713 | 0.092 | 0.111 | 0.065–0.113 | 3.85 | 1.51 | 0 | – |
+| M2 | 6.98 | 6.50–7.28 | 547 ms | 614 ms | 0.547 | 0.080 | 0.090 | 0.064–0.096 | 3.98 | 1.30 | 0 | – |
+| M3 | 8.14 | 7.62–8.31 | 427 ms | 510 ms | 0.497 | 0.064 | 0.073 | 0.058–0.077 | 3.99 | 0.98 | 0 | speech rate 0.98 words/s is outside 1.0-4.5 (possible skip or extra audio) |
+| M4 | 7.38 | 7.02–7.60 | 65 ms | 78 ms | 0.515 | 0.070 | 0.078 | 0.064–0.078 | 4.00 | 1.71 | 0 | – |
+| M5 | 6.55 | 6.23–6.79 | 475 ms | 523 ms | 0.475 | 0.073 | 0.079 | 0.065–0.080 | 3.99 | 1.47 | 0 | – |
+| M6 | 6.44 | 6.03–6.62 | 79 ms | 102 ms | 0.442 | 0.069 | 0.073 | 0.059–0.075 | 3.99 | 2.26 | 0 | – |
+| M7 | 4.53 | 4.25–5.13 | 325 ms | 378 ms | 0.325 | 0.068 | 0.086 | 0.059–0.086 | 4.00 | 1.55 | 0 | – |
+| M8 | 4.90 | 4.43–5.26 | 320 ms | 344 ms | 0.320 | 0.065 | 0.070 | 0.062–0.072 | 4.00 | 1.17 | 0 | – |
+| L1 | 86.29 | 83.93–86.83 | 93 ms | 128 ms | 5.715 | 0.066 | 0.083 | 0.058–0.085 | 3.94 | 1.72 | 0 | – |
+
+### piper: en_US-kristin-medium (kristin), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.95 | 1.82–2.17 | 103 ms | 121 ms | 0.103 | 0.054 | 0.059 | 0.049–0.062 | 4.00 | 1.57 | 0 | – |
+| S2 | 3.73 | 3.61–3.92 | 240 ms | 366 ms | 0.240 | 0.065 | 0.094 | 0.057–0.097 | 4.00 | 1.56 | 0 | – |
+| M1 | 6.55 | 6.36–6.77 | 448 ms | 500 ms | 0.448 | 0.069 | 0.076 | 0.062–0.078 | 4.00 | 1.77 | 0 | – |
+| M2 | 7.20 | 7.01–7.37 | 489 ms | 538 ms | 0.489 | 0.066 | 0.076 | 0.063–0.077 | 4.00 | 1.22 | 0 | – |
+| M3 | 7.34 | 7.09–7.44 | 377 ms | 461 ms | 0.467 | 0.064 | 0.076 | 0.059–0.077 | 3.99 | 1.08 | 0 | – |
+| M4 | 7.11 | 6.94–7.49 | 67 ms | 97 ms | 0.507 | 0.071 | 0.086 | 0.068–0.092 | 3.99 | 1.74 | 0 | – |
+| M5 | 6.59 | 6.36–6.76 | 521 ms | 563 ms | 0.521 | 0.079 | 0.085 | 0.068–0.086 | 3.96 | 1.50 | 0 | – |
+| M6 | 6.04 | 5.89–6.27 | 65 ms | 81 ms | 0.416 | 0.069 | 0.090 | 0.063–0.091 | 3.99 | 2.33 | 0 | – |
+| M7 | 4.01 | 3.66–4.11 | 286 ms | 312 ms | 0.286 | 0.074 | 0.078 | 0.067–0.080 | 3.99 | 1.70 | 0 | – |
+| M8 | 5.37 | 4.98–5.72 | 357 ms | 382 ms | 0.357 | 0.065 | 0.073 | 0.059–0.075 | 4.00 | 1.14 | 0 | – |
+| L1 | 81.18 | 80.03–81.55 | 85 ms | 97 ms | 4.846 | 0.060 | 0.061 | 0.059–0.061 | 3.95 | 1.86 | 0 | – |
+
+### piper: en_US-lessac-medium (lessac), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 2.05 | 1.88–2.21 | 106 ms | 110 ms | 0.106 | 0.051 | 0.055 | 0.049–0.058 | 4.03 | 1.36 | 0 | – |
+| S2 | 3.25 | 3.13–3.33 | 171 ms | 216 ms | 0.171 | 0.053 | 0.066 | 0.051–0.067 | 4.00 | 1.84 | 0 | – |
+| M1 | 6.41 | 6.22–6.59 | 354 ms | 441 ms | 0.354 | 0.055 | 0.069 | 0.051–0.075 | 3.98 | 1.84 | 0 | – |
+| M2 | 5.93 | 5.77–6.20 | 342 ms | 403 ms | 0.342 | 0.058 | 0.066 | 0.054–0.067 | 3.98 | 1.45 | 0 | – |
+| M3 | 6.50 | 6.18–6.69 | 340 ms | 424 ms | 0.401 | 0.061 | 0.077 | 0.057–0.085 | 3.99 | 1.21 | 0 | – |
+| M4 | 6.84 | 6.58–7.14 | 57 ms | 67 ms | 0.408 | 0.060 | 0.076 | 0.058–0.080 | 3.99 | 1.92 | 0 | – |
+| M5 | 6.36 | 6.15–6.91 | 372 ms | 406 ms | 0.372 | 0.058 | 0.063 | 0.053–0.064 | 4.00 | 1.59 | 0 | – |
+| M6 | 5.87 | 5.71–6.22 | 45 ms | 53 ms | 0.334 | 0.057 | 0.061 | 0.054–0.062 | 4.00 | 2.38 | 0 | – |
+| M7 | 3.49 | 3.29–3.53 | 201 ms | 245 ms | 0.202 | 0.058 | 0.070 | 0.056–0.077 | 4.00 | 2.04 | 0 | – |
+| M8 | 4.10 | 3.72–4.34 | 227 ms | 267 ms | 0.227 | 0.055 | 0.065 | 0.054–0.069 | 4.01 | 1.43 | 0 | – |
+| L1 | 76.74 | 76.16–77.66 | 65 ms | 79 ms | 4.315 | 0.056 | 0.057 | 0.056–0.058 | 3.97 | 1.96 | 0 | – |
+
 ### piper: pl_PL-bass-high (bass), t4c4
 
 | Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
@@ -100,6 +288,22 @@ Other CPU: CPU cores used by other processes on the machine during the measured 
 | M8 | 1.93 | 1.79–2.07 | 598 ms | 647 ms | 0.598 | 0.311 | 0.317 | 0.309–0.320 | 4.00 | 3.04 | 0 | – |
 | L1 | 63.63 | 63.27–64.06 | 290 ms | 318 ms | 19.578 | 0.308 | 0.308 | 0.307–0.308 | 3.99 | 2.35 | 0 | – |
 
+### piper: pl_PL-darkman-medium (darkman), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.97 | 1.86–2.04 | 110 ms | 131 ms | 0.110 | 0.057 | 0.065 | 0.054–0.068 | 3.99 | 1.49 | 0 | – |
+| S2 | 2.27 | 2.19–2.33 | 132 ms | 206 ms | 0.132 | 0.060 | 0.089 | 0.055–0.093 | 4.04 | 2.66 | 0 | – |
+| M1 | 5.17 | 5.12–5.29 | 317 ms | 359 ms | 0.317 | 0.061 | 0.070 | 0.054–0.070 | 4.00 | 2.34 | 0 | – |
+| M2 | 5.62 | 5.43–5.70 | 332 ms | 380 ms | 0.332 | 0.059 | 0.067 | 0.055–0.069 | 4.02 | 1.60 | 0 | – |
+| M3 | 6.62 | 6.46–6.75 | 320 ms | 538 ms | 0.427 | 0.066 | 0.103 | 0.060–0.113 | 4.00 | 1.24 | 0 | – |
+| M4 | 7.35 | 7.24–7.45 | 93 ms | 122 ms | 0.450 | 0.061 | 0.070 | 0.060–0.073 | 4.00 | 1.75 | 0 | – |
+| M5 | 5.05 | 4.85–5.19 | 328 ms | 540 ms | 0.328 | 0.065 | 0.109 | 0.058–0.111 | 4.00 | 1.98 | 0 | – |
+| M6 | 5.37 | 5.28–5.48 | 50 ms | 62 ms | 0.309 | 0.057 | 0.064 | 0.055–0.068 | 4.01 | 2.63 | 0 | – |
+| M7 | 3.25 | 3.19–3.32 | 191 ms | 213 ms | 0.191 | 0.059 | 0.065 | 0.055–0.068 | 4.02 | 2.15 | 0 | – |
+| M8 | 3.44 | 3.26–3.51 | 256 ms | 355 ms | 0.256 | 0.074 | 0.103 | 0.059–0.104 | 4.00 | 1.74 | 0 | – |
+| L1 | 62.00 | 61.38–62.55 | 60 ms | 77 ms | 3.888 | 0.063 | 0.071 | 0.058–0.072 | 3.99 | 2.38 | 0 | – |
+
 ### piper: pl_PL-gosia-medium (gosia), t4c4
 
 | Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
@@ -115,6 +319,54 @@ Other CPU: CPU cores used by other processes on the machine during the measured 
 | M7 | 3.19 | 3.08–3.26 | 173 ms | 183 ms | 0.173 | 0.054 | 0.059 | 0.054–0.062 | 4.00 | 2.24 | 0 | – |
 | M8 | 2.43 | 2.32–2.61 | 134 ms | 140 ms | 0.134 | 0.055 | 0.055 | 0.054–0.056 | 4.01 | 2.41 | 0 | – |
 | L1 | 65.05 | 64.70–65.50 | 46 ms | 48 ms | 3.510 | 0.054 | 0.055 | 0.053–0.055 | 4.00 | 2.28 | 0 | – |
+
+### piper: pl_PL-jarvis_wg_glos-medium (jarvis), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.32 | 1.23–1.51 | 70 ms | 82 ms | 0.070 | 0.051 | 0.063 | 0.050–0.064 | 4.03 | 2.14 | 0 | – |
+| S2 | 1.59 | 1.53–1.73 | 95 ms | 106 ms | 0.095 | 0.058 | 0.068 | 0.054–0.070 | 3.99 | 3.49 | 0 | – |
+| M1 | 4.31 | 4.23–4.53 | 264 ms | 325 ms | 0.264 | 0.061 | 0.076 | 0.057–0.083 | 3.99 | 2.79 | 0 | – |
+| M2 | 4.88 | 4.48–5.03 | 307 ms | 365 ms | 0.307 | 0.064 | 0.078 | 0.062–0.080 | 4.00 | 2.01 | 0 | – |
+| M3 | 5.47 | 5.38–5.67 | 268 ms | 342 ms | 0.357 | 0.065 | 0.079 | 0.057–0.088 | 3.99 | 1.48 | 0 | – |
+| M4 | 5.66 | 5.55–5.84 | 82 ms | 106 ms | 0.369 | 0.065 | 0.070 | 0.058–0.072 | 3.99 | 2.34 | 0 | – |
+| M5 | 3.90 | 3.70–4.09 | 254 ms | 278 ms | 0.254 | 0.065 | 0.070 | 0.062–0.070 | 4.00 | 2.61 | 0 | – |
+| M6 | 4.62 | 4.26–4.71 | 40 ms | 48 ms | 0.288 | 0.063 | 0.072 | 0.056–0.076 | 4.00 | 3.01 | 0 | – |
+| M7 | 2.39 | 2.26–2.46 | 150 ms | 157 ms | 0.150 | 0.063 | 0.066 | 0.059–0.066 | 3.99 | 2.88 | 0 | – |
+| M8 | 1.92 | 1.87–2.01 | 116 ms | 124 ms | 0.116 | 0.060 | 0.063 | 0.057–0.064 | 3.98 | 2.99 | 0 | – |
+| L1 | 54.28 | 53.60–54.71 | 52 ms | 69 ms | 3.435 | 0.064 | 0.066 | 0.061–0.066 | 4.00 | 2.75 | 0 | – |
+
+### piper: pl_PL-mc_speech-medium (mc_speech), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.47 | 1.38–1.73 | 155 ms | 185 ms | 0.155 | 0.108 | 0.114 | 0.051–0.116 | 4.02 | 1.91 | 0 | – |
+| S2 | 1.61 | 1.51–1.86 | 105 ms | 156 ms | 0.105 | 0.064 | 0.095 | 0.062–0.118 | 4.03 | 3.74 | 0 | – |
+| M1 | 4.38 | 4.02–4.59 | 252 ms | 291 ms | 0.252 | 0.057 | 0.070 | 0.055–0.076 | 4.01 | 2.73 | 0 | – |
+| M2 | 4.54 | 4.34–4.85 | 310 ms | 469 ms | 0.310 | 0.069 | 0.098 | 0.057–0.099 | 3.99 | 1.93 | 0 | – |
+| M3 | 5.66 | 5.36–5.94 | 268 ms | 323 ms | 0.348 | 0.064 | 0.072 | 0.057–0.072 | 3.99 | 1.49 | 0 | – |
+| M4 | 6.18 | 5.86–6.62 | 84 ms | 96 ms | 0.375 | 0.062 | 0.068 | 0.056–0.071 | 4.01 | 2.07 | 0 | – |
+| M5 | 4.17 | 3.81–4.33 | 255 ms | 288 ms | 0.255 | 0.062 | 0.068 | 0.060–0.069 | 3.99 | 2.32 | 0 | – |
+| M6 | 5.10 | 4.64–5.51 | 80 ms | 111 ms | 0.372 | 0.071 | 0.108 | 0.055–0.108 | 3.99 | 2.65 | 0 | – |
+| M7 | 2.94 | 2.61–3.16 | 172 ms | 207 ms | 0.172 | 0.057 | 0.071 | 0.054–0.071 | 4.01 | 2.39 | 0 | – |
+| M8 | 3.56 | 3.31–3.94 | 252 ms | 330 ms | 0.252 | 0.070 | 0.094 | 0.059–0.094 | 4.01 | 1.60 | 0 | – |
+| L1 | 52.77 | 52.02–53.30 | 64 ms | 75 ms | 3.364 | 0.064 | 0.083 | 0.059–0.085 | 3.99 | 2.80 | 0 | – |
+
+### piper: pl_PL-meski_wg_glos-medium (meski), t4c4
+
+| Text | Audio s | Audio min–max | TTFA median | TTFA p95 | Total s | RTF median | RTF p95 | RTF min–max | CPU cores | Words/s | Failed | Audio check problems (first run) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| S1 | 1.18 | 1.11–1.22 | 65 ms | 74 ms | 0.065 | 0.055 | 0.062 | 0.046–0.062 | 4.03 | 2.56 | 0 | – |
+| S2 | 1.65 | 1.58–1.70 | 87 ms | 110 ms | 0.087 | 0.053 | 0.067 | 0.048–0.073 | 3.99 | 3.61 | 0 | – |
+| M1 | 4.73 | 4.66–4.76 | 250 ms | 282 ms | 0.250 | 0.053 | 0.060 | 0.051–0.063 | 4.00 | 2.52 | 0 | – |
+| M2 | 4.89 | 4.77–5.02 | 278 ms | 330 ms | 0.278 | 0.057 | 0.067 | 0.053–0.067 | 3.99 | 1.84 | 0 | – |
+| M3 | 6.77 | 6.57–6.86 | 335 ms | 447 ms | 0.406 | 0.060 | 0.078 | 0.054–0.080 | 3.99 | 1.18 | 0 | – |
+| M4 | 5.61 | 5.48–5.71 | 71 ms | 104 ms | 0.349 | 0.063 | 0.068 | 0.056–0.069 | 4.00 | 2.33 | 0 | – |
+| M5 | 4.37 | 4.31–4.46 | 260 ms | 295 ms | 0.260 | 0.059 | 0.068 | 0.055–0.068 | 4.01 | 2.24 | 0 | – |
+| M6 | 5.07 | 4.97–5.15 | 41 ms | 51 ms | 0.301 | 0.059 | 0.069 | 0.055–0.073 | 3.98 | 2.77 | 0 | – |
+| M7 | 2.74 | 2.69–2.84 | 178 ms | 210 ms | 0.178 | 0.065 | 0.076 | 0.059–0.076 | 3.97 | 2.46 | 0 | – |
+| M8 | 2.03 | 1.97–2.09 | 132 ms | 151 ms | 0.132 | 0.064 | 0.075 | 0.060–0.077 | 4.02 | 2.89 | 0 | – |
+| L1 | 58.18 | 57.86–58.49 | 46 ms | 69 ms | 4.161 | 0.072 | 0.079 | 0.063–0.081 | 3.97 | 2.56 | 0 | – |
 
 ### piper: pl_PL-zenski_wg_glos-medium (zenski), t4c4
 
@@ -218,8 +470,22 @@ Test method: the iterator of the backend is consumed and the arrival time of eve
 
 | Backend | Model | Config | TTFA S1 | Total S1 s | S1 streams | L1 streams | TTFA L1 | L1 chunks | 1st chunk S1 (audio s) | 1st chunk L1 (audio s) | Max gap L1 s | L1 underrun runs | Cancel latency | Audio after cancel s |
 | --- | --- | --- | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: | ---: |
+| piper | en_GB-alan-medium (alan) | t4c4 | 92 ms | 0.091 | no | yes | 82 ms | 12 | 1.90 | 1.21 | 0.77 | 0 (worst -0.94 s) | 0 ms | 0.00 |
+| piper | en_GB-cori-medium (cori) | t4c4 | 94 ms | 0.093 | no | yes | 87 ms | 12 | 1.89 | 1.23 | 0.72 | 0 (worst -0.82 s) | 0 ms | 0.00 |
+| piper | en_US-amy-medium (amy) | t4c4 | 105 ms | 0.105 | no | yes | 89 ms | 12 | 2.10 | 1.29 | 0.79 | 0 (worst -1.02 s) | 0 ms | 0.00 |
+| piper | en_US-bryce-medium (bryce) | t4c4 | 126 ms | 0.126 | no | yes | 77 ms | 12 | 2.23 | 1.11 | 0.83 | 0 (worst -0.85 s) | 0 ms | 0.00 |
+| piper | en_US-hfc_female-medium (hfc_female) | t4c4 | 88 ms | 0.088 | no | yes | 85 ms | 12 | 1.76 | 1.11 | 0.75 | 0 (worst -0.83 s) | 0 ms | 0.00 |
+| piper | en_US-hfc_male-medium (hfc_male) | t4c4 | 83 ms | 0.083 | no | yes | 75 ms | 12 | 1.64 | 1.06 | 0.68 | 0 (worst -0.82 s) | 0 ms | 0.00 |
+| piper | en_US-joe-medium (joe) | t4c4 | 120 ms | 0.120 | no | yes | 86 ms | 12 | 1.81 | 1.13 | 1.12 | 0 (worst -0.83 s) | 0 ms | 0.00 |
+| piper | en_US-john-medium (john) | t4c4 | 92 ms | 0.091 | no | yes | 94 ms | 12 | 1.82 | 1.44 | 0.74 | 0 (worst -1.07 s) | 0 ms | 0.00 |
+| piper | en_US-kristin-medium (kristin) | t4c4 | 95 ms | 0.095 | no | yes | 90 ms | 12 | 1.96 | 1.24 | 0.79 | 0 (worst -0.90 s) | 0 ms | 0.00 |
+| piper | en_US-lessac-medium (lessac) | t4c4 | 101 ms | 0.101 | no | yes | 74 ms | 12 | 1.83 | 1.03 | 0.70 | 0 (worst -0.72 s) | 0 ms | 0.00 |
 | piper | pl_PL-bass-high (bass) | t4c4 | 584 ms | 0.584 | no | yes | 292 ms | 12 | 1.88 | 0.95 | 3.09 | 3 (worst 0.18 s) | 0 ms | 0.00 |
+| piper | pl_PL-darkman-medium (darkman) | t4c4 | 115 ms | 0.115 | no | yes | 70 ms | 12 | 2.01 | 0.94 | 0.78 | 0 (worst -0.68 s) | 0 ms | 0.00 |
 | piper | pl_PL-gosia-medium (gosia) | t4c4 | 104 ms | 0.104 | no | yes | 46 ms | 12 | 1.81 | 0.75 | 0.51 | 0 (worst -0.53 s) | 0 ms | 0.00 |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | t4c4 | 73 ms | 0.073 | no | yes | 55 ms | 12 | 1.32 | 0.78 | 0.56 | 0 (worst -0.62 s) | 0 ms | 0.00 |
+| piper | pl_PL-mc_speech-medium (mc_speech) | t4c4 | 79 ms | 0.079 | no | yes | 64 ms | 12 | 1.40 | 0.96 | 0.53 | 0 (worst -0.61 s) | 0 ms | 0.00 |
+| piper | pl_PL-meski_wg_glos-medium (meski) | t4c4 | 94 ms | 0.094 | no | yes | 48 ms | 12 | 1.17 | 0.65 | 0.66 | 0 (worst -0.45 s) | 0 ms | 0.00 |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | t4c4 | 64 ms | 0.064 | no | yes | 45 ms | 12 | 1.23 | 0.74 | 0.56 | 0 (worst -0.58 s) | 0 ms | 0.00 |
 | pocket | shefowl/pocket-tts-polish-6l (fp32) | t1c2 | 93 ms | 0.815 | yes | yes | 162 ms | 914 | 0.08 | 0.08 | 0.18 | 0 (worst -0.06 s) | 22 ms | 0.08 |
 | pocket | shefowl/pocket-tts-polish-6l (int8-torch.ao) | t1c2 | 52 ms | 0.524 | yes | yes | 102 ms | 546 | 0.08 | 0.08 | 0.11 | 0 (worst -0.06 s) | 31 ms | 0.16 |
@@ -232,10 +498,38 @@ Test method: the iterator of the backend is consumed and the arrival time of eve
 
 | Backend | Model | Text | N | Total median s | Total p95 s | First 10 / last 10 median s | RTF median | RSS before / after / max MB | RSS slope MB/100 runs | Audio length s | Errors | Runs with warnings |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | ---: | ---: |
+| piper | en_GB-alan-medium (alan) | M1 | 100 | 0.426 | 0.498 | 0.400 / 0.426 | 0.059 | 544 / 607 / 607 | 88.4 | 7.05–7.42 (30 distinct) | 0 | 0 |
+| piper | en_GB-alan-medium (alan) | M8 | 100 | 0.250 | 0.297 | 0.250 / 0.249 | 0.060 | 608 / 608 / 608 | 1.3 | 4.02–4.32 (25 distinct) | 0 | 0 |
+| piper | en_GB-cori-medium (cori) | M1 | 100 | 0.367 | 0.410 | 0.340 / 0.355 | 0.060 | 436 / 439 / 439 | 3.2 | 5.56–6.84 (58 distinct) | 0 | 0 |
+| piper | en_GB-cori-medium (cori) | M8 | 100 | 0.295 | 0.344 | 0.305 / 0.285 | 0.058 | 439 / 440 / 440 | 1.5 | 4.42–6.10 (65 distinct) | 0 | 0 |
+| piper | en_US-amy-medium (amy) | M1 | 100 | 0.432 | 0.631 | 0.457 / 0.409 | 0.061 | 680 / 706 / 706 | 36.4 | 6.87–7.21 (27 distinct) | 0 | 0 |
+| piper | en_US-amy-medium (amy) | M8 | 100 | 0.282 | 0.467 | 0.285 / 0.471 | 0.059 | 707 / 708 / 708 | 1.4 | 4.61–4.96 (23 distinct) | 0 | 0 |
+| piper | en_US-bryce-medium (bryce) | M1 | 100 | 0.468 | 0.536 | 0.474 / 0.470 | 0.059 | 745 / 746 / 746 | 0.5 | 7.66–8.17 (32 distinct) | 0 | 0 |
+| piper | en_US-bryce-medium (bryce) | M8 | 100 | 0.278 | 0.305 | 0.284 / 0.253 | 0.059 | 747 / 747 / 747 | 0.1 | 4.52–4.93 (28 distinct) | 0 | 0 |
+| piper | en_US-hfc_female-medium (hfc_female) | M1 | 100 | 0.406 | 0.485 | 0.404 / 0.393 | 0.060 | 420 / 421 / 421 | 0.8 | 6.42–7.00 (43 distinct) | 0 | 0 |
+| piper | en_US-hfc_female-medium (hfc_female) | M8 | 100 | 0.249 | 0.283 | 0.256 / 0.248 | 0.059 | 422 / 423 / 423 | 1.7 | 3.82–4.60 (48 distinct) | 0 | 0 |
+| piper | en_US-hfc_male-medium (hfc_male) | M1 | 100 | 0.375 | 0.411 | 0.380 / 0.376 | 0.060 | 408 / 428 / 428 | 8.0 | 5.99–6.49 (34 distinct) | 0 | 0 |
+| piper | en_US-hfc_male-medium (hfc_male) | M8 | 100 | 0.251 | 0.282 | 0.252 / 0.251 | 0.059 | 428 / 430 / 430 | 1.8 | 3.67–4.52 (45 distinct) | 0 | 0 |
+| piper | en_US-joe-medium (joe) | M1 | 100 | 0.489 | 0.790 | 0.452 / 0.564 | 0.073 | 442 / 443 / 443 | 0.6 | 6.58–6.90 (26 distinct) | 0 | 0 |
+| piper | en_US-joe-medium (joe) | M8 | 100 | 0.333 | 0.430 | 0.301 / 0.388 | 0.078 | 444 / 444 / 444 | 0.1 | 4.16–4.45 (24 distinct) | 0 | 0 |
+| piper | en_US-john-medium (john) | M1 | 100 | 0.466 | 0.505 | 0.465 / 0.466 | 0.058 | 549 / 550 / 550 | 1.8 | 7.45–9.08 (55 distinct) | 0 | 0 |
+| piper | en_US-john-medium (john) | M8 | 100 | 0.288 | 0.331 | 0.286 / 0.289 | 0.059 | 551 / 551 / 551 | 0.1 | 4.11–5.76 (67 distinct) | 0 | 0 |
+| piper | en_US-kristin-medium (kristin) | M1 | 100 | 0.391 | 0.448 | 0.400 / 0.390 | 0.059 | 560 / 560 / 560 | 0.5 | 6.30–6.91 (40 distinct) | 0 | 0 |
+| piper | en_US-kristin-medium (kristin) | M8 | 100 | 0.311 | 0.361 | 0.321 / 0.311 | 0.058 | 561 / 562 / 562 | 1.6 | 4.91–6.13 (59 distinct) | 0 | 0 |
+| piper | en_US-lessac-medium (lessac) | M1 | 100 | 0.373 | 0.409 | 0.387 / 0.382 | 0.058 | 421 / 436 / 436 | 21.3 | 5.98–6.84 (46 distinct) | 0 | 0 |
+| piper | en_US-lessac-medium (lessac) | M8 | 100 | 0.233 | 0.268 | 0.227 / 0.232 | 0.058 | 437 / 437 / 437 | 0.1 | 3.73–4.39 (43 distinct) | 0 | 0 |
 | piper | pl_PL-bass-high (bass) | M1 | 100 | 1.564 | 1.632 | 1.565 / 1.566 | 0.307 | 447 / 448 / 448 | 1.4 | 4.83–5.42 (37 distinct) | 0 | 0 |
 | piper | pl_PL-bass-high (bass) | M8 | 100 | 0.596 | 0.633 | 0.600 / 0.579 | 0.310 | 449 / 449 / 449 | 0.1 | 1.65–2.09 (27 distinct) | 0 | 0 |
+| piper | pl_PL-darkman-medium (darkman) | M1 | 100 | 0.317 | 0.506 | 0.318 / 0.306 | 0.061 | 381 / 383 / 383 | 1.7 | 5.03–5.39 (26 distinct) | 0 | 0 |
+| piper | pl_PL-darkman-medium (darkman) | M8 | 100 | 0.206 | 0.355 | 0.212 / 0.218 | 0.060 | 383 / 385 / 385 | 2.6 | 3.20–3.61 (28 distinct) | 0 | 0 |
 | piper | pl_PL-gosia-medium (gosia) | M1 | 100 | 0.264 | 0.277 | 0.261 / 0.264 | 0.055 | 363 / 364 / 364 | 1.1 | 4.64–4.97 (25 distinct) | 0 | 0 |
 | piper | pl_PL-gosia-medium (gosia) | M8 | 100 | 0.135 | 0.142 | 0.135 / 0.136 | 0.055 | 365 / 365 / 365 | 0.1 | 2.19–2.61 (31 distinct) | 0 | 0 |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | M1 | 100 | 0.273 | 0.319 | 0.275 / 0.280 | 0.063 | 374 / 375 / 375 | 0.4 | 4.11–4.52 (25 distinct) | 0 | 0 |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | M8 | 100 | 0.122 | 0.152 | 0.115 / 0.126 | 0.063 | 375 / 376 / 376 | 0.2 | 1.79–2.09 (24 distinct) | 0 | 0 |
+| piper | pl_PL-mc_speech-medium (mc_speech) | M1 | 100 | 0.271 | 0.427 | 0.263 / 0.253 | 0.062 | 396 / 397 / 397 | 1.1 | 4.01–4.60 (38 distinct) | 0 | 0 |
+| piper | pl_PL-mc_speech-medium (mc_speech) | M8 | 100 | 0.221 | 0.360 | 0.221 / 0.225 | 0.059 | 399 / 399 / 399 | 0.2 | 3.13–4.05 (47 distinct) | 0 | 0 |
+| piper | pl_PL-meski_wg_glos-medium (meski) | M1 | 100 | 0.292 | 0.336 | 0.298 / 0.304 | 0.062 | 499 / 506 / 506 | 7.5 | 4.55–4.86 (24 distinct) | 0 | 0 |
+| piper | pl_PL-meski_wg_glos-medium (meski) | M8 | 100 | 0.131 | 0.159 | 0.131 / 0.133 | 0.063 | 506 / 508 / 508 | 0.5 | 1.88–2.16 (22 distinct) | 0 | 0 |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | M1 | 100 | 0.244 | 0.256 | 0.242 / 0.244 | 0.055 | 516 / 517 / 517 | 0.3 | 4.24–4.56 (25 distinct) | 0 | 0 |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | M8 | 100 | 0.121 | 0.126 | 0.124 / 0.121 | 0.056 | 518 / 518 / 518 | 0.1 | 2.03–2.28 (19 distinct) | 0 | 0 |
 | pocket | shefowl/pocket-tts-polish-6l (fp32) | M1 | 100 | 1.966 | 2.125 | 1.945 / 1.948 | 0.325 | 1010 / 982 / 1010 | 2.1 | 5.52–6.64 (14 distinct) | 0 | 0 |
@@ -255,8 +549,22 @@ RSS slope: linear fit of RSS after each run. A clear positive slope suggests a m
 
 | Backend | Model | Config | N | Start to first audio (median, min–max) | Interpreter + common imports | Backend import | Model + voice load | First TTFA | First synthesis total | Peak RSS |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| piper | en_GB-alan-medium (alan) | t4c4 | 3 | 1.56 s (1.54–1.58) | 0.03 s | 0.05 s | 1.29 s | 97 ms | 0.10 s | 178 MB |
+| piper | en_GB-cori-medium (cori) | t4c4 | 3 | 1.85 s (1.70–1.98) | 0.03 s | 0.05 s | 1.58 s | 102 ms | 0.10 s | 186 MB |
+| piper | en_US-amy-medium (amy) | t4c4 | 3 | 1.81 s (1.62–1.83) | 0.04 s | 0.06 s | 1.51 s | 105 ms | 0.10 s | 179 MB |
+| piper | en_US-bryce-medium (bryce) | t4c4 | 3 | 1.72 s (1.65–1.72) | 0.03 s | 0.05 s | 1.43 s | 112 ms | 0.11 s | 190 MB |
+| piper | en_US-hfc_female-medium (hfc_female) | t4c4 | 3 | 1.56 s (1.55–1.57) | 0.03 s | 0.05 s | 1.30 s | 95 ms | 0.10 s | 178 MB |
+| piper | en_US-hfc_male-medium (hfc_male) | t4c4 | 3 | 1.55 s (1.45–1.59) | 0.03 s | 0.05 s | 1.30 s | 83 ms | 0.08 s | 172 MB |
+| piper | en_US-joe-medium (joe) | t4c4 | 3 | 3.43 s (2.96–3.56) | 0.05 s | 0.07 s | 2.80 s | 309 ms | 0.31 s | 178 MB |
+| piper | en_US-john-medium (john) | t4c4 | 3 | 1.70 s (1.69–1.81) | 0.03 s | 0.05 s | 1.43 s | 100 ms | 0.10 s | 185 MB |
+| piper | en_US-kristin-medium (kristin) | t4c4 | 3 | 1.66 s (1.65–1.67) | 0.03 s | 0.05 s | 1.40 s | 98 ms | 0.10 s | 186 MB |
+| piper | en_US-lessac-medium (lessac) | t4c4 | 3 | 1.50 s (1.49–1.70) | 0.03 s | 0.05 s | 1.26 s | 91 ms | 0.09 s | 178 MB |
 | piper | pl_PL-bass-high (bass) | t4c4 | 3 | 2.17 s (2.15–2.19) | 0.03 s | 0.05 s | 1.50 s | 511 ms | 0.51 s | 226 MB |
+| piper | pl_PL-darkman-medium (darkman) | t4c4 | 3 | 1.56 s (1.56–1.68) | 0.04 s | 0.06 s | 1.28 s | 103 ms | 0.10 s | 180 MB |
 | piper | pl_PL-gosia-medium (gosia) | t4c4 | 3 | 1.45 s (1.41–1.46) | 0.03 s | 0.04 s | 1.21 s | 91 ms | 0.09 s | 175 MB |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | t4c4 | 3 | 1.74 s (1.70–1.76) | 0.03 s | 0.05 s | 1.50 s | 72 ms | 0.07 s | 169 MB |
+| piper | pl_PL-mc_speech-medium (mc_speech) | t4c4 | 3 | 1.61 s (1.52–1.73) | 0.03 s | 0.05 s | 1.34 s | 77 ms | 0.08 s | 166 MB |
+| piper | pl_PL-meski_wg_glos-medium (meski) | t4c4 | 3 | 1.67 s (1.65–1.76) | 0.03 s | 0.05 s | 1.44 s | 64 ms | 0.06 s | 168 MB |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | t4c4 | 3 | 1.58 s (1.57–1.60) | 0.03 s | 0.04 s | 1.37 s | 62 ms | 0.06 s | 165 MB |
 | pocket | shefowl/pocket-tts-polish-6l (fp32) | t1c2 | 3 | 5.22 s (5.21–5.25) | 0.03 s | 2.88 s | 2.16 s | 100 ms | 0.86 s | 1204 MB |
 | pocket | shefowl/pocket-tts-polish-6l (int8-torch.ao) | t1c2 | 3 | 5.88 s (5.84–5.93) | 0.03 s | 2.85 s | 2.87 s | 60 ms | 0.54 s | 1206 MB |
@@ -270,8 +578,22 @@ One synthesis per raw and normalized text on the best configuration. WAV files a
 
 | Backend | Model | Sample rate | Channels | Native dtype | Samples | Failed | Peak range | NaN/Inf | Problems |
 | --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- |
+| piper | en_GB-alan-medium (alan) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_GB-cori-medium (cori) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_US-amy-medium (amy) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_US-bryce-medium (bryce) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | M3/raw: speech rate 0.98 words/s is outside 1.0-4.5 (possible skip or extra audio) |
+| piper | en_US-hfc_female-medium (hfc_female) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_US-hfc_male-medium (hfc_male) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_US-joe-medium (joe) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_US-john-medium (john) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_US-kristin-medium (kristin) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | en_US-lessac-medium (lessac) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
 | piper | pl_PL-bass-high (bass) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | pl_PL-darkman-medium (darkman) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
 | piper | pl_PL-gosia-medium (gosia) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | pl_PL-mc_speech-medium (mc_speech) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
+| piper | pl_PL-meski_wg_glos-medium (meski) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | 22050 | 1 | float32 (int16 available via AudioChunk.audio_int16_bytes) | 15 | 0 | 1.00–1.00 | 0 | none |
 | pocket | shefowl/pocket-tts-polish-6l (fp32) | 24000 | 1 | float32 (torch.Tensor) | 15 | 0 | 0.16–0.29 | 0 | none |
 | pocket | shefowl/pocket-tts-polish-6l (int8-torch.ao) | 24000 | 1 | float32 (torch.Tensor) | 15 | 0 | 0.16–0.33 | 0 | none |
@@ -285,8 +607,22 @@ A large difference between the raw and the normalized form suggests that the eng
 
 | Backend | Model | M2 raw / norm | M3 raw / norm | M4 raw / norm | M6 raw / norm |
 | --- | --- | ---: | ---: | ---: | ---: |
+| piper | en_GB-alan-medium (alan) | 7.27 / 8.84 | 7.51 / 10.17 | 7.53 / 7.86 | 5.98 / 6.21 |
+| piper | en_GB-cori-medium (cori) | 7.33 / 7.27 | 7.05 / 9.31 | 6.63 / 7.04 | 6.00 / 6.28 |
+| piper | en_US-amy-medium (amy) | 6.63 / 8.52 | 7.09 / 9.52 | 8.08 / 7.81 | 6.55 / 6.71 |
+| piper | en_US-bryce-medium (bryce) | 7.72 / 9.26 | 8.20 / 10.52 | 8.65 / 9.10 | 6.69 / 6.62 |
+| piper | en_US-hfc_female-medium (hfc_female) | 6.25 / 8.02 | 5.97 / 10.04 | 6.68 / 7.28 | 5.69 / 4.96 |
+| piper | en_US-hfc_male-medium (hfc_male) | 5.74 / 7.35 | 6.20 / 8.46 | 6.28 / 6.79 | 4.88 / 5.02 |
+| piper | en_US-joe-medium (joe) | 6.33 / 7.52 | 6.48 / 9.31 | 6.98 / 7.30 | 5.64 / 5.46 |
+| piper | en_US-john-medium (john) | 7.13 / 9.03 | 7.93 / 8.89 | 7.51 / 6.77 | 6.27 / 7.13 |
+| piper | en_US-kristin-medium (kristin) | 7.40 / 8.49 | 7.49 / 9.98 | 7.12 / 7.38 | 6.03 / 6.25 |
+| piper | en_US-lessac-medium (lessac) | 5.80 / 7.70 | 6.40 / 8.61 | 7.14 / 7.09 | 5.90 / 5.71 |
 | piper | pl_PL-bass-high (bass) | 5.34 / 6.40 | 6.80 / 7.01 | 7.88 / 6.12 | 5.41 / 5.22 |
+| piper | pl_PL-darkman-medium (darkman) | 5.77 / 6.93 | 6.61 / 6.88 | 7.27 / 6.12 | 5.27 / 5.43 |
 | piper | pl_PL-gosia-medium (gosia) | 5.51 / 6.52 | 5.92 / 6.22 | 7.12 / 6.30 | 5.27 / 4.98 |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | 4.86 / 5.92 | 5.42 / 6.23 | 5.65 / 5.85 | 4.70 / 4.10 |
+| piper | pl_PL-mc_speech-medium (mc_speech) | 4.90 / 6.03 | 5.74 / 5.72 | 6.25 / 5.32 | 5.21 / 5.50 |
+| piper | pl_PL-meski_wg_glos-medium (meski) | 4.90 / 5.85 | 6.79 / 6.16 | 5.57 / 5.61 | 5.03 / 4.71 |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | 5.15 / 6.36 | 6.25 / 6.54 | 6.11 / 6.05 | 4.71 / 4.40 |
 | pocket | shefowl/pocket-tts-polish-6l (fp32) | 4.80 / 8.08 | 6.08 / 8.08 | 6.08 / 7.44 | 8.08 / 8.16 |
 | pocket | shefowl/pocket-tts-polish-6l (int8-torch.ao) | 4.16 / 8.24 | 7.28 / 8.40 | 6.08 / 7.36 | 6.80 / 8.80 |
@@ -296,6 +632,24 @@ A large difference between the raw and the normalized form suggests that the eng
 
 ## 8. Anomalies, errors and warnings
 
+- `piper__en_GB-cori-medium__cori__t4c4__warm.json` S1/raw: audio length varies by more than 15% between runs (1.76–2.24 s)
+- `piper__en_GB-cori-medium__cori__t4c4__warm.json` S2/raw: audio length varies by more than 15% between runs (3.85–4.46 s)
+- `piper__en_GB-cori-medium__cori__t4c4__warm.json` M8/raw: audio length varies by more than 15% between runs (4.45–5.35 s)
+- `piper__en_US-bryce-medium__bryce__t4c4__warm.json` M3/raw: 8/10 runs with audio check problems: speech rate 0.97 words/s is outside 1.0-4.5 (possible skip or extra audio); speech rate 0.98 words/s is outside 1.0-4.5 (possible skip or extra audio); speech rate 0.99 words/s is outside 1.0-4.5 (possible skip or extra audio)
+- `piper__en_US-hfc_female-medium__hfc_female__t4c4__warm.json` S1/raw: audio length varies by more than 15% between runs (1.63–1.95 s)
+- `piper__en_US-john-medium__john__t4c4__warm.json` S1/raw: audio length varies by more than 15% between runs (2.11–2.73 s)
+- `piper__en_US-john-medium__john__t4c4__warm.json` M3/raw: 7/10 runs with audio check problems: speech rate 0.96 words/s is outside 1.0-4.5 (possible skip or extra audio); speech rate 0.97 words/s is outside 1.0-4.5 (possible skip or extra audio); speech rate 0.98 words/s is outside 1.0-4.5 (possible skip or extra audio); speech rate 0.99 words/s is outside 1.0-4.5 (possible skip or extra audio)
+- `piper__en_US-john-medium__john__t4c4__warm.json` M7/raw: audio length varies by more than 15% between runs (4.25–5.13 s)
+- `piper__en_US-john-medium__john__t4c4__warm.json` M8/raw: audio length varies by more than 15% between runs (4.43–5.26 s)
+- `piper__en_US-kristin-medium__kristin__t4c4__warm.json` S1/raw: audio length varies by more than 15% between runs (1.82–2.17 s)
+- `piper__en_US-lessac-medium__lessac__t4c4__warm.json` S1/raw: audio length varies by more than 15% between runs (1.88–2.21 s)
+- `piper__en_US-lessac-medium__lessac__t4c4__warm.json` M8/raw: audio length varies by more than 15% between runs (3.72–4.34 s)
+- `piper__pl_PL-jarvis_wg_glos-medium__jarvis__t4c4__warm.json` S1/raw: audio length varies by more than 15% between runs (1.23–1.51 s)
+- `piper__pl_PL-mc_speech-medium__mc_speech__t4c4__warm.json` S1/raw: audio length varies by more than 15% between runs (1.38–1.73 s)
+- `piper__pl_PL-mc_speech-medium__mc_speech__t4c4__warm.json` S2/raw: audio length varies by more than 15% between runs (1.51–1.86 s)
+- `piper__pl_PL-mc_speech-medium__mc_speech__t4c4__warm.json` M6/raw: audio length varies by more than 15% between runs (4.64–5.51 s)
+- `piper__pl_PL-mc_speech-medium__mc_speech__t4c4__warm.json` M7/raw: audio length varies by more than 15% between runs (2.61–3.16 s)
+- `piper__pl_PL-mc_speech-medium__mc_speech__t4c4__warm.json` M8/raw: audio length varies by more than 15% between runs (3.31–3.94 s)
 - `pocket__shefowl_pocket-tts-polish-6l__fp32__t1c2__warm.json` M1/raw: audio length varies by more than 15% between runs (5.76–6.88 s)
 - `pocket__shefowl_pocket-tts-polish-6l__fp32__t1c2__warm.json` M2/raw: audio length varies by more than 15% between runs (4.00–5.12 s)
 - `pocket__shefowl_pocket-tts-polish-6l__fp32__t1c2__warm.json` M3/raw: 4/10 runs with audio check problems: speech rate 0.85 words/s is outside 1.0-4.5 (possible skip or extra audio); speech rate 0.95 words/s is outside 1.0-4.5 (possible skip or extra audio); speech rate 0.98 words/s is outside 1.0-4.5 (possible skip or extra audio)
@@ -409,8 +763,22 @@ Claims are copied from `research.md` with its source labels: [A] author claim, [
 
 | Backend | Model | RTF claim | RTF measured | TTFA claim | TTFA S1 measured | Load claim | Load measured | Memory claim | Memory measured |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| piper | en_GB-alan-medium (alan) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.059 (pooled, t4c4) | <0.2 s short sentence [W] | 97 ms | <1 s [W] | 1.29 s | ~0.15-0.3 GB [W] | 139 MB after load; 746 MB peak |
+| piper | en_GB-cori-medium (cori) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.059 (pooled, t4c4) | <0.2 s short sentence [W] | 108 ms | <1 s [W] | 1.58 s | ~0.15-0.3 GB [W] | 146 MB after load; 485 MB peak |
+| piper | en_US-amy-medium (amy) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.070 (pooled, t4c4) | <0.2 s short sentence [W] | 105 ms | <1 s [W] | 1.51 s | ~0.15-0.3 GB [W] | 139 MB after load; 708 MB peak |
+| piper | en_US-bryce-medium (bryce) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.059 (pooled, t4c4) | <0.2 s short sentence [W] | 108 ms | <1 s [W] | 1.43 s | ~0.15-0.3 GB [W] | 146 MB after load; 705 MB peak |
+| piper | en_US-hfc_female-medium (hfc_female) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.060 (pooled, t4c4) | <0.2 s short sentence [W] | 91 ms | <1 s [W] | 1.30 s | ~0.15-0.3 GB [W] | 139 MB after load; 486 MB peak |
+| piper | en_US-hfc_male-medium (hfc_male) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.061 (pooled, t4c4) | <0.2 s short sentence [W] | 102 ms | <1 s [W] | 1.30 s | ~0.15-0.3 GB [W] | 139 MB after load; 460 MB peak |
+| piper | en_US-joe-medium (joe) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.069 (pooled, t4c4) | <0.2 s short sentence [W] | 113 ms | <1 s [W] | 2.80 s | ~0.15-0.3 GB [W] | 139 MB after load; 613 MB peak |
+| piper | en_US-john-medium (john) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.068 (pooled, t4c4) | <0.2 s short sentence [W] | 155 ms | <1 s [W] | 1.43 s | ~0.15-0.3 GB [W] | 146 MB after load; 613 MB peak |
+| piper | en_US-kristin-medium (kristin) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.067 (pooled, t4c4) | <0.2 s short sentence [W] | 103 ms | <1 s [W] | 1.40 s | ~0.15-0.3 GB [W] | 146 MB after load; 602 MB peak |
+| piper | en_US-lessac-medium (lessac) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.057 (pooled, t4c4) | <0.2 s short sentence [W] | 106 ms | <1 s [W] | 1.26 s | ~0.15-0.3 GB [W] | 138 MB after load; 709 MB peak |
 | piper | pl_PL-bass-high (bass) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.308 (pooled, t4c4) | <0.2 s short sentence [W] | 636 ms | <1 s [W] | 1.50 s | ~0.15-0.3 GB [W] | 192 MB after load; 492 MB peak |
+| piper | pl_PL-darkman-medium (darkman) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.061 (pooled, t4c4) | <0.2 s short sentence [W] | 110 ms | <1 s [W] | 1.28 s | ~0.15-0.3 GB [W] | 139 MB after load; 602 MB peak |
 | piper | pl_PL-gosia-medium (gosia) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.055 (pooled, t4c4) | <0.2 s short sentence [W] | 96 ms | <1 s [W] | 1.21 s | ~0.15-0.3 GB [W] | 136 MB after load; 566 MB peak |
+| piper | pl_PL-jarvis_wg_glos-medium (jarvis) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.063 (pooled, t4c4) | <0.2 s short sentence [W] | 70 ms | <1 s [W] | 1.50 s | ~0.15-0.3 GB [W] | 145 MB after load; 590 MB peak |
+| piper | pl_PL-mc_speech-medium (mc_speech) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.063 (pooled, t4c4) | <0.2 s short sentence [W] | 155 ms | <1 s [W] | 1.34 s | ~0.15-0.3 GB [W] | 139 MB after load; 431 MB peak |
+| piper | pl_PL-meski_wg_glos-medium (meski) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.060 (pooled, t4c4) | <0.2 s short sentence [W] | 65 ms | <1 s [W] | 1.44 s | ~0.15-0.3 GB [W] | 145 MB after load; 548 MB peak |
 | piper | pl_PL-zenski_wg_glos-medium (zenski) | ~0.15-0.2 [S] (other voice, i7-1255U) | 0.055 (pooled, t4c4) | <0.2 s short sentence [W] | 62 ms | <1 s [W] | 1.37 s | ~0.15-0.3 GB [W] | 142 MB after load; 419 MB peak |
 | pocket | shefowl/pocket-tts-polish-6l (fp32) | 0.21 [A] (desktop CPU, model not named) | 0.329 (pooled, t1c2) | ~0.2 s [A, base engine] | 106 ms | 0.6 s [A] | 2.16 s | 341 MB weights [A]; ~0.8-1.5 GB process [W] | 879 MB after load; 1201 MB peak |
 | pocket | shefowl/pocket-tts-polish-6l (int8-torch.ao) | 0.11 [A] (int8, backend not named) | 0.212 (pooled, t1c2) | ~0.2 s [A, base engine] | 52 ms | 0.8 s [A] | 2.87 s | 125 MB weights [A] | 919 MB after load; 1204 MB peak |

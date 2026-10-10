@@ -79,6 +79,23 @@ TARGETS = [
     Target("piper", "pl_PL-zenski_wg_glos-medium", "zenski"),
     Target("piper", "pl_PL-gosia-medium", "gosia"),
     Target("piper", "pl_PL-bass-high", "bass"),
+    # Male medium voices, added after M4 to find a male voice for the daemon.
+    Target("piper", "pl_PL-meski_wg_glos-medium", "meski"),
+    Target("piper", "pl_PL-jarvis_wg_glos-medium", "jarvis"),
+    Target("piper", "pl_PL-darkman-medium", "darkman"),
+    Target("piper", "pl_PL-mc_speech-medium", "mc_speech"),
+    # English medium voices (5 female, 5 male). The corpus is Polish, so only speed and memory
+    # are comparable. Listening samples with English text: scripts/listen_en_voices.py.
+    Target("piper", "en_US-lessac-medium", "lessac"),
+    Target("piper", "en_US-amy-medium", "amy"),
+    Target("piper", "en_US-kristin-medium", "kristin"),
+    Target("piper", "en_US-hfc_female-medium", "hfc_female"),
+    Target("piper", "en_GB-cori-medium", "cori"),
+    Target("piper", "en_US-joe-medium", "joe"),
+    Target("piper", "en_US-john-medium", "john"),
+    Target("piper", "en_US-bryce-medium", "bryce"),
+    Target("piper", "en_US-hfc_male-medium", "hfc_male"),
+    Target("piper", "en_GB-alan-medium", "alan"),
     Target("supertonic", "supertonic-3", "F1", voice="F1", extra_stream_options={"split": "sentence"}),
     # The voice style does not change the network, so M1 reuses the F1 thread sweep.
     Target("supertonic", "supertonic-3", "M1", voice="M1", sweep=False, sweep_from="supertonic__supertonic-3__F1"),

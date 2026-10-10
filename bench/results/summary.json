@@ -1,4 +1,104 @@
 {
+ "piper__en_GB-alan-medium__alan": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0589
+  },
+  "ttfa_s1_median_s": 0.0968,
+  "rtf_l1_median": 0.0594,
+  "peak_rss_mb": 745.5,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_GB-cori-medium__cori": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0595
+  },
+  "ttfa_s1_median_s": 0.1076,
+  "rtf_l1_median": 0.0608,
+  "peak_rss_mb": 485.3,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-amy-medium__amy": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0885
+  },
+  "ttfa_s1_median_s": 0.1053,
+  "rtf_l1_median": 0.0619,
+  "peak_rss_mb": 707.5,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-bryce-medium__bryce": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0586
+  },
+  "ttfa_s1_median_s": 0.1085,
+  "rtf_l1_median": 0.0589,
+  "peak_rss_mb": 705.3,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-hfc_female-medium__hfc_female": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0595
+  },
+  "ttfa_s1_median_s": 0.0911,
+  "rtf_l1_median": 0.0609,
+  "peak_rss_mb": 486.3,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-hfc_male-medium__hfc_male": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0611
+  },
+  "ttfa_s1_median_s": 0.1015,
+  "rtf_l1_median": 0.0604,
+  "peak_rss_mb": 460.3,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-joe-medium__joe": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0696
+  },
+  "ttfa_s1_median_s": 0.113,
+  "rtf_l1_median": 0.075,
+  "peak_rss_mb": 613.0,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-john-medium__john": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.071
+  },
+  "ttfa_s1_median_s": 0.155,
+  "rtf_l1_median": 0.0663,
+  "peak_rss_mb": 612.7,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-kristin-medium__kristin": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0668
+  },
+  "ttfa_s1_median_s": 0.103,
+  "rtf_l1_median": 0.0599,
+  "peak_rss_mb": 602.4,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__en_US-lessac-medium__lessac": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0565
+  },
+  "ttfa_s1_median_s": 0.1059,
+  "rtf_l1_median": 0.0559,
+  "peak_rss_mb": 708.9,
+  "streaming": "sentence/chunk level only"
+ },
  "piper__pl_PL-bass-high__bass": {
   "best_config": "t4c4",
   "mean_median_rtf_by_config": {
@@ -12,6 +112,16 @@
   "peak_rss_mb": 492.3,
   "streaming": "sentence/chunk level only"
  },
+ "piper__pl_PL-darkman-medium__darkman": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0619
+  },
+  "ttfa_s1_median_s": 0.1099,
+  "rtf_l1_median": 0.0626,
+  "peak_rss_mb": 602.4,
+  "streaming": "sentence/chunk level only"
+ },
  "piper__pl_PL-gosia-medium__gosia": {
   "best_config": "t4c4",
   "mean_median_rtf_by_config": {
@@ -23,6 +133,36 @@
   "ttfa_s1_median_s": 0.0963,
   "rtf_l1_median": 0.054,
   "peak_rss_mb": 565.5,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__pl_PL-jarvis_wg_glos-medium__jarvis": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0617
+  },
+  "ttfa_s1_median_s": 0.0696,
+  "rtf_l1_median": 0.0637,
+  "peak_rss_mb": 589.7,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__pl_PL-mc_speech-medium__mc_speech": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0678
+  },
+  "ttfa_s1_median_s": 0.1554,
+  "rtf_l1_median": 0.0635,
+  "peak_rss_mb": 430.6,
+  "streaming": "sentence/chunk level only"
+ },
+ "piper__pl_PL-meski_wg_glos-medium__meski": {
+  "best_config": "t4c4",
+  "mean_median_rtf_by_config": {
+   "t4c4": 0.0599
+  },
+  "ttfa_s1_median_s": 0.0649,
+  "rtf_l1_median": 0.0716,
+  "peak_rss_mb": 548.1,
   "streaming": "sentence/chunk level only"
  },
  "piper__pl_PL-zenski_wg_glos-medium__zenski": {
