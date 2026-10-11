@@ -26,7 +26,8 @@ _LIST_NUMBER = re.compile(r"\d+[.)]")
 # A comma between words, not inside a number like 3,5.
 _COMMA = re.compile(r",\s")
 _COMPLETE_WORD = re.compile(r"\S+(?=\s)")
-_PLAIN_WORD = re.compile(r"[^\W\d_]+")
+# An apostrophe can stand inside a word: "commit'a" (see normalizer/english.py).
+_PLAIN_WORD = re.compile(r"[^\W\d_]+(?:['’][^\W\d_]+)?")
 _TAG = re.compile(r"</?en>")
 # A Markdown list item, as in normalizer/cleanup.py.
 _LIST_ITEM = re.compile(r"^\s*(?:[-*+•]|\d+[.)])\s", re.MULTILINE)

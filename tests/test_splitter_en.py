@@ -62,3 +62,11 @@ def test_early_first_segment_can_end_after_a_tagged_word():
 def test_early_first_segment_inside_a_span_keeps_tags():
     stream = SentenceStream(first_words=2)
     assert stream.feed("<en>Good morning dear friend ") == ["<en>Good morning</en>"]
+
+
+def test_early_first_segment_can_end_after_an_inflected_english_word():
+    # A real LLM answer: "commit'a" is one word, as "<en>commit</en>a" after the normalizer.
+    stream = SentenceStream(first_words=2)
+    assert stream.feed("Wyślij commit'a z krótkim ") == ["Wyślij commit'a"]
+    stream = SentenceStream(first_words=2)
+    assert stream.feed("Wyślij commit’a z krótkim ") == ["Wyślij commit’a"]
