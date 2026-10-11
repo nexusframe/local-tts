@@ -103,10 +103,15 @@ def phonemize_mixed(text: str, polish: Phonemizer, english: Phonemizer) -> list[
         if not part.strip():
             space = space or bool(part)
             continue
+        attached = bool(result) and not (space or part[0].isspace())
+        lone_y = attached and not is_english and _LONE_Y.match(part)
+        if lone_y:
+            part = "t" + part
         sentences = [s for s in (english if is_english else polish)(part.strip()) if s]
+        if lone_y and sentences and "t" in sentences[0]:
+            sentences[0].remove("t")
         if not sentences:
             continue
-        attached = bool(result) and not (space or part[0].isspace())
         if is_english and preposition:
             sentences[0] = [*_preposition_phonemes(preposition, sentences[0]), " ", *sentences[0]]
             preposition = ""
@@ -130,6 +135,9 @@ def phonemize_mixed(text: str, polish: Phonemizer, english: Phonemizer) -> list[
 # gives "f"/"w" and "s"/"z": voiceless before a voiceless phoneme.
 _LAST_PREPOSITION = re.compile(r"(?:^|\s)([wWzZ])\s*$")
 _PREPOSITIONS = {"w": ("f", "w"), "z": ("s", "z")}
+# Alone, espeak-ng reads "y" as "ˈiɡrɛk". The ending "<en>commit</en>y" goes as "ty",
+# then the "t" phoneme is removed.
+_LONE_Y = re.compile(r"[yY](?!\w)")
 _VOICELESS = frozenset("ptkfsʃxθhɕ")
 _STRESS = frozenset("ˈˌ")
 

@@ -47,6 +47,13 @@ def test_word_with_a_polish_ending_has_polish_stress_and_w_is_not_a_letter_name(
     assert "puʃˈɔvatɕ" in joined(backend, "Trzeba <en>push</en>ować.")
 
 
+def test_ending_y_is_not_read_as_a_letter_name(backend):
+    # Alone, espeak-ng reads "y" as the letter name "ˈiɡrɛk". Found in a real LLM answer.
+    assert "kɛmˈɨtɨ tˈutaj." in joined(backend, "Mam <en>commit</en>y tutaj.")
+    assert "kɛmˈɨtɨ." in joined(backend, "Mam <en>commit</en>y.")
+    assert "kɛmˈɨtɨ, a" in joined(backend, "Mam <en>commit</en>y, a")
+
+
 EN_MODEL = DEFAULT_MODELS_DIR / "en_GB-alan-medium" / "en_GB-alan-medium.onnx"
 
 

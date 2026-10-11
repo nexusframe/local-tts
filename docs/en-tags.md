@@ -52,6 +52,7 @@ The Polish voices did not learn these English phonemes: `æ ð θ ɹ ɪ ʊ ʌ ə
 
 - espeak-ng gives no phonemes for punctuation before the first word of a part. Punctuation right after `</en>` is kept as a phoneme, because the sentence intonation needs it.
 - Alone, espeak-ng reads `w` and `z` as letter names (`vɨ`, `zɨ`). Before a span, they get the phonemes that espeak-ng gives in a sentence: `f`/`w` and `s`/`z` (voiceless before a voiceless phoneme).
+- Alone, espeak-ng also reads the ending `y` as a letter name (`ˈiɡrɛk`). After a span, the ending goes to espeak-ng as `ty`, and then the `t` phoneme is removed (`commit'y` → `kɛmˈɨtɨ`). The other one-letter endings (`a e i o u ą ę ó`) are correct without a change (measured 2026-10-11).
 - An English stem with a Polish ending is one Polish word: the stress goes to the second-to-last vowel of the full word (`push'ować` → `puʃˈɔvatɕ`, `commit'a` → `kɛmˈɨta`).
 
 ## Measured facts
