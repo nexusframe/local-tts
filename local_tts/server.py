@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import signal
 from pathlib import Path
 
 from local_tts.engine import Engine
@@ -85,6 +86,12 @@ class Server:
 
     async def serve_forever(self) -> None:
         self._loop = asyncio.get_running_loop()
+        # SIGTERM comes from kill and systemd. SIGINT also when the shell started the
+        # daemon with "&", because the handler replaces the ignored setting.
+        # Before the socket exists: clients take the socket as the sign that the daemon is ready.
+        stop = asyncio.Event()
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            self._loop.add_signal_handler(sig, self._stop, stop, sig)
         if self._socket_path.exists():
             self._socket_path.unlink()
         server = await asyncio.start_unix_server(self._handle, path=str(self._socket_path), limit=1 << 20)
@@ -93,7 +100,15 @@ class Server:
         self.engine.start()
         try:
             async with server:
-                await server.serve_forever()
+                await stop.wait()
         finally:
+            for sig in (signal.SIGTERM, signal.SIGINT):
+                self._loop.remove_signal_handler(sig)
             self.engine.close()
             self._socket_path.unlink(missing_ok=True)
+            log.info("stopped")
+
+    @staticmethod
+    def _stop(stop: asyncio.Event, sig: signal.Signals) -> None:
+        log.info("stopping on %s", sig.name)
+        stop.set()
