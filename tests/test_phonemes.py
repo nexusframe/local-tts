@@ -65,3 +65,19 @@ def fix_dz_unchanged(text: str, phonemes: list[list[str]]) -> bool:
     from local_tts.backends.phonemes import fix_dz
 
     return fix_dz(text, phonemes) == phonemes
+
+
+def test_stress_before_g_after_i():
+    # zenski read "inteligencji" like "inteligiencji" with "iɡˈɛ". Listening test 2026-10-12.
+    from local_tts.backends.phonemes import stress_before_g
+
+    text = "Sztucznej inteligencji."
+    assert stress_before_g(text, [p("ʃtˈutʃnɛj ˌintɛliɡˈɛntsji.")]) == [p("ʃtˈutʃnɛj ˌintɛliˈɡɛntsji.")]
+
+
+def test_other_ge_does_not_change():
+    # These words sounded correct in the same listening test.
+    from local_tts.backends.phonemes import stress_before_g
+
+    phonemes = [p("lɛɡˈɛnda mˈuviʲ ɔ ɡˌɛɔɡrˈafji i ɡɛnˈɛtɨtsˌɛ.")]
+    assert stress_before_g("Legenda mówi o geografii i genetyce.", phonemes) == phonemes

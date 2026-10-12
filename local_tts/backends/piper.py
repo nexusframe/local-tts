@@ -22,7 +22,13 @@ from piper.phonemize_espeak import EspeakPhonemizer
 # so English calls take the same lock. Private name: piper-tts is pinned to 1.8.0.
 from piper.voice import _ESPEAK_PHONEMIZER_LOCK
 
-from local_tts.backends.phonemes import fix_dz as _fix_dz, lengthen_trz, phonemize_mixed, to_polish_phonemes
+from local_tts.backends.phonemes import (
+    fix_dz as _fix_dz,
+    lengthen_trz,
+    phonemize_mixed,
+    stress_before_g,
+    to_polish_phonemes,
+)
 
 _english_espeak: EspeakPhonemizer | None = None
 # Phonemes that are not a sound of a word: space, stress, punctuation, and the
@@ -101,7 +107,7 @@ class PiperBackend:
             # PiperVoice.synthesize() calls self.phonemize(). Wrap it for this voice only;
             # the audio processing after phonemization stays the same.
             espeak_polish = self._voice.phonemize
-            corrections = [c for c, on in ((lengthen_trz, fix_trz), (_fix_dz, fix_dz)) if on]
+            corrections = [c for c, on in ((lengthen_trz, fix_trz), (_fix_dz, fix_dz)) if on] + [stress_before_g]
 
             def polish(text: str) -> list[list[str]]:
                 phonemes = espeak_polish(text)

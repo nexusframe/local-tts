@@ -6,6 +6,9 @@ clearer in a blind listening test (see docs/trz-phonemes.md).
 
 espeak-ng also gives the same phonemes "dʑ" for "dz" (widzenia) and for "dzi"/"dź"
 (dzień). The phonemes "d" "z" for "dz" were better in a listening test (2026-10-12).
+
+The zenski voice reads "iɡˈɛ" (inteligencji) like "gie". The stress mark before
+"ɡ" ("iˈɡɛ") was better in a listening test (2026-10-12).
 """
 
 from __future__ import annotations
@@ -73,6 +76,22 @@ def fix_dz(text: str, sentence_phonemes: list[list[str]]) -> list[list[str]]:
             else:
                 out.append(sentence[i])
                 i += 1
+        result.append(out)
+    return result
+
+
+_I_G_STRESS = ["i", "ɡ", "ˈ", "ɛ"]
+_I_STRESS_G = ["i", "ˈ", "ɡ", "ɛ"]
+
+
+def stress_before_g(text: str, sentence_phonemes: list[list[str]]) -> list[list[str]]:
+    """Replace "iɡˈɛ" with "iˈɡɛ". The text is not used."""
+    result = []
+    for sentence in sentence_phonemes:
+        out = list(sentence)
+        for i in range(len(out) - 3):
+            if out[i : i + 4] == _I_G_STRESS:
+                out[i : i + 4] = _I_STRESS_G
         result.append(out)
     return result
 
