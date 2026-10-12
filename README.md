@@ -8,7 +8,10 @@ Local text-to-speech daemon for a Polish AI assistant. It uses Piper voices on t
 python3.12 -m venv .venv
 .venv/bin/pip install -r requirements.lock.txt
 python3 bench/fetch_models.py --backend piper   # voices go to bench/models/piper/
+.venv/bin/python scripts/patch_alignment.py      # copies with word times go to bench/models/piper-aligned/
 ```
+
+The patched copies give the word times for `spoken_partial` (see below). The script verifies that the audio of each copy is the same as the audio of the original. Without the copies, the daemon works, and `spoken_partial` is always empty.
 
 ## Start the daemon
 
@@ -53,6 +56,18 @@ Each request gets one final event: `done`, `cancelled` or `error`. The events `c
 ```
 
 The daemon calculates `spoken` from the audio in the output buffer at the time of the cancel. A segment that was cut in the middle is not in `spoken`. A request that did not start gets `"spoken": ""`.
+
+The events `cancelled` and `error` also have the field `spoken_partial`: the words of the cut segment that the listener heard completely, from the start of the segment, as the client sent them. Use `spoken` and `spoken_partial` together:
+
+```
+{"event": "cancelled", "id": "u1", "spoken": "", "spoken_partial": "Kraków to jedno z najstarszych miast w Polsce,"}
+```
+
+- The word times come from the phoneme alignment of the Piper model (`scripts/patch_alignment.py`).
+- A number or an abbreviation counts only when all its spoken words were heard ("1257" is 4 words).
+- Measured on the real daemon (2026-10-12, voice `zenski`, 1 sentence, 7 cuts): in 5 cuts, the error was 0 words, compared with a recording of the audio output. In 2 cuts inside "1257", the field had 2 and 3 words fewer (the number rule above). The reference has an error of about 1 word, because the word times of two syntheses differ (median 192 ms).
+- Word times compared with an independent reference (the last sound before each space phoneme, same synthesis): Polish corpus 187 of 200 words agree within 1 ms, 13 are late (at most 128 ms), none early. English voices `cori`, `bryce`: 2 sentences each, 1 word late (93 and 151 ms), none early.
+- `spoken_partial` is `""` when no segment was cut, when no word of it was heard, or when the voice has no word times.
 
 ## Pronunciation dictionary
 

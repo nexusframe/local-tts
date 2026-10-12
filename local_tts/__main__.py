@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 
 from local_tts.backends.piper import PiperBackend
-from local_tts.config import DEFAULT_MODELS_DIR, DEFAULT_VOICES, default_pronunciation_path, default_socket_path
+from local_tts.config import ALIGNED_MODELS_DIR, DEFAULT_MODELS_DIR, DEFAULT_VOICES, default_pronunciation_path, default_socket_path
 from local_tts.engine import Engine
 from local_tts.player import PwCatPlayer
 from local_tts.pronunciation import PronunciationDictionary
@@ -27,6 +27,11 @@ def parse_args() -> argparse.Namespace:
         help="Load a voice. Use the option one time for each voice. The first voice is the default voice. "
         f"Default: {', '.join(f'{k}={v}' for k, v in DEFAULT_VOICES.items())}",
     )
+    parser.add_argument(
+        "--aligned-models-dir", type=Path, default=ALIGNED_MODELS_DIR,
+        help="Directory with copies of the models that give word times (scripts/patch_alignment.py). "
+        "The daemon uses a copy when it exists. Without word times, events have no spoken_partial text. Default: %(default)s",
+    )
     parser.add_argument("--threads", type=int, default=4, help="ONNX Runtime intra-op threads for each voice. Default: %(default)s")
     parser.add_argument("--no-trz-fix", action="store_true", help="Do not lengthen the phonemes of \"trz\". Piper then reads \"trzy\" like \"czy\".")
     parser.add_argument(
@@ -43,13 +48,21 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_voices(models_dir: Path, voices: dict[str, str], threads: int, fix_trz: bool) -> dict[str, PiperBackend]:
+def load_voices(
+    models_dir: Path, voices: dict[str, str], threads: int, fix_trz: bool, aligned_dir: Path | None = None
+) -> dict[str, PiperBackend]:
+    """Load the voices. A copy of a model in aligned_dir is used first: it gives word times."""
     backends = {}
     for name, model in voices.items():
         start = time.monotonic()
-        backend = PiperBackend(models_dir / model / f"{model}.onnx", threads=threads, fix_trz=fix_trz)
+        aligned = aligned_dir / model / f"{model}.onnx" if aligned_dir else None
+        path = aligned if aligned and aligned.exists() else models_dir / model / f"{model}.onnx"
+        backend = PiperBackend(path, threads=threads, fix_trz=fix_trz)
         backend.warm_up()
-        log.info("voice %s (%s) loaded in %.2f s", name, model, time.monotonic() - start)
+        log.info(
+            "voice %s (%s) loaded in %.2f s, word times: %s",
+            name, model, time.monotonic() - start, "yes" if path == aligned else "no (run scripts/patch_alignment.py)",
+        )
         backends[name] = backend
     return backends
 
@@ -58,7 +71,7 @@ def main() -> None:
     args = parse_args()
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     voices = dict(v.split("=", 1) for v in args.voice) if args.voice else DEFAULT_VOICES
-    backends = load_voices(args.models_dir, voices, args.threads, fix_trz=not args.no_trz_fix)
+    backends = load_voices(args.models_dir, voices, args.threads, fix_trz=not args.no_trz_fix, aligned_dir=args.aligned_models_dir)
     default_voice = next(iter(voices))
     pronunciation = PronunciationDictionary(args.pronunciation)
     server = Server(

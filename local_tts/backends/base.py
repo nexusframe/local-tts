@@ -11,11 +11,16 @@ class Backend(Protocol):
     sample_rate: int
     language: str  # "pl" or "en": the engine selects the normalizer for it
 
-    def synthesize(self, text: str) -> Iterator[np.ndarray]:
+    def synthesize(self, text: str, word_ends: list[float] | None = None) -> Iterator[np.ndarray]:
         """Yield mono int16 PCM chunks for one sentence.
 
         The engine checks for cancel between chunks. A backend that streams
         inside a sentence gives a shorter cancel latency.
+
+        With a word_ends list: add the end time of each word of the text (words
+        split at whitespace), in seconds from the start of the audio of this
+        call. The times are in the list when the last chunk comes, so the engine
+        knows them before it plays that chunk. A backend without word times adds nothing.
         """
         ...
 

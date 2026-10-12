@@ -31,8 +31,13 @@ from local_tts.pronunciation import PronunciationDictionary, apply_aliases
 from local_tts.protocol import Begin, Speak
 from local_tts.normalizer import normalize, normalize_english
 from local_tts.splitter import SentenceStream, split_sentences
+from local_tts.word_map import heard_prefix
 
 EventSink = Callable[..., None]
+
+# Audio goes to the player in parts of this length, so that the played time is
+# known also during a long sentence, and a cancel stops the write sooner.
+_WRITE_SECONDS = 0.1
 
 _STOP = object()
 # Last item in the piece queue of an utterance.
@@ -58,6 +63,32 @@ class _Chunk:
     utterance: _Utterance
     pcm: np.ndarray
     sample_rate: int
+
+
+@dataclass(frozen=True)
+class _Words:
+    """Word end times of one sentence of a segment. Comes before the last chunk of the sentence.
+
+    ends: seconds from the start of the sentence, one for each word of the
+    spoken text, or None when the backend gave no times. offset: seconds of
+    the sentence that are before this item in the audio queue.
+    """
+
+    utterance: _Utterance
+    text: str
+    to_spoken: Callable[[str], str]
+    ends: tuple[float, ...] | None
+    offset: float
+
+
+@dataclass
+class _Partial:
+    """The segment that plays now: its text and the end times of its spoken words."""
+
+    text: str
+    to_spoken: Callable[[str], str]
+    ends: list[float] = field(default_factory=list)
+    broken: bool = False
 
 
 @dataclass(frozen=True)
@@ -236,7 +267,7 @@ class Engine:
                 if item is _STOP:
                     self._requests.put(_STOP)
                     break
-                self._emit("cancelled", id=item.id, spoken="")
+                self._emit("cancelled", id=item.id, spoken="", spoken_partial="")
 
     def status(self) -> dict:
         with self._state_lock:
@@ -272,6 +303,10 @@ class Engine:
         normalize_text = normalize if backend.language == "pl" else normalize_english
         # Read for each utterance, so that a changed file is used from the next one.
         aliases = self._pronunciation.aliases(backend.language) if self._pronunciation else {}
+
+        def to_spoken(text: str) -> str:
+            return normalize_text(apply_aliases(text, aliases))
+
         stream = SentenceStream(early_first=utterance.early_first, first_words=self._first_words)
         try:
             while True:
@@ -283,19 +318,27 @@ class Engine:
                     if not any(char.isalnum() for char in segment):
                         continue  # Only punctuation, for example the "." that comes after a flush.
                     # The normalizer can make new sentence ends, so split again.
-                    for sentence in split_sentences(normalize_text(apply_aliases(segment, aliases))):
+                    for sentence in split_sentences(to_spoken(segment)):
                         with self._state_lock:
                             if not self._current(utterance):
                                 return _End(utterance)
                             self._synthesizing = utterance
+                        word_ends: list[float] = []
+                        offset = 0.0
                         try:
-                            for pcm in backend.synthesize(sentence):
+                            for pcm in backend.synthesize(sentence, word_ends=word_ends):
                                 if not self._current(utterance):
                                     return _End(utterance)
+                                if word_ends:  # The last chunk of the sentence.
+                                    ends = tuple(word_ends) if len(word_ends) == len(sentence.split()) else None
+                                    self._audio.put(_Words(utterance, segment, to_spoken, ends, offset))
                                 self._audio.put(_Chunk(utterance, pcm, backend.sample_rate))
+                                offset += len(pcm) / backend.sample_rate
                         finally:
                             with self._state_lock:
                                 self._synthesizing = None
+                        if not word_ends:
+                            self._audio.put(_Words(utterance, segment, to_spoken, None, offset))
                     self._audio.put(_SegmentEnd(utterance, segment))
                 if piece is _END_OF_TEXT:
                     break
@@ -308,13 +351,27 @@ class Engine:
     def _playback_loop(self) -> None:
         # Seconds of audio written for each started utterance.
         played: dict[str, float] = {}
-        # For each utterance: the segments that were written, with the audio seconds at their end.
-        segments: dict[str, list[tuple[float, str]]] = {}
+        # For each utterance: the segments that were written, with the audio seconds
+        # at their end and their word times.
+        segments: dict[str, list[tuple[float, str, _Partial | None]]] = {}
+        # For each utterance: the segment that plays now (no _SegmentEnd yet).
+        partials: dict[str, _Partial] = {}
         while (item := self._audio.get()) is not _STOP:
             utterance = item.utterance
-            if isinstance(item, _SegmentEnd):
+            if isinstance(item, _Words):
                 if self._current(utterance):
-                    segments.setdefault(utterance.id, []).append((played.get(utterance.id, 0.0), item.text))
+                    partial = partials.setdefault(utterance.id, _Partial(item.text, item.to_spoken))
+                    if item.ends is None:
+                        partial.broken = True
+                    else:
+                        start = played.get(utterance.id, 0.0) - item.offset
+                        partial.ends.extend(start + end for end in item.ends)
+                continue
+            if isinstance(item, _SegmentEnd):
+                # After a cancel, the cut segment stays for the final event.
+                if self._current(utterance):
+                    words = partials.pop(utterance.id, None)
+                    segments.setdefault(utterance.id, []).append((played.get(utterance.id, 0.0), item.text, words))
                 continue
             if isinstance(item, _Chunk):
                 with self._write_lock:
@@ -323,10 +380,14 @@ class Engine:
                     if utterance.id not in played:
                         played[utterance.id] = 0.0
                         self._emit("started", id=utterance.id)
-                    self._player.write(item.pcm, item.sample_rate)
-                    # After stop() the chunk was not played.
-                    if self._current(utterance):
-                        played[utterance.id] += len(item.pcm) / item.sample_rate
+                    step = max(1, round(item.sample_rate * _WRITE_SECONDS))
+                    for start in range(0, len(item.pcm), step):
+                        part = item.pcm[start : start + step]
+                        self._player.write(part, item.sample_rate)
+                        # After stop() the part was not played.
+                        if not self._current(utterance):
+                            break
+                        played[utterance.id] += len(part) / item.sample_rate
                 continue
 
             # End marker: wait until the audio of this utterance was played.
@@ -334,11 +395,26 @@ class Engine:
                 self._player.drain()
             audio_seconds = played.pop(utterance.id, 0.0)
             heard = audio_seconds - self._unheard.pop(utterance.id, 0.0)
+            written = segments.pop(utterance.id, [])
             # A segment counts only when the listener heard all of it.
-            spoken = " ".join(text for end, text in segments.pop(utterance.id, []) if end <= heard + 1e-9)
+            heard_segments = [text for end, text, _ in written if end <= heard + 1e-9]
+            spoken = " ".join(heard_segments)
+            # The cut segment: the first written segment that was not heard completely,
+            # else the segment that was not written completely.
+            cut = written[len(heard_segments)][2] if len(heard_segments) < len(written) else partials.get(utterance.id)
+            partials.pop(utterance.id, None)
+            spoken_partial = self._spoken_partial(cut, heard)
             if not self._current(utterance):
-                self._emit("cancelled", id=utterance.id, spoken=spoken)
+                self._emit("cancelled", id=utterance.id, spoken=spoken, spoken_partial=spoken_partial)
             elif item.error is not None:
-                self._emit("error", id=utterance.id, message=item.error, spoken=spoken)
+                self._emit("error", id=utterance.id, message=item.error, spoken=spoken, spoken_partial=spoken_partial)
             else:
                 self._emit("done", id=utterance.id, audio_seconds=audio_seconds)
+
+    @staticmethod
+    def _spoken_partial(partial: _Partial | None, heard: float) -> str:
+        """The words of the cut segment that the listener heard completely, in the text of the client."""
+        if partial is None or partial.broken:
+            return ""
+        heard_words = sum(1 for end in partial.ends if end <= heard + 1e-9)
+        return heard_prefix(partial.text, heard_words, partial.to_spoken)

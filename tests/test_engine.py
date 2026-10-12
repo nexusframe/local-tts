@@ -455,3 +455,63 @@ def test_pronunciation_file_replaces_words_for_the_language_of_the_voice(log, tm
     log.wait_for("done", id=last)
     engine.close()
     assert player.played == ["zenski:Mam pe i te.", "en_cori:Restart engine x."]
+
+
+def cut_in_a_sentence(log, text, written_slices, queued=0.0, **backend_options):
+    """Speak text with 1 s of audio per sentence, cancel after written_slices writes of 0.1 s of "Raz"."""
+    player = FakePlayer(block_on="Raz", block_after=written_slices)
+    engine = make_engine(log, player, zenski=FakeBackend("zenski", chunk_seconds=1.0, **backend_options))
+    request_id = engine.speak(Speak(text=text))
+    assert player.blocked.wait(2.0)
+    player.queued = queued
+    engine.cancel()
+    event = log.wait_for("cancelled", id=request_id)
+    engine.close()
+    return event
+
+
+def test_cancelled_event_reports_the_heard_words_of_the_cut_sentence(log):
+    event = cut_in_a_sentence(log, "Raz dwa trzy cztery.", written_slices=6)
+    assert event["spoken"] == ""
+    assert event["spoken_partial"] == "Raz dwa"
+
+
+def test_the_cut_sentence_can_be_written_completely_and_still_be_in_the_output_buffer(log):
+    player = FakePlayer(block_on="Pięć")
+    engine = make_engine(log, player, zenski=FakeBackend("zenski", chunk_seconds=1.0))
+    request_id = engine.speak(Speak(text="Raz. Dwa trzy cztery. Pięć."))
+    assert player.blocked.wait(2.0)
+    # 2.0 s written, 0.6 s of it not heard: "Dwa" (ends at 1.33 s) was heard, "trzy" (1.67 s) was not.
+    player.queued = 0.6
+
+    engine.cancel()
+
+    event = log.wait_for("cancelled", id=request_id)
+    engine.close()
+    assert event["spoken"] == "Raz."
+    assert event["spoken_partial"] == "Dwa"
+
+
+def test_audio_in_the_output_buffer_is_not_a_heard_word(log):
+    event = cut_in_a_sentence(log, "Raz dwa trzy cztery.", written_slices=6, queued=0.2)
+    assert event["spoken_partial"] == "Raz"
+
+
+def test_a_number_of_the_cut_sentence_counts_only_when_all_its_words_were_heard(log):
+    # Spoken: "Raz tysiąc dwieście pięćdziesiąt siedem razy." -> 6 words of 1/6 s.
+    event = cut_in_a_sentence(log, "Raz 1257 razy.", written_slices=4)
+    assert event["spoken_partial"] == "Raz"
+
+
+def test_without_word_times_there_is_no_partial_text(log):
+    event = cut_in_a_sentence(log, "Raz dwa trzy cztery.", written_slices=6, word_times=False)
+    assert event["spoken_partial"] == ""
+
+
+def test_error_event_also_reports_the_partial_text(log):
+    engine = make_engine(log, zenski=FakeBackend("zenski", fail_on="Błąd"))
+    request_id = engine.speak(Speak(text="Raz. Błąd."))
+    event = log.wait_for("error", id=request_id)
+    engine.close()
+    assert event["spoken"] == "Raz."
+    assert event["spoken_partial"] == ""

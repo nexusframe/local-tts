@@ -8,6 +8,8 @@ from pathlib import Path
 REPO_DIR = Path(__file__).resolve().parents[1]
 # M1 uses the Piper models that bench/fetch_models.py downloaded.
 DEFAULT_MODELS_DIR = REPO_DIR / "bench" / "models" / "piper"
+# Copies of the models with the phoneme alignment output (scripts/patch_alignment.py).
+ALIGNED_MODELS_DIR = REPO_DIR / "bench" / "models" / "piper-aligned"
 # The first voice is the default voice. Listening test picks: docs/voices.md.
 DEFAULT_VOICES = {
     "zenski": "pl_PL-zenski_wg_glos-medium",

@@ -9,24 +9,40 @@ import numpy as np
 
 
 class FakeBackend:
-    """Gives one chunk per sentence. The chunk holds the sentence, so tests can see what was played."""
+    """Gives one chunk per sentence. The chunk holds the sentence, so tests can see what was played.
+
+    The chunk has 10 samples, or chunk_seconds of audio. With word_times, the
+    words of the sentence have equal durations.
+    """
 
     sample_rate = 22050
 
-    def __init__(self, name: str = "fake", fail_on: str | None = None, language: str = "pl") -> None:
+    def __init__(
+        self,
+        name: str = "fake",
+        fail_on: str | None = None,
+        language: str = "pl",
+        chunk_seconds: float | None = None,
+        word_times: bool = True,
+    ) -> None:
         self.name = name
         self.fail_on = fail_on
         self.language = language
+        self.samples = 10 if chunk_seconds is None else round(chunk_seconds * self.sample_rate)
+        self.word_times = word_times
         self.calls: list[str] = []
 
     def interrupt(self) -> None:
         pass
 
-    def synthesize(self, text: str):
+    def synthesize(self, text: str, word_ends: list[float] | None = None):
         self.calls.append(text)
         if self.fail_on is not None and self.fail_on in text:
             raise RuntimeError(f"cannot synthesize {text!r}")
-        yield FakeChunk(self.name, text)
+        if word_ends is not None and self.word_times:
+            words = len(text.split())
+            word_ends.extend((i + 1) / words * self.samples / self.sample_rate for i in range(words))
+        yield FakeChunk(self.name, text, self.samples)
 
 
 class SlowBackend(FakeBackend):
@@ -38,14 +54,14 @@ class SlowBackend(FakeBackend):
         self.interrupts = 0
         self._interrupted = threading.Event()
 
-    def synthesize(self, text: str):
+    def synthesize(self, text: str, word_ends: list[float] | None = None):
         if self.slow_on in text:
             self.calls.append(text)
             if not self._interrupted.wait(timeout=5.0):
                 raise AssertionError("synthesis was not interrupted")
             self._interrupted.clear()
             raise RuntimeError("Exiting due to terminate flag")
-        yield from super().synthesize(text)
+        yield from super().synthesize(text, word_ends)
 
     def interrupt(self) -> None:
         self.interrupts += 1
@@ -53,8 +69,8 @@ class SlowBackend(FakeBackend):
 
 
 class FakeChunk(np.ndarray):
-    def __new__(cls, voice: str, text: str):
-        chunk = np.zeros(10, dtype=np.int16).view(cls)
+    def __new__(cls, voice: str, text: str, samples: int = 10):
+        chunk = np.zeros(samples, dtype=np.int16).view(cls)
         chunk.label = f"{voice}:{text}"
         return chunk
 
@@ -65,12 +81,14 @@ class FakeChunk(np.ndarray):
 class FakePlayer:
     """Records played chunks. When `blocking` is set, write() waits until release() or stop().
 
-    With `block_on`, only the write of a chunk that contains this text waits.
+    With `block_on`, only the write of a chunk that contains this text waits;
+    with `block_after`, the first block_after writes of that chunk do not wait.
     `queued` is the value of queued_seconds(): audio that was written but not heard.
     """
 
-    def __init__(self, blocking: bool = False, block_on: str | None = None) -> None:
+    def __init__(self, blocking: bool = False, block_on: str | None = None, block_after: int = 0) -> None:
         self.played: list[str] = []
+        self.block_after = block_after
         self.stops = 0
         self.queued = 0.0
         self.block_on = block_on
@@ -83,8 +101,11 @@ class FakePlayer:
     def write(self, pcm, sample_rate: int) -> None:
         stops_before = self.stops
         if self.block_on is not None and self.block_on in pcm.label:
-            self._open.clear()
-            self.blocked.set()
+            if self.block_after > 0:
+                self.block_after -= 1
+            else:
+                self._open.clear()
+                self.blocked.set()
         self._open.wait()
         with self._lock:
             if self.stops == stops_before:

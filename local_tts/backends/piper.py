@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import threading
+import unicodedata
 from pathlib import Path
 from typing import Iterator
 
@@ -24,6 +25,16 @@ from piper.voice import _ESPEAK_PHONEMIZER_LOCK
 from local_tts.backends.phonemes import fix_dz as _fix_dz, lengthen_trz, phonemize_mixed, to_polish_phonemes
 
 _english_espeak: EspeakPhonemizer | None = None
+# Phonemes that are not a sound of a word: space, stress, punctuation, and the
+# begin, end and pad symbols of Piper.
+_SILENT = frozenset(" ˈˌ^$_.,;:!?…—–-\"'()[]«»„”")
+# Marks that change the sound before them. espeak-ng can add them only in the full
+# sentence ("ciepło i" is "tɕˈɛpwɔː i"), so they do not count as a sound.
+_MODIFIERS = frozenset("ːˑʰʲʷ")
+
+
+def _modifies(phoneme: str) -> bool:
+    return phoneme in _MODIFIERS or unicodedata.combining(phoneme[0]) > 0
 
 
 def _english_phonemes(text: str) -> list[list[str]]:
@@ -104,9 +115,59 @@ class PiperBackend:
         """The phonemes that synthesize() uses for the text, grouped by sentence."""
         return self._voice.phonemize(text)
 
-    def synthesize(self, text: str) -> Iterator[np.ndarray]:
-        for chunk in self._voice.synthesize(text):
-            yield chunk.audio_int16_array
+    def synthesize(self, text: str, word_ends: list[float] | None = None) -> Iterator[np.ndarray]:
+        """Yield the audio. With word_ends, also add the end time of each word (see Backend)."""
+        if word_ends is None:
+            for chunk in self._voice.synthesize(text):
+                yield chunk.audio_int16_array
+            return
+        # Piper gives one chunk for each espeak-ng sentence, usually one for the text.
+        # The next chunk is made before the current one goes out, so that the word
+        # ends are ready with the last chunk.
+        chunks = self._voice.synthesize(text, include_alignments=True)
+        # End sample of each sound phoneme, from the alignment output of the model.
+        sound_ends: list[int] = []
+        aligned = True
+        samples = 0
+        current = next(chunks, None)
+        while current is not None:
+            following = next(chunks, None)
+            if current.phoneme_alignments is None:
+                aligned = False  # The model has no alignment output (scripts/patch_alignment.py).
+            else:
+                end = samples
+                for alignment in current.phoneme_alignments:
+                    end += alignment.num_samples
+                    if _modifies(alignment.phoneme) and sound_ends:
+                        sound_ends[-1] = end
+                    elif alignment.phoneme not in _SILENT:
+                        sound_ends.append(end)
+            audio = current.audio_int16_array
+            samples += len(audio)
+            if following is None and aligned and sound_ends:
+                word_ends.extend(s / self.sample_rate for s in self._word_end_samples(text, sound_ends))
+            yield audio
+            current = following
+
+    def _word_end_samples(self, text: str, sound_ends: list[int]) -> list[int]:
+        """The end sample of each word of the text.
+
+        The phonemes of the first k words give the count of sound phonemes up to
+        the end of word k. espeak-ng joins some words ("w domu" is one phoneme
+        word), so the words of the text and the spaces of the phonemes do not agree.
+        """
+        words = text.split()
+        ends: list[int] = []
+        for k in range(1, len(words) + 1):
+            prefix = " ".join(words[:k])
+            if prefix.count("<en>") > prefix.count("</en>"):
+                prefix += "</en>"
+            count = sum(
+                1 for sentence in self._voice.phonemize(prefix) for p in sentence if p not in _SILENT and not _modifies(p)
+            )
+            end = sound_ends[min(count, len(sound_ends)) - 1] if count else 0
+            ends.append(max(end, ends[-1] if ends else 0))
+        return ends
 
     def interrupt(self) -> None:
         self._session.interrupt()
