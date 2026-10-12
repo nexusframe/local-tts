@@ -63,11 +63,18 @@ class FakeChunk(np.ndarray):
 
 
 class FakePlayer:
-    """Records played chunks. When `blocking` is set, write() waits until release() or stop()."""
+    """Records played chunks. When `blocking` is set, write() waits until release() or stop().
 
-    def __init__(self, blocking: bool = False) -> None:
+    With `block_on`, only the write of a chunk that contains this text waits.
+    `queued` is the value of queued_seconds(): audio that was written but not heard.
+    """
+
+    def __init__(self, blocking: bool = False, block_on: str | None = None) -> None:
         self.played: list[str] = []
         self.stops = 0
+        self.queued = 0.0
+        self.block_on = block_on
+        self.blocked = threading.Event()
         self._open = threading.Event()
         if not blocking:
             self._open.set()
@@ -75,6 +82,9 @@ class FakePlayer:
 
     def write(self, pcm, sample_rate: int) -> None:
         stops_before = self.stops
+        if self.block_on is not None and self.block_on in pcm.label:
+            self._open.clear()
+            self.blocked.set()
         self._open.wait()
         with self._lock:
             if self.stops == stops_before:
@@ -89,6 +99,9 @@ class FakePlayer:
 
     def release(self) -> None:
         self._open.set()
+
+    def queued_seconds(self) -> float:
+        return self.queued
 
 
 class EventLog:

@@ -58,6 +58,14 @@ class _Chunk:
 
 
 @dataclass(frozen=True)
+class _SegmentEnd:
+    """All audio of one segment is in the audio queue. The text is as the client sent it."""
+
+    utterance: _Utterance
+    text: str
+
+
+@dataclass(frozen=True)
 class _End:
     utterance: _Utterance
     error: str | None = None
@@ -86,6 +94,8 @@ class Engine:
         # Ids of utterances without a final event, in request order.
         self._pending: dict[str, None] = {}
         self._speaking: str | None = None
+        # Audio seconds that the player had not played yet when stop() cut an utterance.
+        self._unheard: dict[str, float] = {}
         # The utterance whose sentence the backend synthesizes now.
         self._synthesizing: _Utterance | None = None
         # Streams that have no end() yet.
@@ -146,7 +156,7 @@ class Engine:
         self._interrupt_synthesis(lambda current: current is utterance)
         utterance.pieces.put(_END_OF_TEXT)
         # Like cancel(): the first stop() unblocks a write() that holds the write lock.
-        if self._speaking == stream_id:
+        if self._note_unheard(lambda speaking: speaking == stream_id):
             self._player.stop()
         with self._write_lock:
             if self._speaking == stream_id:
@@ -162,6 +172,15 @@ class Engine:
             utterance = self._synthesizing
             if utterance is not None and matches(utterance):
                 self._backends[utterance.voice].interrupt()
+
+    def _note_unheard(self, matches: Callable[[str], bool]) -> bool:
+        """Before stop(): keep the audio seconds that the listener did not hear. Return True if it matched."""
+        with self._state_lock:
+            speaking = self._speaking
+            if speaking is None or not matches(speaking):
+                return False
+            self._unheard[speaking] = self._player.queued_seconds()
+            return True
 
     def _open_stream(self, stream_id: str) -> _Utterance | None:
         """Return the open stream, or None for a cancelled stream. Raise for other ids."""
@@ -190,6 +209,7 @@ class Engine:
         with self._cancel_lock:
             self._epoch += 1
             self._interrupt_synthesis(lambda utterance: True)
+            self._note_unheard(lambda speaking: True)
             self._player.stop()
             with self._write_lock:
                 self._player.stop()
@@ -207,7 +227,7 @@ class Engine:
                 if item is _STOP:
                     self._requests.put(_STOP)
                     break
-                self._emit("cancelled", id=item.id)
+                self._emit("cancelled", id=item.id, spoken="")
 
     def status(self) -> dict:
         with self._state_lock:
@@ -263,6 +283,7 @@ class Engine:
                         finally:
                             with self._state_lock:
                                 self._synthesizing = None
+                    self._audio.put(_SegmentEnd(utterance, segment))
                 if piece is _END_OF_TEXT:
                     break
         except Exception as exc:
@@ -274,8 +295,14 @@ class Engine:
     def _playback_loop(self) -> None:
         # Seconds of audio written for each started utterance.
         played: dict[str, float] = {}
+        # For each utterance: the segments that were written, with the audio seconds at their end.
+        segments: dict[str, list[tuple[float, str]]] = {}
         while (item := self._audio.get()) is not _STOP:
             utterance = item.utterance
+            if isinstance(item, _SegmentEnd):
+                if self._current(utterance):
+                    segments.setdefault(utterance.id, []).append((played.get(utterance.id, 0.0), item.text))
+                continue
             if isinstance(item, _Chunk):
                 with self._write_lock:
                     if not self._current(utterance):
@@ -284,16 +311,21 @@ class Engine:
                         played[utterance.id] = 0.0
                         self._emit("started", id=utterance.id)
                     self._player.write(item.pcm, item.sample_rate)
-                    played[utterance.id] += len(item.pcm) / item.sample_rate
+                    # After stop() the chunk was not played.
+                    if self._current(utterance):
+                        played[utterance.id] += len(item.pcm) / item.sample_rate
                 continue
 
             # End marker: wait until the audio of this utterance was played.
             if self._current(utterance):
                 self._player.drain()
             audio_seconds = played.pop(utterance.id, 0.0)
+            heard = audio_seconds - self._unheard.pop(utterance.id, 0.0)
+            # A segment counts only when the listener heard all of it.
+            spoken = " ".join(text for end, text in segments.pop(utterance.id, []) if end <= heard + 1e-9)
             if not self._current(utterance):
-                self._emit("cancelled", id=utterance.id)
+                self._emit("cancelled", id=utterance.id, spoken=spoken)
             elif item.error is not None:
-                self._emit("error", id=utterance.id, message=item.error)
+                self._emit("error", id=utterance.id, message=item.error, spoken=spoken)
             else:
                 self._emit("done", id=utterance.id, audio_seconds=audio_seconds)

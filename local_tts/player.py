@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import array
+import fcntl
 import subprocess
+import termios
 import threading
 from typing import Protocol
 
@@ -22,16 +25,25 @@ class Player(Protocol):
         """Discard all queued audio now. Can be called from any thread. Unblocks write() and drain()."""
         ...
 
+    def queued_seconds(self) -> float:
+        """Seconds of written audio that the listener did not hear yet. Can be called from any thread."""
+        ...
+
 
 class PwCatPlayer:
     """Plays audio through PipeWire with one `pw-cat` process for each utterance.
 
     drain() closes stdin and waits: pw-cat stops only after it played all audio.
     stop() kills the process, so the sound stops at once.
+
+    write() returns when the audio is in the pipe to pw-cat. The pipe holds about
+    1.3 s of 22050 Hz audio (measured 2026-10-12), so queued_seconds() reads the
+    bytes in the pipe and adds the latency of pw-cat.
     """
 
     def __init__(self, latency: str = "50ms") -> None:
         self._latency = latency
+        self._latency_seconds = float(latency.removesuffix("ms")) / 1000 if latency.endswith("ms") else 0.0
         self._lock = threading.Lock()
         self._proc: subprocess.Popen | None = None
         self._rate: int | None = None
@@ -69,6 +81,18 @@ class PwCatPlayer:
         for proc in victims:
             proc.kill()
             proc.wait()
+
+    def queued_seconds(self) -> float:
+        with self._lock:
+            proc, rate = self._proc, self._rate
+        if proc is None or rate is None:
+            return 0.0
+        pipe_bytes = array.array("i", [0])
+        try:
+            fcntl.ioctl(proc.stdin.fileno(), termios.FIONREAD, pipe_bytes)
+        except (OSError, ValueError):
+            return 0.0  # stop() or drain() closed the pipe.
+        return pipe_bytes[0] / 2 / rate + self._latency_seconds
 
     def _spawn(self, sample_rate: int) -> subprocess.Popen:
         proc = subprocess.Popen(

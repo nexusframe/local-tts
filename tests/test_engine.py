@@ -3,7 +3,7 @@ import pytest
 from local_tts.engine import Engine
 from local_tts.protocol import Begin, Speak
 
-from fakes import EventLog, FakeBackend, FakePlayer, SlowBackend
+from fakes import EventLog, FakeBackend, FakeChunk, FakePlayer, SlowBackend
 
 
 @pytest.fixture
@@ -302,3 +302,85 @@ def test_first_words_sets_the_word_limit_of_the_early_first_segment(log):
     log.wait_for("done", id=stream)
     engine.close()
     assert player.played == ["zenski:Raz dwa", "zenski:trzy cztery"]
+
+
+def test_cancelled_event_reports_the_sentences_that_were_played(log):
+    player = FakePlayer(block_on="Trzy")
+    engine = make_engine(log, player)
+    request_id = engine.speak(Speak(text="Raz. Dwa. Trzy."))
+    assert player.blocked.wait(2.0)
+
+    engine.cancel()
+
+    event = log.wait_for("cancelled", id=request_id)
+    engine.close()
+    assert event["spoken"] == "Raz. Dwa."
+
+
+def test_a_sentence_still_in_the_output_buffer_is_not_spoken(log):
+    player = FakePlayer(block_on="Trzy")
+    engine = make_engine(log, player)
+    request_id = engine.speak(Speak(text="Raz. Dwa. Trzy."))
+    assert player.blocked.wait(2.0)
+    # The audio of "Dwa." was written, but the listener did not hear it yet.
+    player.queued = len(FakeChunk("zenski", "Dwa.")) / FakeBackend.sample_rate
+
+    engine.cancel()
+
+    event = log.wait_for("cancelled", id=request_id)
+    engine.close()
+    assert event["spoken"] == "Raz."
+
+
+def test_a_queued_request_that_did_not_start_has_no_spoken_text(log):
+    engine = make_engine(log, zenski=SlowBackend("zenski"))
+    first = engine.speak(Speak(text="Raz. Długie zdanie."))
+    # The synthesis waits in "Długie", so this request stays in the request queue.
+    queued = engine.speak(Speak(text="Czekam."))
+    log.wait_for("started", id=first)
+
+    engine.cancel()
+
+    events = {e: log.wait_for("cancelled", id=e) for e in (first, queued)}
+    engine.close()
+    assert events[first]["spoken"] == "Raz."
+    assert events[queued]["spoken"] == ""
+
+
+def test_spoken_text_of_a_stream_is_the_text_that_the_client_sent(log):
+    player = FakePlayer(block_on="Koniec")
+    engine = make_engine(log, player)
+    stream_id = engine.begin(Begin())
+    for piece in ["Mam 2 ", "koty", " i psa. ", "Koniec", " tekstu. ", "Dalej."]:
+        engine.append(stream_id, piece)
+    assert player.blocked.wait(2.0)
+
+    engine.cancel()
+
+    event = log.wait_for("cancelled", id=stream_id)
+    engine.close()
+    assert event["spoken"] == "Mam 2 koty i psa."
+
+
+def test_error_event_reports_the_sentences_that_were_played(log):
+    engine = make_engine(log, zenski=FakeBackend("zenski", fail_on="Błąd"))
+    request_id = engine.speak(Speak(text="Raz. Błąd. Trzy."))
+
+    event = log.wait_for("error", id=request_id)
+    engine.close()
+    assert event["spoken"] == "Raz."
+
+
+def test_abort_reports_the_sentences_that_were_heard(log):
+    player = FakePlayer(block_on="Trzy")
+    engine = make_engine(log, player)
+    stream_id = engine.begin(Begin())
+    engine.append(stream_id, "Raz, dwa. Cztery. Trzy. Pięć.")
+    assert player.blocked.wait(2.0)
+    player.queued = len(FakeChunk("zenski", "Cztery.")) / FakeBackend.sample_rate
+
+    engine.abort(stream_id)
+
+    event = log.wait_for("cancelled", id=stream_id)
+    engine.close()
+    assert event["spoken"] == "Raz, dwa."
