@@ -1,6 +1,7 @@
 import pytest
 
 from local_tts.engine import Engine
+from local_tts.pronunciation import PronunciationDictionary
 from local_tts.protocol import Begin, Speak
 
 from fakes import EventLog, FakeBackend, FakeChunk, FakePlayer, SlowBackend
@@ -440,3 +441,17 @@ def test_flush_of_a_cancelled_stream_is_ignored_and_of_an_unknown_stream_is_an_e
     with pytest.raises(ValueError, match="no open stream"):
         engine.flush("nobody")
     engine.close()
+
+
+def test_pronunciation_file_replaces_words_for_the_language_of_the_voice(log, tmp_path):
+    path = tmp_path / "pronunciation.toml"
+    path.write_text('[pl]\n"PIT" = "pe i te"\n\n[en]\n"nginx" = "engine x"\n', encoding="utf-8")
+    player = FakePlayer()
+    backends = {"zenski": FakeBackend("zenski"), "en_cori": FakeBackend("en_cori", language="en")}
+    engine = Engine(backends, player, log, "zenski", pronunciation=PronunciationDictionary(path))
+    engine.start()
+    engine.speak(Speak(text="Mam PIT."))
+    last = engine.speak(Speak(text="Restart nginx.", voice="en_cori"))
+    log.wait_for("done", id=last)
+    engine.close()
+    assert player.played == ["zenski:Mam pe i te.", "en_cori:Restart engine x."]

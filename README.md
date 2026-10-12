@@ -54,6 +54,24 @@ Each request gets one final event: `done`, `cancelled` or `error`. The events `c
 
 The daemon calculates `spoken` from the audio in the output buffer at the time of the cancel. A segment that was cut in the middle is not in `spoken`. A request that did not start gets `"spoken": ""`.
 
+## Pronunciation dictionary
+
+To change how the daemon reads a word, add it to `~/.config/local-tts/pronunciation.toml` (or the file of `--pronunciation`). Use one table for each language of the voices:
+
+```toml
+[pl]
+"Kubernetes" = "<en>kubernetes</en>"
+"nginx" = "<en>engine x</en>"
+
+[en]
+"nginx" = "engine x"
+```
+
+- The daemon replaces whole words before the normalizer, so the new text can have `<en>` tags, numbers and abbreviations.
+- Words are case-sensitive. A longer word wins ("GitHub Actions" before "GitHub"). Text in `<en>` tags does not change.
+- The daemon reads the file again when it changes. If the file is not valid, the log shows a warning and the last valid words stay in use.
+- The `spoken` field of the events has the text before the replacement.
+
 ## Tests
 
 ```

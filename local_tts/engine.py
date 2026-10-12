@@ -27,6 +27,7 @@ import numpy as np
 
 from local_tts.backends.base import Backend
 from local_tts.player import Player
+from local_tts.pronunciation import PronunciationDictionary, apply_aliases
 from local_tts.protocol import Begin, Speak
 from local_tts.normalizer import normalize, normalize_english
 from local_tts.splitter import SentenceStream, split_sentences
@@ -81,8 +82,10 @@ class Engine:
         on_event: EventSink,
         default_voice: str,
         first_words: int = 2,
+        pronunciation: PronunciationDictionary | None = None,
     ) -> None:
         self._backends = dict(backends)
+        self._pronunciation = pronunciation
         # Word limit of the early first segment of a stream (see SentenceStream).
         self._first_words = first_words
         self._player = player
@@ -267,6 +270,8 @@ class Engine:
         """Put the audio chunks of one utterance into the audio queue. Return its end marker."""
         backend = self._backends[utterance.voice]
         normalize_text = normalize if backend.language == "pl" else normalize_english
+        # Read for each utterance, so that a changed file is used from the next one.
+        aliases = self._pronunciation.aliases(backend.language) if self._pronunciation else {}
         stream = SentenceStream(early_first=utterance.early_first, first_words=self._first_words)
         try:
             while True:
@@ -278,7 +283,7 @@ class Engine:
                     if not any(char.isalnum() for char in segment):
                         continue  # Only punctuation, for example the "." that comes after a flush.
                     # The normalizer can make new sentence ends, so split again.
-                    for sentence in split_sentences(normalize_text(segment)):
+                    for sentence in split_sentences(normalize_text(apply_aliases(segment, aliases))):
                         with self._state_lock:
                             if not self._current(utterance):
                                 return _End(utterance)

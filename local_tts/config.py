@@ -22,3 +22,8 @@ DEFAULT_VOICES = {
 def default_socket_path() -> Path:
     runtime_dir = os.environ.get("XDG_RUNTIME_DIR") or f"/tmp/local-tts-{os.getuid()}"
     return Path(runtime_dir) / "local-tts.sock"
+
+
+def default_pronunciation_path() -> Path:
+    config_dir = os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config"
+    return Path(config_dir) / "local-tts" / "pronunciation.toml"
