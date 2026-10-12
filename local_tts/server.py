@@ -16,7 +16,7 @@ import signal
 from pathlib import Path
 
 from local_tts.engine import Engine
-from local_tts.protocol import Append, Begin, Cancel, End, ProtocolError, Speak, Status, encode_event, parse_request
+from local_tts.protocol import Append, Begin, Cancel, End, Flush, ProtocolError, Speak, Status, encode_event, parse_request
 
 log = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class Server:
             writer.close()
 
     def _reply(self, line: bytes, streams: set[str]) -> bytes | None:
-        """Return the reply line. Append has no reply, because it comes for each LLM token."""
+        """Return the reply line. Append has no reply, because it comes for each LLM token. Flush has none, as append."""
         try:
             request = parse_request(line)
         except ProtocolError as exc:
@@ -71,6 +71,9 @@ class Server:
                 return encode_event("accepted", id=stream_id)
             if isinstance(request, Append):
                 self.engine.append(request.id, request.text)
+                return None
+            if isinstance(request, Flush):
+                self.engine.flush(request.id)
                 return None
             if isinstance(request, End):
                 self.engine.end(request.id)

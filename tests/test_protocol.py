@@ -1,6 +1,6 @@
 import pytest
 
-from local_tts.protocol import Append, Begin, Cancel, End, ProtocolError, Speak, Status, encode_event, parse_request
+from local_tts.protocol import Append, Begin, Cancel, End, Flush, ProtocolError, Speak, Status, encode_event, parse_request
 
 
 def test_speak_with_only_text_uses_defaults():
@@ -32,6 +32,10 @@ def test_end_closes_a_stream():
     assert parse_request('{"cmd": "end", "id": "s1"}') == End(id="s1")
 
 
+def test_flush_names_a_stream():
+    assert parse_request('{"cmd": "flush", "id": "s1"}') == Flush(id="s1")
+
+
 @pytest.mark.parametrize(
     "line",
     [
@@ -50,6 +54,8 @@ def test_end_closes_a_stream():
         '{"cmd": "append", "id": "s1"}',
         '{"cmd": "append", "id": "s1", "text": 5}',
         '{"cmd": "end"}',
+        '{"cmd": "flush"}',
+        '{"cmd": "flush", "id": 3}',
     ],
 )
 def test_invalid_requests_raise_protocol_error(line):

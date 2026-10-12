@@ -40,6 +40,12 @@ echo '{"cmd": "speak", "text": "Dzień dobry."}' | socat - UNIX-CONNECT:$XDG_RUN
 
 For streamed LLM text, use `begin`, `append` and `end` (see `local_tts/protocol.py` and `docs/m4-results.md`).
 
+A sentence is spoken when the next sentence starts or at `end`. Before a pause in the text, for example an LLM tool call, send `flush`. The daemon then speaks the text that it has now, and the stream stays open. The text after `flush` starts to play early again (`--first-words`). `flush` has no reply:
+
+```
+{"cmd": "flush", "id": "s1"}
+```
+
 Each request gets one final event: `done`, `cancelled` or `error`. The events `cancelled` and `error` have the field `spoken`: the text of the segments that the listener heard completely, as the client sent it (before normalization). A segment is a sentence or the early first part of a stream. Use it to remove the words that were not spoken from the LLM history after barge-in:
 
 ```

@@ -384,3 +384,59 @@ def test_abort_reports_the_sentences_that_were_heard(log):
     event = log.wait_for("cancelled", id=stream_id)
     engine.close()
     assert event["spoken"] == "Raz, dwa."
+
+
+def test_flush_plays_the_incomplete_sentence_and_the_stream_stays_open(log):
+    player = FakePlayer()
+    engine = make_engine(log, player)
+    stream_id = engine.begin(Begin())
+    engine.append(stream_id, "Sprawdzam pogodę")
+
+    engine.flush(stream_id)
+
+    log.wait_for("started", id=stream_id)
+    engine.append(stream_id, ". Jutro będzie słońce.")
+    engine.end(stream_id)
+    log.wait_for("done", id=stream_id)
+    engine.close()
+    assert player.played == ["zenski:Sprawdzam pogodę", "zenski:Jutro będzie słońce."]
+
+
+def test_text_after_a_flush_starts_to_play_early_again(log):
+    player = FakePlayer()
+    engine = make_engine(log, player)
+    stream_id = engine.begin(Begin())
+    engine.append(stream_id, "Dobrze, sprawdzam pogodę.")
+    engine.flush(stream_id)
+    wait_until(lambda: player.played == ["zenski:Dobrze,", "zenski:sprawdzam pogodę."])
+
+    engine.append(stream_id, " Jutro będzie ciepło ")
+
+    wait_until(lambda: player.played[2:] == ["zenski:Jutro będzie"])
+    engine.append(stream_id, "i słońce.")
+    engine.end(stream_id)
+    log.wait_for("done", id=stream_id)
+    engine.close()
+    assert player.played[-1] == "zenski:ciepło i słońce."
+
+
+def test_flush_with_no_waiting_text_plays_nothing(log):
+    player = FakePlayer()
+    engine = make_engine(log, player)
+    stream_id = engine.begin(Begin())
+    engine.flush(stream_id)
+    engine.append(stream_id, "Raz.")
+    engine.end(stream_id)
+    log.wait_for("done", id=stream_id)
+    engine.close()
+    assert player.played == ["zenski:Raz."]
+
+
+def test_flush_of_a_cancelled_stream_is_ignored_and_of_an_unknown_stream_is_an_error(log):
+    engine = make_engine(log)
+    stream_id = engine.begin(Begin())
+    engine.cancel()
+    engine.flush(stream_id)
+    with pytest.raises(ValueError, match="no open stream"):
+        engine.flush("nobody")
+    engine.close()

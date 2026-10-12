@@ -87,10 +87,12 @@ class SentenceStream:
     character of the next sentence. flush() gives the rest at the end.
 
     With early_first, the first segment can be a part of the first sentence,
-    so that synthesis starts before the LLM completes the sentence.
+    so that synthesis starts before the LLM completes the sentence. After
+    flush(), the next text also starts with an early segment.
     """
 
     def __init__(self, early_first: bool = True, first_words: int = 2) -> None:
+        self._early_first = early_first
         self._waiting_first = early_first
         self._first_words = first_words
         self._buffer = ""
@@ -145,4 +147,5 @@ class SentenceStream:
     def flush(self) -> list[str]:
         sentences = split_sentences(self._buffer)
         self._buffer = ""
+        self._waiting_first = self._early_first
         return sentences

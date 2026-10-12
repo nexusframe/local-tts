@@ -36,6 +36,8 @@ EventSink = Callable[..., None]
 _STOP = object()
 # Last item in the piece queue of an utterance.
 _END_OF_TEXT = object()
+# Item in the piece queue: speak the text that waits for the end of its sentence.
+_FLUSH = object()
 
 
 @dataclass(frozen=True)
@@ -136,6 +138,10 @@ class Engine:
     def append(self, stream_id: str, text: str) -> None:
         if (utterance := self._open_stream(stream_id)) is not None:
             utterance.pieces.put(text)
+
+    def flush(self, stream_id: str) -> None:
+        if (utterance := self._open_stream(stream_id)) is not None:
+            utterance.pieces.put(_FLUSH)
 
     def end(self, stream_id: str) -> None:
         with self._state_lock:
@@ -267,8 +273,10 @@ class Engine:
                 piece = utterance.pieces.get()
                 if not self._current(utterance):
                     return _End(utterance)
-                segments = stream.flush() if piece is _END_OF_TEXT else stream.feed(piece)
+                segments = stream.flush() if piece is _END_OF_TEXT or piece is _FLUSH else stream.feed(piece)
                 for segment in segments:
+                    if not any(char.isalnum() for char in segment):
+                        continue  # Only punctuation, for example the "." that comes after a flush.
                     # The normalizer can make new sentence ends, so split again.
                     for sentence in split_sentences(normalize_text(segment)):
                         with self._state_lock:

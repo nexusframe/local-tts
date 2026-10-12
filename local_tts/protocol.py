@@ -43,6 +43,16 @@ class End:
 
 
 @dataclass(frozen=True)
+class Flush:
+    """Speak the text of an open stream that waits for the end of its sentence. The stream stays open.
+
+    Send it before a pause in the text, for example before an LLM tool call.
+    """
+
+    id: str
+
+
+@dataclass(frozen=True)
 class Cancel:
     pass
 
@@ -52,7 +62,7 @@ class Status:
     pass
 
 
-Request = Speak | Begin | Append | End | Cancel | Status
+Request = Speak | Begin | Append | End | Flush | Cancel | Status
 
 
 def parse_request(line: str | bytes) -> Request:
@@ -76,6 +86,8 @@ def parse_request(line: str | bytes) -> Request:
         return Append(id=_stream_id(message), text=text)
     if cmd == "end":
         return End(id=_stream_id(message))
+    if cmd == "flush":
+        return Flush(id=_stream_id(message))
     if cmd != "speak":
         raise ProtocolError(f"unknown cmd: {cmd!r}")
 
