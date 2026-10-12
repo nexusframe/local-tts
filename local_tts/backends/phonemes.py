@@ -3,6 +3,9 @@
 espeak-ng gives the same phonemes "tʃ" for "trz" (trzy) and "cz" (czy), so
 Piper reads "trzy" like "czy". A longer fricative ("tʃʃ") for "trz" made "trz"
 clearer in a blind listening test (see docs/trz-phonemes.md).
+
+espeak-ng also gives the same phonemes "dʑ" for "dz" (widzenia) and for "dzi"/"dź"
+(dzień). The phonemes "d" "z" for "dz" were better in a listening test (2026-10-12).
 """
 
 from __future__ import annotations
@@ -34,6 +37,38 @@ def lengthen_trz(text: str, sentence_phonemes: list[list[str]]) -> list[list[str
         while i < len(sentence):
             if sentence[i : i + 2] == _TSH:
                 out.extend(_TRZ if next(remaining) == "trz" else _TSH)
+                i += 2
+            else:
+                out.append(sentence[i])
+                i += 1
+        result.append(out)
+    return result
+
+
+_DZJ = "dʑ"
+# "dż" is "dʒ" and does not count.
+_DZ_SPELLING = re.compile(r"dź|dzi|dz(?![żź])", re.IGNORECASE)
+
+
+def fix_dz(text: str, sentence_phonemes: list[list[str]]) -> list[list[str]]:
+    """Replace "dʑ" with "d" "z" where the text has "dz" (not "dzi" or "dź").
+
+    As in lengthen_trz(), the n-th "dʑ" belongs to the n-th spelling. If the counts
+    do not agree ("wódz" is "vuts", "być dobrym" has a "dʑ"), there is no change.
+    """
+    spellings = [m.group().lower() for m in _DZ_SPELLING.finditer(text)]
+    found = sum("".join(sentence).count(_DZJ) for sentence in sentence_phonemes)
+    if found != len(spellings) or "dz" not in spellings:
+        return sentence_phonemes
+
+    remaining = iter(spellings)
+    result = []
+    for sentence in sentence_phonemes:
+        out: list[str] = []
+        i = 0
+        while i < len(sentence):
+            if "".join(sentence[i : i + 2]) == _DZJ:
+                out.extend(["d", "z"] if next(remaining) == "dz" else ["d", "ʑ"])
                 i += 2
             else:
                 out.append(sentence[i])

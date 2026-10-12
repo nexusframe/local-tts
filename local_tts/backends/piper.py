@@ -21,7 +21,7 @@ from piper.phonemize_espeak import EspeakPhonemizer
 # so English calls take the same lock. Private name: piper-tts is pinned to 1.8.0.
 from piper.voice import _ESPEAK_PHONEMIZER_LOCK
 
-from local_tts.backends.phonemes import lengthen_trz, phonemize_mixed, to_polish_phonemes
+from local_tts.backends.phonemes import fix_dz as _fix_dz, lengthen_trz, phonemize_mixed, to_polish_phonemes
 
 _english_espeak: EspeakPhonemizer | None = None
 
@@ -69,7 +69,7 @@ class _InterruptibleSession:
 
 
 class PiperBackend:
-    def __init__(self, model_path: Path, threads: int = 4, fix_trz: bool = True) -> None:
+    def __init__(self, model_path: Path, threads: int = 4, fix_trz: bool = True, fix_dz: bool = True) -> None:
         config_path = model_path.with_name(model_path.name + ".json")
         if not model_path.exists() or not config_path.exists():
             raise FileNotFoundError(f"Piper model or config not found: {model_path}")
@@ -90,10 +90,14 @@ class PiperBackend:
             # PiperVoice.synthesize() calls self.phonemize(). Wrap it for this voice only;
             # the audio processing after phonemization stays the same.
             espeak_polish = self._voice.phonemize
-            if fix_trz:
-                polish = lambda text: lengthen_trz(text, espeak_polish(text))
-            else:
-                polish = espeak_polish
+            corrections = [c for c, on in ((lengthen_trz, fix_trz), (_fix_dz, fix_dz)) if on]
+
+            def polish(text: str) -> list[list[str]]:
+                phonemes = espeak_polish(text)
+                for correction in corrections:
+                    phonemes = correction(text, phonemes)
+                return phonemes
+
             self._voice.phonemize = lambda text: phonemize_mixed(text, polish, _english_phonemes)
 
     def phonemize(self, text: str) -> list[list[str]]:

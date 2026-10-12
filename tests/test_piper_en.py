@@ -35,6 +35,13 @@ def test_trz_fix_still_works_next_to_english_tsh(backend):
     assert "lˈantʃ." in phonemes
 
 
+def test_dz_fix_works_next_to_an_english_span(backend):
+    phonemes = joined(backend, "Do widzenia, <en>commit</en> jest w urządzeniu. Dzień dobry.")
+    assert "vidzˈɛɲʲa," in phonemes
+    assert "ˌuʒɔndzˈɛɲʲu." in phonemes
+    assert phonemes.endswith("dʑˈɛɲ dˈɔbrɨ.")
+
+
 def test_tagged_text_gives_audio(backend):
     audio = list(backend.synthesize("Testy w <en>Python</en>ie przeszły."))
     assert sum(len(chunk) for chunk in audio) > 0.5 * backend.sample_rate

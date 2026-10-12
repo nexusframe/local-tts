@@ -33,6 +33,10 @@ A09	must	abbreviation	Pokój nr 5.	Pokój numer pięć.
 A10	must	abbreviation	Działamy wg planu.	Działamy według planu.
 A11	must	abbreviation	Mam ok. 5 km do domu.	Mam około pięciu kilometrów do domu.
 A12	nice	abbreviation	Podaj tel. kontaktowy.	Podaj telefon kontaktowy.
+A13	must	abbreviation	Ok, zrobione.	Okej, zrobione.
+A14	must	abbreviation	Wszystko jest OK.	Wszystko jest okej.
+A15	must	abbreviation	Dobrze, ok. I do widzenia.	Dobrze, okej. I do widzenia.
+A16	must	abbreviation	Dobrze. OK, idę.	Dobrze. Okej, idę.
 N01	must	cardinal	Wynik: 0.	Wynik: zero.
 N02	must	cardinal	Za 7 dni.	Za siedem dni.
 N03	must	cardinal	Mam 11 lat.	Mam jedenaście lat.
