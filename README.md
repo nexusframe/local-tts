@@ -28,6 +28,7 @@ The daemon listens on the Unix socket `$XDG_RUNTIME_DIR/local-tts.sock`. Use `--
 .venv/bin/python -m local_tts.client speak --voice jarvis "Dzień dobry."
 .venv/bin/python -m local_tts.client speak --voice en_cori "Good morning."
 .venv/bin/python -m local_tts.client speak --interrupt "Stop."   # stop the current speech first
+.venv/bin/python -m local_tts.client speak --speed 0.8 "Wolniej."  # slower than the rate of the voice
 .venv/bin/python -m local_tts.client speak --no-wait "Tekst."     # do not wait for the end
 .venv/bin/python -m local_tts.client cancel                       # stop speech, clear the queue
 .venv/bin/python -m local_tts.client status                       # voices, current speech, queue
@@ -42,6 +43,14 @@ echo '{"cmd": "speak", "text": "Dzień dobry."}' | socat - UNIX-CONNECT:$XDG_RUN
 ```
 
 For streamed LLM text, use `begin`, `append` and `end` (see `local_tts/protocol.py` and `docs/m4-results.md`).
+
+`speak` and `begin` have an optional field `speed`: a multiplier of the speech rate of the voice, from 0.5 to 2.0. The default is 1.0. A smaller value gives slower speech, for example to say an answer again more slowly. For `begin`, the speed is for all the text of the stream. A value out of the range gives an `error` event. Each voice has its own rate at 1.0 (see `docs/voices.md`, "Speech rate"):
+
+```
+{"cmd": "speak", "text": "Numer to 5 5 5, 1 2 3.", "speed": 0.8}
+```
+
+The speed is for a full request, not for one word in a sentence: Piper uses one rate for each synthesis. To say one word more slowly, send it in a separate request.
 
 A sentence is spoken when the next sentence starts or at `end`. Before a pause in the text, for example an LLM tool call, send `flush`. The daemon then speaks the text that it has now, and the stream stays open. The text after `flush` starts to play early again (`--first-words`). `flush` has no reply:
 

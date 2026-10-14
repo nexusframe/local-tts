@@ -105,7 +105,6 @@ class PiperBackend:
         self.sample_rate = self._voice.config.sample_rate
         # Speech rate: a larger value gives slower speech. 1.0 is the rate of the model.
         self.length_scale = length_scale
-        self._syn_config = SynthesisConfig(length_scale=length_scale)
         # "pl" or "en", from the espeak-ng voice of the model ("pl", "en-us", "en-gb-x-rp").
         self.language = self._voice.config.espeak_voice.split("-")[0]
         if self.language == "pl":
@@ -126,16 +125,17 @@ class PiperBackend:
         """The phonemes that synthesize() uses for the text, grouped by sentence."""
         return self._voice.phonemize(text)
 
-    def synthesize(self, text: str, word_ends: list[float] | None = None) -> Iterator[np.ndarray]:
+    def synthesize(self, text: str, word_ends: list[float] | None = None, speed: float = 1.0) -> Iterator[np.ndarray]:
         """Yield the audio. With word_ends, also add the end time of each word (see Backend)."""
+        syn_config = SynthesisConfig(length_scale=self.length_scale / speed)
         if word_ends is None:
-            for chunk in self._voice.synthesize(text, syn_config=self._syn_config):
+            for chunk in self._voice.synthesize(text, syn_config=syn_config):
                 yield chunk.audio_int16_array
             return
         # Piper gives one chunk for each espeak-ng sentence, usually one for the text.
         # The next chunk is made before the current one goes out, so that the word
         # ends are ready with the last chunk.
-        chunks = self._voice.synthesize(text, syn_config=self._syn_config, include_alignments=True)
+        chunks = self._voice.synthesize(text, syn_config=syn_config, include_alignments=True)
         # End sample of each sound phoneme, from the alignment output of the model.
         sound_ends: list[int] = []
         aligned = True

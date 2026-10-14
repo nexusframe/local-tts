@@ -31,12 +31,14 @@ class FakeBackend:
         self.samples = 10 if chunk_seconds is None else round(chunk_seconds * self.sample_rate)
         self.word_times = word_times
         self.calls: list[str] = []
+        self.speeds: list[float] = []
 
     def interrupt(self) -> None:
         pass
 
-    def synthesize(self, text: str, word_ends: list[float] | None = None):
+    def synthesize(self, text: str, word_ends: list[float] | None = None, speed: float = 1.0):
         self.calls.append(text)
+        self.speeds.append(speed)
         if self.fail_on is not None and self.fail_on in text:
             raise RuntimeError(f"cannot synthesize {text!r}")
         if word_ends is not None and self.word_times:
@@ -54,14 +56,14 @@ class SlowBackend(FakeBackend):
         self.interrupts = 0
         self._interrupted = threading.Event()
 
-    def synthesize(self, text: str, word_ends: list[float] | None = None):
+    def synthesize(self, text: str, word_ends: list[float] | None = None, speed: float = 1.0):
         if self.slow_on in text:
             self.calls.append(text)
             if not self._interrupted.wait(timeout=5.0):
                 raise AssertionError("synthesis was not interrupted")
             self._interrupted.clear()
             raise RuntimeError("Exiting due to terminate flag")
-        yield from super().synthesize(text, word_ends)
+        yield from super().synthesize(text, word_ends, speed)
 
     def interrupt(self) -> None:
         self.interrupts += 1

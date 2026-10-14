@@ -5,6 +5,10 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
+# Range of the 'speed' field: a multiplier of the speech rate of the voice.
+MIN_SPEED = 0.5
+MAX_SPEED = 2.0
+
 
 class ProtocolError(ValueError):
     pass
@@ -16,6 +20,7 @@ class Speak:
     voice: str | None = None
     interrupt: bool = False
     id: str | None = None
+    speed: float = 1.0  # 1.0 is the rate of the voice, a smaller value gives slower speech
 
 
 @dataclass(frozen=True)
@@ -25,6 +30,7 @@ class Begin:
     voice: str | None = None
     interrupt: bool = False
     id: str | None = None
+    speed: float = 1.0  # for all the text of the stream
 
 
 @dataclass(frozen=True)
@@ -101,7 +107,12 @@ def _speak_options(message: dict) -> dict:
     interrupt = message.get("interrupt", False)
     if not isinstance(interrupt, bool):
         raise ProtocolError("'interrupt' must be true or false")
+    speed = message.get("speed", 1.0)
+    # bool is an int in Python: "speed": true is not a number.
+    if isinstance(speed, bool) or not isinstance(speed, (int, float)) or not MIN_SPEED <= speed <= MAX_SPEED:
+        raise ProtocolError(f"'speed' must be a number from {MIN_SPEED} to {MAX_SPEED}")
     return {
+        "speed": float(speed),
         "voice": _optional(message, "voice", str),
         "interrupt": interrupt,
         "id": _optional(message, "id", str),

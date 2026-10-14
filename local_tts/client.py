@@ -43,6 +43,7 @@ def main() -> int:
     speak = sub.add_parser("speak", help="Speak the text and wait until the speech ends.")
     speak.add_argument("text")
     speak.add_argument("--voice")
+    speak.add_argument("--speed", type=float, help="Multiplier of the speech rate of the voice, 0.5 to 2.0. A smaller value gives slower speech.")
     speak.add_argument("--interrupt", action="store_true", help="Stop the current speech first.")
     speak.add_argument("--no-wait", action="store_true", help="Do not wait until the speech ends.")
     sub.add_parser("cancel", help="Stop the current speech and clear the queue.")
@@ -55,6 +56,8 @@ def main() -> int:
             message.update(text=args.text, interrupt=args.interrupt)
             if args.voice:
                 message["voice"] = args.voice
+            if args.speed is not None:
+                message["speed"] = args.speed
         send(sock, message)
         request_id = None
         for event in events(sock):

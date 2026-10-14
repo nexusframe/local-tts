@@ -17,8 +17,8 @@ TEXT = (
 pytestmark = pytest.mark.skipif(not MODEL.exists(), reason="Piper model not found")
 
 
-def seconds(backend, text=TEXT):
-    return len(np.concatenate(list(backend.synthesize(text)))) / backend.sample_rate
+def seconds(backend, text=TEXT, **kwargs):
+    return len(np.concatenate(list(backend.synthesize(text, **kwargs)))) / backend.sample_rate
 
 
 def test_larger_length_scale_gives_slower_speech():
@@ -39,3 +39,14 @@ def test_load_voices_gives_each_model_its_rate():
     backends = load_voices(DEFAULT_MODELS_DIR, models, threads=1, fix_trz=True)
     # Listening test picks (docs/voices.md).
     assert {name: b.length_scale for name, b in backends.items()} == {"woman": 1.3, "man": 0.85, "pl": 1.0}
+
+
+def test_speed_of_a_request_divides_the_length_scale_of_the_voice():
+    from local_tts.backends.piper import PiperBackend
+
+    # 1.3 / 0.7 = 1.86: much slower than the rate of the voice. VITS adds noise to durations.
+    backend = PiperBackend(MODEL, threads=1, length_scale=1.3)
+    normal = seconds(backend)
+    assert seconds(backend, speed=0.7) > normal * 1.2
+    assert seconds(backend, speed=1.5) < normal / 1.15
+    assert seconds(backend, word_ends=[], speed=0.7) > normal * 1.2

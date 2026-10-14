@@ -54,6 +54,8 @@ class _Utterance:
     early_first: bool
     # Text pieces, then _END_OF_TEXT.
     pieces: queue.Queue
+    # Multiplier of the speech rate of the voice (the 'speed' field of the request).
+    speed: float = 1.0
     # Set by abort(): this utterance only is cancelled.
     aborted: threading.Event = field(default_factory=threading.Event)
 
@@ -237,7 +239,7 @@ class Engine:
         request_id = request.id or f"u{next(self._ids)}"
         if request.interrupt:
             self.cancel()
-        utterance = _Utterance(request_id, voice, self._epoch, early_first, queue.Queue())
+        utterance = _Utterance(request_id, voice, self._epoch, early_first, queue.Queue(), speed=request.speed)
         with self._state_lock:
             self._pending[request_id] = None
             if stream:
@@ -326,7 +328,7 @@ class Engine:
                         word_ends: list[float] = []
                         offset = 0.0
                         try:
-                            for pcm in backend.synthesize(sentence, word_ends=word_ends):
+                            for pcm in backend.synthesize(sentence, word_ends=word_ends, speed=utterance.speed):
                                 if not self._current(utterance):
                                     return _End(utterance)
                                 if word_ends:  # The last chunk of the sentence.

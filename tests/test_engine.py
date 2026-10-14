@@ -39,6 +39,22 @@ def test_voice_selects_the_backend_and_queued_requests_play_in_order(log):
     assert player.played == ["zenski:Pytanie?", "gosia:Odpowiedź."]
 
 
+def test_speed_of_a_request_goes_to_each_of_its_sentences(log):
+    backend = FakeBackend("zenski")
+    engine = make_engine(log, zenski=backend)
+    engine.speak(Speak(text="Wolno. Bardzo wolno.", speed=0.7))
+    last = engine.speak(Speak(text="Normalnie."))
+    log.wait_for("done", id=last)
+    stream = engine.begin(Begin(speed=1.5))
+    engine.append(stream, "Szybko. Też szybko.")
+    engine.end(stream)
+    log.wait_for("done", id=stream)
+    engine.close()
+    assert list(zip(backend.calls, backend.speeds)) == [
+        ("Wolno.", 0.7), ("Bardzo wolno.", 0.7), ("Normalnie.", 1.0), ("Szybko.", 1.5), ("Też szybko.", 1.5),
+    ]
+
+
 def test_unknown_voice_is_rejected_at_once(log):
     engine = make_engine(log)
     with pytest.raises(ValueError, match="nobody"):

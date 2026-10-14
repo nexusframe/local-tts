@@ -12,6 +12,12 @@ def test_speak_with_all_fields():
     assert parse_request(line) == Speak(text="Hej.", voice="gosia", interrupt=True, id="a1")
 
 
+def test_speed_is_a_rate_multiplier_for_speak_and_begin():
+    assert parse_request('{"cmd": "speak", "text": "Hej.", "speed": 0.8}') == Speak(text="Hej.", speed=0.8)
+    assert parse_request('{"cmd": "begin", "speed": 2}') == Begin(speed=2.0)
+    assert parse_request('{"cmd": "speak", "text": "Hej."}').speed == 1.0
+
+
 def test_cancel_and_status_commands():
     assert parse_request(b'{"cmd": "cancel"}\n') == Cancel()
     assert parse_request('{"cmd": "status"}') == Status()
@@ -50,6 +56,10 @@ def test_flush_names_a_stream():
         '{"cmd": "speak", "text": "Hej.", "interrupt": "yes"}',
         '{"cmd": "speak", "text": "Hej.", "id": 7}',
         '{"cmd": "begin", "interrupt": 1}',
+        '{"cmd": "speak", "text": "Hej.", "speed": "slow"}',
+        '{"cmd": "speak", "text": "Hej.", "speed": true}',
+        '{"cmd": "speak", "text": "Hej.", "speed": 0.4}',
+        '{"cmd": "begin", "speed": 2.1}',
         '{"cmd": "append", "text": "Hej"}',
         '{"cmd": "append", "id": "s1"}',
         '{"cmd": "append", "id": "s1", "text": 5}',
