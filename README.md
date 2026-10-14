@@ -83,7 +83,7 @@ The events `cancelled` and `error` also have the field `spoken_partial`: the wor
 Both normalizers read units and currency (`5 km`, `20 zł`, `$20`). The English normalizer reads a range as "to" (`15-20°C` is "15 to 20 degrees Celsius"). The Polish normalizer reads a range without "do" (`15-20` is "piętnaście-dwadzieścia"). Some numbers need a special format from the client (for example, the LLM prompt of the assistant):
 
 - **Phone numbers:** write the digits one by one with spaces, and put a comma between the groups: `5 5 5, 1 2 3, 4 5 6`. For a country code, write `plus 4 8,` (English) or `plus czterdzieści osiem,` (Polish). Both voice languages read this format correctly (measured 2026-10-13).
-- Do not send a phone number with hyphens (`555-123-456`). The English normalizer reads a hyphen between two numbers as a range: "555 to 123". The Polish normalizer reads each group as a number with a hyphen.
+- Do not send a phone number with hyphens. The English normalizer reads two groups as a range (`555-123` is "555 to 123"). It does not change three or more groups, and espeak-ng reads the hyphens as "dash" (`555-123-456`). The Polish normalizer reads each group as a number with a hyphen.
 - Do not send a phone number with spaces only (`555 123 456`). The Polish normalizer reads it as one number: "pięćset pięćdziesiąt pięć milionów…".
 - ISO dates (`2026-10-13`) are not changed by the English normalizer. espeak-ng reads the hyphens as "dash". Write the date in words for an English voice: `October 13, 2026`.
 
