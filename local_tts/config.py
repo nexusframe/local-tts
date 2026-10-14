@@ -19,6 +19,12 @@ DEFAULT_VOICES = {
     "en_bryce": "en_US-bryce-medium",
     "en_hfc_male": "en_US-hfc_male-medium",
 }
+# Piper length_scale for each model: a larger value gives slower speech. Other models use 1.0.
+# Listening test picks (docs/voices.md).
+LENGTH_SCALES = {
+    "en_US-hfc_female-medium": 1.3,
+    "en_US-bryce-medium": 0.85,
+}
 
 
 def default_socket_path() -> Path:

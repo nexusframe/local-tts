@@ -15,7 +15,7 @@ from typing import Iterator
 
 import numpy as np
 import onnxruntime as ort
-from piper import PiperVoice
+from piper import PiperVoice, SynthesisConfig
 from piper.config import PiperConfig
 from piper.phonemize_espeak import EspeakPhonemizer
 # piper-tts uses this lock for its espeak-ng calls. espeak-ng has one global state,
@@ -86,7 +86,9 @@ class _InterruptibleSession:
 
 
 class PiperBackend:
-    def __init__(self, model_path: Path, threads: int = 4, fix_trz: bool = True, fix_dz: bool = True) -> None:
+    def __init__(
+        self, model_path: Path, threads: int = 4, fix_trz: bool = True, fix_dz: bool = True, length_scale: float = 1.0
+    ) -> None:
         config_path = model_path.with_name(model_path.name + ".json")
         if not model_path.exists() or not config_path.exists():
             raise FileNotFoundError(f"Piper model or config not found: {model_path}")
@@ -101,6 +103,9 @@ class PiperBackend:
             session=self._session,
         )
         self.sample_rate = self._voice.config.sample_rate
+        # Speech rate: a larger value gives slower speech. 1.0 is the rate of the model.
+        self.length_scale = length_scale
+        self._syn_config = SynthesisConfig(length_scale=length_scale)
         # "pl" or "en", from the espeak-ng voice of the model ("pl", "en-us", "en-gb-x-rp").
         self.language = self._voice.config.espeak_voice.split("-")[0]
         if self.language == "pl":
@@ -124,13 +129,13 @@ class PiperBackend:
     def synthesize(self, text: str, word_ends: list[float] | None = None) -> Iterator[np.ndarray]:
         """Yield the audio. With word_ends, also add the end time of each word (see Backend)."""
         if word_ends is None:
-            for chunk in self._voice.synthesize(text):
+            for chunk in self._voice.synthesize(text, syn_config=self._syn_config):
                 yield chunk.audio_int16_array
             return
         # Piper gives one chunk for each espeak-ng sentence, usually one for the text.
         # The next chunk is made before the current one goes out, so that the word
         # ends are ready with the last chunk.
-        chunks = self._voice.synthesize(text, include_alignments=True)
+        chunks = self._voice.synthesize(text, syn_config=self._syn_config, include_alignments=True)
         # End sample of each sound phoneme, from the alignment output of the model.
         sound_ends: list[int] = []
         aligned = True

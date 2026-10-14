@@ -86,3 +86,13 @@ def test_word_ends_are_ready_when_the_last_chunk_comes(backend):
     word_ends: list[float] = []
     lengths_at_chunk = [len(word_ends) for _ in backend.synthesize("Jutro będzie ciepło.", word_ends=word_ends)]
     assert lengths_at_chunk[-1] == 3
+
+
+def test_word_ends_agree_with_the_alignment_at_a_slower_rate():
+    from local_tts.backends.piper import PiperBackend
+
+    slow = PiperBackend(ALIGNED, threads=1, length_scale=1.3)
+    word_ends, reference = synthesize_with_reference(slow, "Jutro będzie bardzo ciepło i słonecznie.")
+    assert word_ends[:-1] == pytest.approx(reference, abs=0.001)
+    duration, word_ends = synthesize(slow, "Jutro będzie bardzo ciepło i słonecznie.")
+    assert len(word_ends) == 6 and word_ends[-1] <= duration

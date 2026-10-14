@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 
 from local_tts.backends.piper import PiperBackend
-from local_tts.config import ALIGNED_MODELS_DIR, DEFAULT_MODELS_DIR, DEFAULT_VOICES, default_pronunciation_path, default_socket_path
+from local_tts.config import ALIGNED_MODELS_DIR, DEFAULT_MODELS_DIR, DEFAULT_VOICES, LENGTH_SCALES, default_pronunciation_path, default_socket_path
 from local_tts.engine import Engine
 from local_tts.player import PwCatPlayer
 from local_tts.pronunciation import PronunciationDictionary
@@ -57,11 +57,11 @@ def load_voices(
         start = time.monotonic()
         aligned = aligned_dir / model / f"{model}.onnx" if aligned_dir else None
         path = aligned if aligned and aligned.exists() else models_dir / model / f"{model}.onnx"
-        backend = PiperBackend(path, threads=threads, fix_trz=fix_trz)
+        backend = PiperBackend(path, threads=threads, fix_trz=fix_trz, length_scale=LENGTH_SCALES.get(model, 1.0))
         backend.warm_up()
         log.info(
-            "voice %s (%s) loaded in %.2f s, word times: %s",
-            name, model, time.monotonic() - start, "yes" if path == aligned else "no (run scripts/patch_alignment.py)",
+            "voice %s (%s) loaded in %.2f s, length_scale %.2f, word times: %s",
+            name, model, time.monotonic() - start, backend.length_scale, "yes" if path == aligned else "no (run scripts/patch_alignment.py)",
         )
         backends[name] = backend
     return backends

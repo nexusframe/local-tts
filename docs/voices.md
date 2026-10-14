@@ -44,6 +44,19 @@ Each voice adds about 85 MB at load and about 160 MB at its first synthesis. ONN
 The prototype target is daemon RSS ≤ 1.5 GB: the current set is at the limit. Each added voice goes above it.
 A test with the ORT memory arena off is an open item for M5.
 
+## Speech rate
+
+The daemon sets the Piper `length_scale` of each model from `LENGTH_SCALES` in `local_tts/config.py`.
+A larger value gives slower speech. Other models use 1.0 (the rate of the model).
+
+| Model | `length_scale` | Sample, 1.0 → selected value |
+|---|---|---|
+| `en_US-hfc_female-medium` | 1.3 | 8.4 s → 9.9 s |
+| `en_US-bryce-medium` | 0.85 | 11.5 s → 10.2 s |
+
+Listening test, 2026-10-14: the user selected the values from samples 1.0 to 1.5 (`hfc_female`) and 0.75 to 1.0 (`bryce`).
+At 1.0, `hfc_female` was too fast and `bryce` was too slow. Word times (`spoken_partial`) come from the alignments of the same synthesis, so they agree at all rates (`tests/test_piper_word_ends.py`).
+
 ## Voice language
 
 The daemon gets the language of a voice from the espeak-ng voice in the model config (`pl`, `en-us`, `en-gb-x-rp`).
