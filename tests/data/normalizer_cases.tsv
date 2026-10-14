@@ -19,20 +19,20 @@ C07	must	cleanup	[śmiech] No dobrze.	No dobrze.
 C08	must	cleanup	Uruchom `make test`.	Uruchom make test.
 C09	must	cleanup	Zobacz [dokumentację](https://x.pl).	Zobacz dokumentację.
 C10	must	cleanup	Raz,   dwa.\n\nTrzy.	Raz, dwa. Trzy.
-P01	nice	punctuation	Wynik (wstępny) jest dobry.	Wynik, wstępny, jest dobry.
+P01	must	punctuation	Wynik (wstępny) jest dobry.	Wynik, wstępny, jest dobry.
 P02	must	punctuation	Opcja i/lub inna.	Opcja i lub inna.
 A01	must	abbreviation	Weź np. jutro.	Weź na przykład jutro.
 A02	must	abbreviation	Nie, tzn. jeszcze nie.	Nie, to znaczy jeszcze nie.
 A03	must	abbreviation	Kupiłem jabłka, gruszki itd.	Kupiłem jabłka, gruszki i tak dalej.
 A04	must	abbreviation	Owoce, warzywa itp.	Owoce, warzywa i tym podobne.
 A05	must	abbreviation	Dzwonił prof. Nowak.	Dzwonił profesor Nowak.
-A06	nice	abbreviation	Pisała mgr inż. Kowalska.	Pisała magister inżynier Kowalska.
+A06	must	abbreviation	Pisała mgr inż. Kowalska.	Pisała magister inżynier Kowalska.
 A07	must	abbreviation	Cena wynosi, tj. po rabacie, mniej.	Cena wynosi, to jest po rabacie, mniej.
 A08	must	abbreviation	Mieszkam na ul. Długiej.	Mieszkam na ulicy Długiej.
 A09	must	abbreviation	Pokój nr 5.	Pokój numer pięć.
 A10	must	abbreviation	Działamy wg planu.	Działamy według planu.
 A11	must	abbreviation	Mam ok. 5 km do domu.	Mam około pięciu kilometrów do domu.
-A12	nice	abbreviation	Podaj tel. kontaktowy.	Podaj telefon kontaktowy.
+A12	must	abbreviation	Podaj tel. kontaktowy.	Podaj telefon kontaktowy.
 A13	must	abbreviation	Ok, zrobione.	Okej, zrobione.
 A14	must	abbreviation	Wszystko jest OK.	Wszystko jest okej.
 A15	must	abbreviation	Dobrze, ok. I do widzenia.	Dobrze, okej. I do widzenia.
@@ -66,7 +66,7 @@ K07	must	case	Wrócił po 5 latach.	Wrócił po pięciu latach.
 K08	must	case	Przyszedł z 2 kolegami.	Przyszedł z dwoma kolegami.
 K09	must	case	Było to przed 3 dniami.	Było to przed trzema dniami.
 K10	must	case	Wrócę za 5 minut.	Wrócę za pięć minut.
-K11	nice	case	Udało się dzięki 2 osobom.	Udało się dzięki dwóm osobom.
+K11	must	case	Udało się dzięki 2 osobom.	Udało się dzięki dwóm osobom.
 K12	must	case	Przyszło ponad 100 osób.	Przyszło ponad sto osób.
 K13	must	case	Limit do 1000 zł.	Limit do tysiąca złotych.
 K14	must	case	Policz od 1 do 10.	Policz od jednego do dziesięciu.
@@ -99,8 +99,8 @@ U09	must	currency	Kosztuje 5,99 zł.	Kosztuje pięć złotych dziewięćdziesią
 U10	must	currency	Kosztuje 0,50 zł.	Kosztuje pięćdziesiąt groszy.
 U11	must	currency	Budżet to 3,5 mln zł.	Budżet to trzy i pół miliona złotych.
 U12	must	currency	Mam 5 tys. zł.	Mam pięć tysięcy złotych.
-U13	nice	currency	Kosztuje 100 €.	Kosztuje sto euro.
-U14	nice	currency	Kosztuje $20.	Kosztuje dwadzieścia dolarów.
+U13	must	currency	Kosztuje 100 €.	Kosztuje sto euro.
+U14	must	currency	Kosztuje $20.	Kosztuje dwadzieścia dolarów.
 U15	must	percent	Bateria: 50%.	Bateria: pięćdziesiąt procent.
 U16	must	percent	Wzrost o 5%.	Wzrost o pięć procent.
 U17	must	percent	Rabat do 30%.	Rabat do trzydziestu procent.
@@ -111,6 +111,6 @@ U21	must	unit	Przejdź 500 m.	Przejdź pięćset metrów.
 U22	must	unit	Zostały 2 km.	Zostały dwa kilometry.
 U23	must	unit	Czekaj 15 min.	Czekaj piętnaście minut.
 U24	must	unit	Czekaj 2 min.	Czekaj dwie minuty.
-U25	nice	unit	Plik ma 2 GB.	Plik ma dwa gigabajty.
-U26	nice	unit	Mamy 5 mld zł.	Mamy pięć miliardów złotych.
+U25	must	unit	Plik ma 2 GB.	Plik ma dwa gigabajty.
+U26	must	unit	Mamy 5 mld zł.	Mamy pięć miliardów złotych.
 U27	must	currency	Kosztuje 0,52 zł.	Kosztuje pięćdziesiąt dwa grosze.

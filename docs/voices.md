@@ -51,7 +51,7 @@ The daemon gets the language of a voice from the espeak-ng voice in the model co
 
 | | Polish voice (`pl`) | English voice (`en`) |
 |---|---|---|
-| Normalizer | Polish rules: numbers, dates, times, units, abbreviations | markup only: Markdown, emoji, `[...]` tags, `<en>` tags. espeak-ng reads numbers and times. |
+| Normalizer | Polish rules: numbers, dates, times, units, abbreviations | markup: Markdown, emoji, `[...]` tags, `<en>` tags. Ranges (`15-20` is "15 to 20"), `°C`/`°F`, metric units, `$`/`€`/`£`. espeak-ng reads the numbers and times. |
 | `<en>` tags and `commit'a` | English phonemes with the Polish phoneme map (see `docs/en-tags.md`) | tags are removed, all text is English |
 | "trz" fix | yes | no |
 

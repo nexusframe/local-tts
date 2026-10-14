@@ -6,6 +6,7 @@ from local_tts.normalizer.abbreviations import abbreviations
 from local_tts.normalizer.cleanup import cleanup
 from local_tts.normalizer.dates import dates
 from local_tts.normalizer.english import protect, remove_tags, restore
+from local_tts.normalizer.english_units import english_units
 from local_tts.normalizer.numerals import leftover_digits, numerals
 from local_tts.normalizer.punctuation import punctuation
 from local_tts.normalizer.times import times
@@ -27,5 +28,9 @@ def normalize(text: str) -> str:
 
 
 def normalize_english(text: str) -> str:
-    """For an English voice: remove markup and tags only. espeak-ng en reads numbers itself."""
-    return punctuation(cleanup(remove_tags(text), polish=False))
+    """For an English voice: remove markup and tags, read ranges, units and currency.
+
+    espeak-ng en reads the numbers itself. Ranges go before punctuation(), which
+    changes a spaced dash into a comma.
+    """
+    return punctuation(english_units(cleanup(remove_tags(text), polish=False)))
