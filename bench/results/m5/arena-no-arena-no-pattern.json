@@ -1,0 +1,40 @@
+{
+ "variant": "no-arena-no-pattern",
+ "ort": "1.30.0",
+ "rss_mb": {
+  "after_load": [
+   535.9453125,
+   535.9453125
+  ],
+  "after_one_long_each": [
+   562.7890625,
+   769.484375
+  ],
+  "after_3_rounds": [
+   572.421875,
+   783.82421875
+  ],
+  "end": [
+   578.5390625,
+   783.82421875
+  ]
+ },
+ "rtf": {
+  "zenski_short": {
+   "median_rtf": 0.08331719793621703,
+   "median_seconds": 0.10930611799994949
+  },
+  "zenski_long": {
+   "median_rtf": 0.0840476324905911,
+   "median_seconds": 4.984442038999987
+  },
+  "en_hfc_female_short": {
+   "median_rtf": 0.08555277060224853,
+   "median_seconds": 0.17084170499583706
+  },
+  "en_hfc_female_long": {
+   "median_rtf": 0.08208625067282271,
+   "median_seconds": 4.421057501996984
+  }
+ }
+}

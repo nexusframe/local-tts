@@ -1,0 +1,40 @@
+{
+ "variant": "no-arena",
+ "ort": "1.30.0",
+ "rss_mb": {
+  "after_load": [
+   523.94921875,
+   533.66796875
+  ],
+  "after_one_long_each": [
+   571.5,
+   765.4453125
+  ],
+  "after_1_rounds": [
+   595.96484375,
+   813.4375
+  ],
+  "end": [
+   592.15625,
+   813.4375
+  ]
+ },
+ "rtf": {
+  "zenski_short": {
+   "median_rtf": 0.08271781144516062,
+   "median_seconds": 0.10417595799663104
+  },
+  "zenski_long": {
+   "median_rtf": 0.0909294810907628,
+   "median_seconds": 5.38295929999731
+  },
+  "en_hfc_female_short": {
+   "median_rtf": 0.08230292763816317,
+   "median_seconds": 0.16375566499482375
+  },
+  "en_hfc_female_long": {
+   "median_rtf": 0.0789904436460328,
+   "median_seconds": 4.24331648000225
+  }
+ }
+}

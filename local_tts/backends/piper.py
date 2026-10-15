@@ -95,6 +95,8 @@ class PiperBackend:
         opts = ort.SessionOptions()
         opts.intra_op_num_threads = threads
         opts.inter_op_num_threads = 1
+        # The arena keeps the memory of the longest input of each voice (6 voices: 2.0 GB RSS, without: 0.6 GB).
+        opts.enable_cpu_mem_arena = False
         self._session = _InterruptibleSession(
             ort.InferenceSession(str(model_path), sess_options=opts, providers=["CPUExecutionProvider"])
         )

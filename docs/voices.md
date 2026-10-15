@@ -40,9 +40,8 @@ Memory, measured with the default voices (one process, 4 threads for each voice,
 | 7 voices (with `gosia`) | 600 MB | 1766 MB |
 | 6 voices (current) | 515 MB | 1509 MB |
 
-Each voice adds about 85 MB at load and about 160 MB at its first synthesis. ONNX Runtime keeps that memory (CPU memory arena).
-The prototype target is daemon RSS ≤ 1.5 GB: the current set is at the limit. Each added voice goes above it.
-A test with the ORT memory arena off is an open item for M5.
+These values are with the ONNX Runtime CPU memory arena on (before 2026-10-15). The arena kept the memory of the longest input of each voice: after all corpus texts, RSS was 2.0-2.2 GB.
+Since 2026-10-15 the arena is off (`docs/m5-arena.md`): 6 voices use approximately 0.6 GB (521 MB after load, 574 MB after one sentence with each voice). The prototype target is daemon RSS ≤ 1.5 GB.
 
 ## Speech rate
 

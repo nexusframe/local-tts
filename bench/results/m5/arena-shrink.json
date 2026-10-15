@@ -1,0 +1,40 @@
+{
+ "variant": "shrink",
+ "ort": "1.30.0",
+ "rss_mb": {
+  "after_load": [
+   558.421875,
+   558.421875
+  ],
+  "after_one_long_each": [
+   608.62109375,
+   758.68359375
+  ],
+  "after_3_rounds": [
+   743.1171875,
+   1009.0703125
+  ],
+  "end": [
+   614.8359375,
+   1009.0703125
+  ]
+ },
+ "rtf": {
+  "zenski_short": {
+   "median_rtf": 0.08127915896713411,
+   "median_seconds": 0.10285776198725216
+  },
+  "zenski_long": {
+   "median_rtf": 0.08353773154289604,
+   "median_seconds": 4.9201564399991184
+  },
+  "en_hfc_female_short": {
+   "median_rtf": 0.0786658867626932,
+   "median_seconds": 0.1542966709967004
+  },
+  "en_hfc_female_long": {
+   "median_rtf": 0.08011748563917293,
+   "median_seconds": 4.3068211789941415
+  }
+ }
+}
