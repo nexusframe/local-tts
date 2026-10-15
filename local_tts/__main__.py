@@ -13,7 +13,7 @@ from local_tts.config import ALIGNED_MODELS_DIR, DEFAULT_MODELS_DIR, DEFAULT_VOI
 from local_tts.engine import Engine
 from local_tts.player import PwCatPlayer
 from local_tts.pronunciation import PronunciationDictionary
-from local_tts.server import Server
+from local_tts.server import Server, exit_if_running
 
 log = logging.getLogger("local_tts")
 
@@ -70,6 +70,8 @@ def load_voices(
 def main() -> None:
     args = parse_args()
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    # Before the voices load (about 10 s): a second daemon must not take the socket of the first.
+    exit_if_running(args.socket)
     voices = dict(v.split("=", 1) for v in args.voice) if args.voice else DEFAULT_VOICES
     backends = load_voices(args.models_dir, voices, args.threads, fix_trz=not args.no_trz_fix, aligned_dir=args.aligned_models_dir)
     default_voice = next(iter(voices))

@@ -13,12 +13,49 @@ import asyncio
 import logging
 import os
 import signal
+import socket
 from pathlib import Path
 
 from local_tts.engine import Engine
 from local_tts.protocol import Append, Begin, Cancel, End, Flush, ProtocolError, Speak, Status, encode_event, parse_request
 
 log = logging.getLogger(__name__)
+
+
+# EX_CONFIG: the unit file does not start the daemon again after this exit code.
+EXIT_ALREADY_RUNNING = 78
+
+
+def socket_in_use(path: Path) -> bool:
+    """True if a process accepts connections on the socket file. A file without a listener is free."""
+    if not path.exists():
+        return False
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as probe:
+        try:
+            probe.connect(str(path))
+        except OSError:
+            return False
+    return True
+
+
+def exit_if_running(path: Path) -> None:
+    if socket_in_use(path):
+        log.error("daemon already running on %s; stop it first (systemctl --user stop local-tts)", path)
+        raise SystemExit(EXIT_ALREADY_RUNNING)
+
+
+def sd_notify(message: str) -> None:
+    """Send a state to systemd (Type=notify). Without $NOTIFY_SOCKET, do nothing."""
+    address = os.environ.get("NOTIFY_SOCKET")
+    if not address:
+        return
+    if address.startswith("@"):  # Abstract socket namespace.
+        address = "\0" + address[1:]
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as notify:
+            notify.sendto(message.encode(), address)
+    except OSError as exc:
+        log.warning("cannot notify systemd: %s", exc)
 
 
 class Server:
@@ -95,12 +132,14 @@ class Server:
         stop = asyncio.Event()
         for sig in (signal.SIGTERM, signal.SIGINT):
             self._loop.add_signal_handler(sig, self._stop, stop, sig)
+        exit_if_running(self._socket_path)
         if self._socket_path.exists():
             self._socket_path.unlink()
         server = await asyncio.start_unix_server(self._handle, path=str(self._socket_path), limit=1 << 20)
         os.chmod(self._socket_path, 0o600)
         log.info("listening on %s", self._socket_path)
         self.engine.start()
+        sd_notify("READY=1")
         try:
             async with server:
                 await stop.wait()
@@ -114,4 +153,5 @@ class Server:
     @staticmethod
     def _stop(stop: asyncio.Event, sig: signal.Signals) -> None:
         log.info("stopping on %s", sig.name)
+        sd_notify("STOPPING=1")
         stop.set()

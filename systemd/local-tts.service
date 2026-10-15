@@ -1,0 +1,26 @@
+[Unit]
+Description=local-tts: offline text-to-speech daemon (Piper, PipeWire)
+Documentation=file://%h/projects/local-tts/README.md
+# The daemon plays through PipeWire, which runs in the graphical session.
+PartOf=graphical-session.target
+After=graphical-session.target pipewire.service
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+# READY=1 is sent when the voices are loaded and the socket listens (about 10 s for 6 voices).
+Type=notify
+WorkingDirectory=%h/projects/local-tts
+ExecStart=%h/projects/local-tts/.venv/bin/python -m local_tts
+Restart=on-failure
+# 78: another daemon listens on the socket. A restart cannot fix it.
+RestartPreventExitStatus=78
+RestartSec=2
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=yes
+LimitCORE=0
+# 6 voices without the ONNX Runtime arena: about 0.6 GB, peak about 0.8 GB (docs/m5-arena.md).
+MemoryMax=1500M
+
+[Install]
+WantedBy=graphical-session.target

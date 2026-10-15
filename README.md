@@ -21,6 +21,18 @@ The patched copies give the word times for `spoken_partial` (see below). The scr
 
 The daemon listens on the Unix socket `$XDG_RUNTIME_DIR/local-tts.sock`. Use `--help` to see all options (voices, threads, socket path). To stop the daemon, push Ctrl+C or send SIGTERM.
 
+### Start the daemon as a systemd user service
+
+The unit file `systemd/local-tts.service` starts the daemon with the graphical session and starts it again after a failure. It expects the repository in `~/projects/local-tts`. Stop a daemon that you started by hand first, because the service uses the same socket. A second daemon on a socket that is in use stops at once with exit code 78.
+
+```
+ln -s ~/projects/local-tts/systemd/local-tts.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now local-tts
+```
+
+`systemctl --user start` returns when the voices are loaded and the socket listens. Logs: `journalctl --user -u local-tts -f`. Stop: `systemctl --user stop local-tts`. After a change to the code: `systemctl --user restart local-tts`.
+
 ## Speak text from the command line
 
 ```
