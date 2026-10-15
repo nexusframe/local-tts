@@ -143,6 +143,11 @@ class Server:
         try:
             async with server:
                 await stop.wait()
+                # In Python 3.12 the end of "async with" waits until all clients disconnect.
+                # A client can keep its connection open, so close the connections first.
+                server.close()
+                for writer in list(self._clients):
+                    writer.close()
         finally:
             for sig in (signal.SIGTERM, signal.SIGINT):
                 self._loop.remove_signal_handler(sig)

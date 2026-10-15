@@ -122,3 +122,20 @@ def test_daemon_replaces_a_socket_file_that_nobody_listens_on(tmp_path):
                 time.sleep(0.05)
     process.send_signal(signal.SIGTERM)
     assert process.wait(timeout=5) == 0
+
+
+def test_sigterm_stops_the_server_also_with_a_connected_client(tmp_path):
+    # A client such as the assistant keeps its connection open all the time.
+    socket_path = tmp_path / "tts.sock"
+    process = start_server(socket_path)
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+        client.connect(str(socket_path))
+        client.settimeout(5)
+        process.send_signal(signal.SIGTERM)
+        try:
+            returncode = process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            pytest.fail("server did not stop while a client was connected")
+        assert client.recv(1) == b""  # The server closed the connection.
+    assert returncode == 0
