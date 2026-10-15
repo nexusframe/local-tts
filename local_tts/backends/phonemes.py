@@ -174,11 +174,11 @@ def phonemize_mixed(text: str, polish: Phonemizer, english: Phonemizer) -> list[
         if result:
             if not attached:
                 result[-1].append(" ")
-            junction = len(result[-1])
-            result[-1].extend(sentences[0])
+            joined, junction = result[-1], len(result[-1])
+            joined.extend(sentences[0])
             result.extend(sentences[1:])
             if attached and not is_english:
-                _stress_word_at(result[-1], junction)
+                _stress_word_at(joined, junction)
         else:
             result.extend(sentences)
         space = part[-1].isspace()

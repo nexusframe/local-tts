@@ -47,6 +47,11 @@ def test_new_sentences_of_a_part_stay_separate():
     assert mixed("Raz|dwa <en>three|four</en> pięć") == ["raz", "dwa THREE", "FOUR pięć"]
 
 
+def test_polish_ending_followed_by_more_sentences_gets_the_stress():
+    # The stress goes to the word at the junction, not to the last sentence of the part.
+    assert mixed("Ja <en>push</en>ała|potem obiad|koniec") == ["ja PUSHˈała", "potem obiad", "koniec"]
+
+
 def test_punctuation_after_the_tag_is_kept():
     # espeak-ng gives no phonemes for "." or for the "," before "do jutra".
     assert mixed("Zrobiłem <en>commit</en>.") == ["zrobiłem COMMIT."]
