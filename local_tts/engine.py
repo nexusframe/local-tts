@@ -18,8 +18,11 @@ from __future__ import annotations
 
 import collections
 import itertools
+import json
+import logging
 import queue
 import threading
+import time
 from dataclasses import dataclass, field
 from typing import Callable, Mapping
 
@@ -35,6 +38,8 @@ from local_tts.word_map import heard_prefix
 
 EventSink = Callable[..., None]
 
+log = logging.getLogger(__name__)
+
 # Audio goes to the player in parts of this length, so that the played time is
 # known also during a long sentence, and a cancel stops the write sooner.
 _WRITE_SECONDS = 0.1
@@ -44,6 +49,19 @@ _STOP = object()
 _END_OF_TEXT = object()
 # Item in the piece queue: speak the text that waits for the end of its sentence.
 _FLUSH = object()
+
+
+@dataclass
+class _Metrics:
+    """Times of one utterance for its "metrics" log line. Monotonic clock, seconds."""
+
+    # The first text with a letter or digit: speak(), or the first append() of a stream.
+    first_text: float | None = None
+    chars: int = 0
+    sentences: int = 0
+    synth_seconds: float = 0.0
+    audio_seconds: float = 0.0
+    first_audio: float | None = None
 
 
 @dataclass(frozen=True)
@@ -58,6 +76,7 @@ class _Utterance:
     speed: float = 1.0
     # Set by abort(): this utterance only is cancelled.
     aborted: threading.Event = field(default_factory=threading.Event)
+    metrics: _Metrics = field(default_factory=_Metrics, compare=False)
 
 
 @dataclass(frozen=True)
@@ -162,6 +181,7 @@ class Engine:
 
     def speak(self, request: Speak) -> str:
         utterance = self._enqueue(request, early_first=False)
+        _note_text(utterance, request.text)
         utterance.pieces.put(request.text)
         utterance.pieces.put(_END_OF_TEXT)
         return utterance.id
@@ -173,6 +193,7 @@ class Engine:
 
     def append(self, stream_id: str, text: str) -> None:
         if (utterance := self._open_stream(stream_id)) is not None:
+            _note_text(utterance, text)
             utterance.pieces.put(text)
 
     def flush(self, stream_id: str) -> None:
@@ -269,6 +290,7 @@ class Engine:
                 if item is _STOP:
                     self._requests.put(_STOP)
                     break
+                _log_metrics(item, "cancelled")
                 self._emit("cancelled", id=item.id, spoken="", spoken_partial="")
 
     def status(self) -> dict:
@@ -327,6 +349,8 @@ class Engine:
                             self._synthesizing = utterance
                         word_ends: list[float] = []
                         offset = 0.0
+                        utterance.metrics.sentences += 1
+                        synth_start = time.monotonic()
                         try:
                             for pcm in backend.synthesize(sentence, word_ends=word_ends, speed=utterance.speed):
                                 if not self._current(utterance):
@@ -337,6 +361,8 @@ class Engine:
                                 self._audio.put(_Chunk(utterance, pcm, backend.sample_rate))
                                 offset += len(pcm) / backend.sample_rate
                         finally:
+                            utterance.metrics.synth_seconds += time.monotonic() - synth_start
+                            utterance.metrics.audio_seconds += offset
                             with self._state_lock:
                                 self._synthesizing = None
                         if not word_ends:
@@ -381,6 +407,7 @@ class Engine:
                         continue
                     if utterance.id not in played:
                         played[utterance.id] = 0.0
+                        utterance.metrics.first_audio = time.monotonic()
                         self._emit("started", id=utterance.id)
                     step = max(1, round(item.sample_rate * _WRITE_SECONDS))
                     for start in range(0, len(item.pcm), step):
@@ -406,6 +433,8 @@ class Engine:
             cut = written[len(heard_segments)][2] if len(heard_segments) < len(written) else partials.get(utterance.id)
             partials.pop(utterance.id, None)
             spoken_partial = self._spoken_partial(cut, heard)
+            result = "cancelled" if not self._current(utterance) else "error" if item.error is not None else "done"
+            _log_metrics(utterance, result)
             if not self._current(utterance):
                 self._emit("cancelled", id=utterance.id, spoken=spoken, spoken_partial=spoken_partial)
             elif item.error is not None:
@@ -420,3 +449,28 @@ class Engine:
             return ""
         heard_words = sum(1 for end in partial.ends if end <= heard + 1e-9)
         return heard_prefix(partial.text, heard_words, partial.to_spoken)
+
+
+def _note_text(utterance: _Utterance, text: str) -> None:
+    metrics = utterance.metrics
+    metrics.chars += len(text)
+    if metrics.first_text is None and any(char.isalnum() for char in text):
+        metrics.first_text = time.monotonic()
+
+
+def _log_metrics(utterance: _Utterance, result: str) -> None:
+    """One JSON line for each utterance. first_audio_s: from the first text to the first audio write."""
+    m = utterance.metrics
+    first_audio = None if m.first_audio is None or m.first_text is None else round(m.first_audio - m.first_text, 3)
+    line = {
+        "id": utterance.id,
+        "voice": utterance.voice,
+        "result": result,
+        "chars": m.chars,
+        "sentences": m.sentences,
+        "first_audio_s": first_audio,
+        "synth_s": round(m.synth_seconds, 3),
+        "audio_s": round(m.audio_seconds, 3),
+        "rtf": round(m.synth_seconds / m.audio_seconds, 3) if m.audio_seconds > 0 else None,
+    }
+    log.info("metrics %s", json.dumps(line, ensure_ascii=False))

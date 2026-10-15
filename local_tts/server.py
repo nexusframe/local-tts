@@ -14,6 +14,8 @@ import logging
 import os
 import signal
 import socket
+import threading
+import time
 from pathlib import Path
 
 from local_tts.engine import Engine
@@ -44,6 +46,12 @@ def exit_if_running(path: Path) -> None:
         raise SystemExit(EXIT_ALREADY_RUNNING)
 
 
+def memory_mb() -> tuple[float, float]:
+    """Current and peak RSS of this process in MB (VmRSS, VmHWM)."""
+    fields = dict(line.split(":", 1) for line in Path("/proc/self/status").read_text().splitlines() if ":" in line)
+    return tuple(round(int(fields[key].split()[0]) / 1024, 1) for key in ("VmRSS", "VmHWM"))
+
+
 def sd_notify(message: str) -> None:
     """Send a state to systemd (Type=notify). Without $NOTIFY_SOCKET, do nothing."""
     address = os.environ.get("NOTIFY_SOCKET")
@@ -63,11 +71,18 @@ class Server:
         self._socket_path = socket_path
         self._clients: set[asyncio.StreamWriter] = set()
         self._loop: asyncio.AbstractEventLoop | None = None
+        self._started = time.monotonic()
+        # Number of final events of each type since the start.
+        self._results = {"done": 0, "cancelled": 0, "error": 0}
+        self._results_lock = threading.Lock()
         self.engine: Engine = engine_factory(self._on_engine_event)
 
     def _on_engine_event(self, event: str, **fields: object) -> None:
         """Called from engine threads."""
         log.info("%s %s", event, fields)
+        if event in self._results:
+            with self._results_lock:
+                self._results[event] += 1
         if self._loop is not None:
             self._loop.call_soon_threadsafe(self._broadcast, encode_event(event, **fields))
 
@@ -122,7 +137,7 @@ class Server:
             self.engine.cancel()
             return encode_event("ack", cmd="cancel")
         assert isinstance(request, Status)
-        return encode_event("status", **self.engine.status())
+        return encode_event("status", **self.engine.status(), **self._process_status())
 
     async def serve_forever(self) -> None:
         self._loop = asyncio.get_running_loop()
@@ -154,6 +169,12 @@ class Server:
             self.engine.close()
             self._socket_path.unlink(missing_ok=True)
             log.info("stopped")
+
+    def _process_status(self) -> dict:
+        rss, peak = memory_mb()
+        with self._results_lock:
+            results = dict(self._results)
+        return {"rss_mb": rss, "peak_rss_mb": peak, "uptime_s": round(time.monotonic() - self._started), "results": results}
 
     @staticmethod
     def _stop(stop: asyncio.Event, sig: signal.Signals) -> None:

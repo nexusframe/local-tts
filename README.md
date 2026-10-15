@@ -33,6 +33,20 @@ systemctl --user enable --now local-tts
 
 `systemctl --user start` returns when the voices are loaded and the socket listens. Logs: `journalctl --user -u local-tts -f`. Stop: `systemctl --user stop local-tts`. After a change to the code: `systemctl --user restart local-tts`.
 
+### Metrics
+
+At the end of each request the daemon logs one line `metrics {...}` (JSON):
+
+| Field | Meaning |
+|---|---|
+| `result` | `done`, `cancelled` or `error` |
+| `chars`, `sentences` | length of the client text, number of synthesized sentences |
+| `first_audio_s` | seconds from the first text to the first audio write (for a stream: from the first `append` with text, not from `begin`). `null` if no audio was played |
+| `synth_s`, `audio_s`, `rtf` | synthesis time, audio time, and `synth_s / audio_s` |
+
+`python scripts/metrics_summary.py --since "-1 day"` shows the median and p95 of `first_audio_s` and `rtf` for each voice.
+The `status` event also has `rss_mb` and `peak_rss_mb` (memory of the daemon process), `uptime_s`, and `results` (number of `done`, `cancelled` and `error` events since the start).
+
 ## Speak text from the command line
 
 ```
